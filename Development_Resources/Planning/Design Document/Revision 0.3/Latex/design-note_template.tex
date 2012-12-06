@@ -1,0 +1,159 @@
+\documentclass{mxl-design}
+\usepackage{listings}
+\usepackage{float}
+
+\title{MXL Design Note Template}
+\author{K. Scott Tripp and Allison Craddock}
+
+\docnum{UNRELEASED}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+
+%===Revision History=================================================
+\vspace{5in}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|p{0.5in}|p{1.2in}|p{2.8in}|p{0.5in}|}
+	\hline
+	\bf Rev & \bf Date & \bf Notes & \bf Authors \\ 
+	\hline
+	1	& July 30, 2012 & Initial Release 	& KST	\\ \hline
+		&				&					&		\\ \hline
+		&				&					&		\\ \hline
+		&				&					&		\\ \hline
+		&				&					&		\\ \hline
+		&				&					&		\\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\clearpage
+\tableofcontents
+\clearpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This is the standard ``Design Note'' template for all notes concerning the Michigan Exploration Laboratory (MXL) design initiatives.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Body}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Background}
+Give a brief description of the design and a short paragraph of the problem/solution.
+
+%\begin{changelog}
+%	\item This is an itemized list
+%	\item of random stuff
+%	\item yup, pretty much all
+%\end{changelog}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Requirements}
+If we decide to differentiate between design notes and technical memos, use the following convention for design notes:
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Naming Convention, etc.}
+When you need to create a design note, use:
+
+\begin{verbatim}
+	\documentclass[note]{mxl-doc}
+\end{verbatim}
+
+Alternately, they could be separate classes, such as mxl-memo and mxl-tech-note.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Design}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Describe the design problem and proposed and/or implemented solution(s). This should include an overall solution followed by specific hardware and software designs, if applicable.  Include drawings and schematics in this section.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Software Design}
+
+Information specific to any software written with regard to this design endeavor.  Notes should include any unique problems encountered and solutions that were devised to solve these issues.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Hardware Design}
+
+Information specific to any hardware created in this design endeavor.  Notes should include any unique problems encountered and solutions that were devised to solve these issues.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Miscellaneous Design Elements and Issues}
+
+This section is for addressing anything that is not adequately covered in Hardware or Software sections.  This can include any "tricks of the trade" or other useful tidbits discovered during the design development process.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cost}
+
+This section will help us keep track of man-hour and hardware costs so that we may be able to identify how much individual design endeavors cost the project.  This will make future cost estimation more accurate.  Use tables and/or spreadsheets to organize costs.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Labor}
+
+Provide best estimation of man-hours associated with the efforts applied to this design issue
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Hardware \& Equipment}
+
+Provide an itemized list and cost summary of all hardware and other equipment needed to carry out this design.  Indicate which tools and/or supplies were purchased specifically for this design, and which were already in supply in the MXL.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Miscellaneous Costs}
+
+List all costs not covered in the above cost subsections.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Timeline}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Identify the estimated work involved by milestones within the design.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{References}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Add references to any documents used in this design.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Remaining Work}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Whether they are separate or a combined class, a few things still need to be done.
+
+\begin{itemize}
+	\item We should have a logo included in the document.
+	\item It needs to include the document number
+	\item Design notes need to include a revision history
+\end{itemize}
+
+As far as the revision history goes, it would be nice to follow the form of
+
+\begin{verbatim}
+	\version{1}{Created class}{KST}
+	\version{2}{Added version history}{KST}
+\end{verbatim}
+
+Which would translate to something like
+
+\begin{tabular}{|l|l|l|l|}
+	\hline
+	Version & Description & Initials & Date \\ \hline
+	1 & Created a class & KST & 3 April 2012 \\ \hline
+	2 & Added version history & KST & 14 June 2012 \\ \hline
+	3 & Revised content for Design Note specific template & ABC & 2 July 2012 \\ \hline
+\end{tabular}
+
+Additionally, the variable $\backslash$version should be available in the environment,
+and always refer to the latest version in the table.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
