@@ -105,13 +105,13 @@ The user interface component of Mercury2 will run on a net-accessible web server
 The hardware manager component of Mercury2 will run on a computer physically connected to the ground station hardware. It is responsible for parsing ground station commands from the user interface as well as providing the sockets that satellite operators will use to transmit and receive data to and from their satellite.
 
 \begin{itemize}
-	\item Run schedules and commands transmitted from the user interface
-	\item Periodically sync schedules from the user interface
+	\item Run schedules and commands received from the user interface
 	\item Asynchronously manage hardware and data streams
 	\item Connect to hardware via drivers
 	\item Buffer and record telemetry data
-	\item Provide sockets (defined by the schedule from the user interface) to allow satellite operators to transmit commands to and receive telemetry from the satellite
-	\item Key encrypted security for all data streams (using keys provided by the user interface in the schedule)
+	\item Periodically sync schedules from the user interface	
+	\item Provide sockets (defined by the schedule) to allow satellite operators to transmit commands to and receive telemetry from the ground station
+	\item Key encrypted security for all data streams (using keys from the user interface)
 \end{itemize}
 
 %==================================%
