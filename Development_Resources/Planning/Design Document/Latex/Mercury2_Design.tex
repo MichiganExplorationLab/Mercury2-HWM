@@ -63,6 +63,7 @@ This section contains a list terms and acronyms commonly used in this document.
 \end{table}
 
 %=== Requirements ===%
+\clearpage
 \subsection{Application Requirements}
 This section outlines the various requirements for the Mercury2 system. These are the requirements for the initial release of the application.
 
@@ -117,16 +118,51 @@ The hardware manager component of Mercury2 will run on a computer physically con
 %==================================%
 %====== Architecture Details ======%
 %==================================%
+\clearpage
 \section{Architecture Details}
+This section will detail each component of the Mercury2 system displayed in figure 1 (below).
 
-%=== Web Interface ===%
-\subsection{Web Interface}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.55]{Architecture_Diagram.png}
+\caption{Mercury2 Architecture Overview}
+\end{figure}
+
+%=== User Interface ===%
+\subsection{User Interface}
+The user interface for Mercury2 will consist of an application running on a web server that will allow satellite and ground station operators to interact with the ground station. This web application will be responsible for managing user permissions, maintaining the ground station reservation schedule, providing ground station feedback to satellite operators during reservations, and sending commands to the hardware manager. Each major component of the user interface (illustrated in figure 1) will be described in further detail in the following sections.
+
+\paragraph{Platform Details}
+The user interface application will be developed on top of a popular Python MVC web framework, known as \textit{Django}, running on an Apache web server. Django comes with many useful features right out of the box such as user management, user input sterilization, and a well developed templating system which will greatly reduce development time. The application will make use of a MySQL database to store user information, schedule details, and user activity logs, among other things.
+
+\paragraph{Security}
+Because the user interface has access to sensitive user information and direct control over the ground station, security and access control will be very important. Fortunately, Django comes with many useful security features by default such as user input sterilization, protection against cross-site scripting attacks, password hashing, and user permission management. User permissions will be configured to give users various levels of control over the ground station depending on their role (satellite operator, ground station operator, administrator, etc.). This mechanism will be detailed in the User Manager section (2.1.1). In addition, the security protocols used to protect the hardware manager data and command streams will be detailed in section 2.3.1.
+
+\subsubsection{User Manager}
+
+\subsubsection{Reservation System}
+
+\subsubsection{Satellite Tracking}
+
+\subsubsection{Ground Station Manager}
+
+\subsubsection{Administration Panel}
 
 %=== Hardware Manager ===%
 \subsection{Hardware Manager}
 
+\subsubsection{Network Manager}
+
+\subsubsection{Schedule Manager}
+
+\subsubsection{Hardware Drivers}
+
+\subsubsection{Telemetry Buffer}
+
 %=== Data Flow ===%
 \subsection{Data Flow}
+
+\subsubsection{Security}
 
 % End the document
 \end{document}
