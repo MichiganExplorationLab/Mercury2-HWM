@@ -3,3 +3,5 @@
 /Development_Resources/Planning/Design Document/Latex/Mercury2_Design.out
 /Development_Resources/Planning/Design Document/Latex/*.toc
 /Development_Resources/Planning/Design Document/Latex/Mercury2_Design.synctex.gz
+
+*.pyc

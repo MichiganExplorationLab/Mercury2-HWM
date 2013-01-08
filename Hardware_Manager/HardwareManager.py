@@ -8,7 +8,14 @@
 # file is responsible for initializing the application.
 
 # Import the required libraries
+from hwm.application.core import initialization
 
-
-# Run the initialization script
-
+# Verify that the app isn't being run as a module
+if __name__ == '__main__':
+  # Catch all otherwise uncaught exceptions and pass them to the error handler
+  
+  # Call the initialization script
+  initialization.initialize()
+  
+  # Start the application
+  initialization.start()

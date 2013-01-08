@@ -1,0 +1,10 @@
+## Contains the configuration for this hardware manager instance.
+##
+## If any invalid options are included, they will be ignored when the file is loaded. If the parser detects a YAML 
+## error the application will exit.
+
+# Ground station parameters
+station-name: "MXL"
+station-longitude: -83.712076
+station-latitude: 42.293385
+station-altitude: 264
