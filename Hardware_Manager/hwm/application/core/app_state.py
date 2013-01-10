@@ -38,12 +38,13 @@ class State:
     @param configuration_file  The YAML configuration file to load.
     """
     
-    # Log & announce the configuration file load 
-    
-    
     # Load the configuration file and run it through the YAML parser
     #config_stream = open(configuration_file, 'r')
     #config = yaml.load(config_stream)
+    
+    # Log & announce the configuration file load 
+    #if self.verbose_startup:
+    #  print "\n"
     
 # Declare the ManagerState instance
 ManagerState = State()

@@ -7,6 +7,7 @@ application state and starting the reactor loop.
 
 # Import the required modules
 from app_state import ManagerState
+import logging
 
 def initialize():
   """Initializes the hardware manager.
@@ -16,6 +17,9 @@ def initialize():
   
   # Announce program start
   announce_start()
+  
+  # Setup logging
+  setup_logs()
   
   # Read the configuration files
   ManagerState.read_configuration('configuration.yaml');
@@ -27,7 +31,9 @@ def start():
   Starts the hardware manager after initialization has been performed.
   """
   
-  print "\n# Starting the event reactor."
+  # Announce reactor start
+  if ManagerState.verbose_startup:
+    print "- Starting the event reactor."
 
 def announce_start():
   """Announces the application start to the console and application logs."""
@@ -38,7 +44,20 @@ def announce_start():
   print "|                                                   |"
   print "| Developed by the Michigan Exploration Laboratory  |"
   print "| http://exploration.engin.umich.edu/blog/          |"
-  print "|___________________________________________________|"
-  print "\n# Starting the Hardware Manager." 
+  print "|___________________________________________________|\n"
+
+def setup_logs():
+  """Sets up the logger."""
   
-  # Update the log
+  # Configure the logger
+  logging.basicConfig(filename='logs/hardware_manager.log',
+                      format='%(asctime)s - %(levelname)s - %(message)s',
+                      datefmt='%m/%d/%Y %H:%M:%S')
+  
+  # Announce the logging system setup
+  if ManagerState.verbose_startup:
+    print "- Setting up the logging system."
+  
+  # Log the program start
+  logging.info("Startup: Starting the hardware manager.")
+  logging.info("Startup: Setup the logging system.")
