@@ -22,7 +22,7 @@ def initialize():
   setup_logs()
   
   # Read the configuration files
-  ManagerState.read_configuration('configuration.yaml');
+  ManagerState.read_configuration('config/configuration.yml');
   #ManagerState.read_configuration('pipelines.yaml');
 
 def start():
@@ -52,7 +52,8 @@ def setup_logs():
   # Configure the logger
   logging.basicConfig(filename='logs/hardware_manager.log',
                       format='%(asctime)s - %(levelname)s - %(message)s',
-                      datefmt='%m/%d/%Y %H:%M:%S')
+                      datefmt='%m/%d/%Y %H:%M:%S',
+                      level=logging.DEBUG)
   
   # Announce the logging system setup
   if ManagerState.verbose_startup:
