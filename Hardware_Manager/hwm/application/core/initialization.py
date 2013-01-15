@@ -6,7 +6,7 @@ application state and starting the reactor loop.
 """
 
 # Import the required modules
-from app_state import ManagerState
+from configuration import Configuration
 import logging
 
 def initialize():
@@ -22,8 +22,11 @@ def initialize():
   setup_logs()
   
   # Read the configuration files
-  ManagerState.read_configuration('config/configuration.yml');
-  #ManagerState.read_configuration('pipelines.yaml');
+  Configuration.read_configuration('config/configuration.yml')
+  #Configuration.read_configuration('pipelines.yaml')
+  
+  # Verify that all required configuration options are set
+  Configuration.check_required_configuration()
 
 def start():
   """Starts the hardware manager.
@@ -32,7 +35,7 @@ def start():
   """
   
   # Announce reactor start
-  if ManagerState.verbose_startup:
+  if Configuration.verbose_startup:
     print "- Starting the event reactor."
 
 def announce_start():
@@ -40,7 +43,7 @@ def announce_start():
   
   # Print a message to the terminal
   print " ___________________________________________________ "
-  print "|        Mercury2 - Hardware Manager ("+ManagerState.version+")        |"
+  print "|        Mercury2 - Hardware Manager ("+Configuration.version+")        |"
   print "|                                                   |"
   print "| Developed by the Michigan Exploration Laboratory  |"
   print "| http://exploration.engin.umich.edu/blog/          |"
@@ -56,9 +59,10 @@ def setup_logs():
                       level=logging.DEBUG)
   
   # Announce the logging system setup
-  if ManagerState.verbose_startup:
+  if Configuration.verbose_startup:
     print "- Setting up the logging system."
   
   # Log the program start
+  logging.info("=======================================")
   logging.info("Startup: Starting the hardware manager.")
   logging.info("Startup: Setup the logging system.")
