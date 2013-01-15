@@ -1,0 +1,46 @@
+\hypertarget{namespacehwm_1_1application_1_1core_1_1errors}{\section{hwm.\-application.\-core.\-errors Namespace Reference}
+\label{namespacehwm_1_1application_1_1core_1_1errors}\index{hwm.\-application.\-core.\-errors@{hwm.\-application.\-core.\-errors}}
+}
+
+
+Contains general error handling functions.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacehwm_1_1application_1_1core_1_1errors_a10d031e79f3534b5a7c704a658eec281}{uncaught\-\_\-exception}
+\begin{DoxyCompactList}\small\item\em Handles previously uncaught exceptions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Contains general error handling functions. This module contains assorted error handling functions. These functions are typically used to handle top-\/level hardware manager exceptions (such as a previously uncaught exceptions). 
+
+\subsection{Function Documentation}
+\hypertarget{namespacehwm_1_1application_1_1core_1_1errors_a10d031e79f3534b5a7c704a658eec281}{\index{hwm\-::application\-::core\-::errors@{hwm\-::application\-::core\-::errors}!uncaught\-\_\-exception@{uncaught\-\_\-exception}}
+\index{uncaught\-\_\-exception@{uncaught\-\_\-exception}!hwm::application::core::errors@{hwm\-::application\-::core\-::errors}}
+\subsubsection[{uncaught\-\_\-exception}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-application.\-core.\-errors.\-uncaught\-\_\-exception (
+\begin{DoxyParamCaption}
+\item[{}]{type, }
+\item[{}]{value, }
+\item[{}]{tb}
+\end{DoxyParamCaption}
+)}}\label{namespacehwm_1_1application_1_1core_1_1errors_a10d031e79f3534b5a7c704a658eec281}
+
+
+Handles previously uncaught exceptions. 
+
+This method is used to handle top-\/level uncaught exceptions. It exits the program with an error code if such an exception is encountered.
+
+\begin{DoxyNote}{Note}
+This function logs all uncaught exceptions to the application logs, which are set up in \hyperlink{namespacehwm_1_1application_1_1core_1_1initialization}{hwm.\-application.\-core.\-initialization}. If the logs haven't been set up (i.\-e. the exception was generated early on) the default log settings will be used.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em type} & The exception type. \\
+\hline
+{\em value} & The exception descriptive text. \\
+\hline
+{\em tb} & The complete traceback for the provided exception. \\
+\hline
+\end{DoxyParams}

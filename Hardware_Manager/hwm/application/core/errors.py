@@ -1,4 +1,4 @@
-""" @package hwm.application.core
+""" @package hwm.application.core.errors
 Contains general error handling functions.
 
 This module contains assorted error handling functions. These functions are typically used to handle top-level hardware

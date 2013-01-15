@@ -1,4 +1,4 @@
-""" @package hwm.application.core
+""" @package hwm.application.core.configuration
 Contains a class to store the hardware manager configuration.
 
 This module contains a class that provides methods for storing, modifying, and retrieving application configuration and
@@ -13,12 +13,13 @@ class Config:
   """Provides access to the hardware manager application configuration.
   
   This class stores and provides access to the configuration and shared state used by the hardware manager such as the 
-  configuration, reservation schedules, and pipeline configuration. To use this class import this module (configuration) 
-  and assign a local variable to 'Configuration' (makes code easier to test).
+  configuration, reservation schedules, and pipeline configuration. In addition, it allows users to store their own 
+  configuration options as needed. To use this class import this module (configuration) and assign a local variable to 
+  'Configuration' (makes code easier to test).
   """
   
   def __init__(self):
-    """Initializes all of the available state variables to their default values.
+    """Initializes the dictionaries and other member variables used to hold the configuration.
     
     @note Only user_options can be modified during program execution (using the setter/getter). This keeps prevents
           configuration options from getting altered/deleted.
@@ -116,7 +117,8 @@ class Config:
   def get(self, option_key):
     """Retrieves the specified configuration option.
     
-    This method returns the value of the specified option from either the user defined options or pre-set runtime options.
+    This method returns the value of the specified option from either the user defined options or pre-set runtime 
+    options.
     
     @throws OptionNotFound Thrown if the specified option can't be located in either configuration value dictionary.
     
@@ -138,7 +140,7 @@ class Config:
     raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
   
   def delete(self, option_key):
-    """Removes the specified configuration option.
+    """Removes the specified configuration option from the user options dictionary.
     
     @throws OptionProtected Thrown if the user tries to delete a protected run-time option.
     @throws OptionNotFound Thrown if the option can't be located.
@@ -167,5 +169,6 @@ class OptionProtected(Exception):
 class OptionNotFound(Exception):
   pass
 
-# Declare the 'singleton' Configuration instance
+## Stores a 'singleton' instance of the Config object. Assign local references to this instance to access the 
+# configuration.
 Configuration = Config()

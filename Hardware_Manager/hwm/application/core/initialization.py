@@ -1,4 +1,4 @@
-""" @package hwm.application.core
+""" @package hwm.application.core.initialization
 Initializes the Hardware Manager application.
  
 This module contains the methods responsible for initializing the Hardware Manager. This entails setting up the 
