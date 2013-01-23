@@ -26,7 +26,7 @@ class Config:
     """
     
     # Program metadata
-    self.version = "0.1.0";
+    self.version = "1.0dev";
     self.verbose_startup = True;
     
     # This dictionary stores all pre-set configuration options (read from files)

@@ -9,19 +9,9 @@
 
 # Import the required libraries
 from hwm.application.core import initialization
-from hwm.application.core import errors
-import sys
 
 # Verify that the app isn't being run as a module
-if __name__ == '__main__':
-  # Set the default uncaught exception handler
-  sys.excepthook = errors.uncaught_exception
-  
+if __name__ == '__main__': 
   # Initialize the application
   initialization.initialize()
   
-  # Start the application
-  initialization.start()
-  
-  # Exit the program
-  sys.exit(0)

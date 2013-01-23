@@ -7,13 +7,17 @@ application state and starting the reactor loop.
 
 # Import the required modules
 from configuration import Configuration
-import logging
+from hwm.application.core import errors
+import logging, sys
 
 def initialize():
   """Initializes the hardware manager.
   
   Initializes the hardware manager by setting up the state and starting the event reactor.
   """
+  
+  # Set the default uncaught exception handler
+  sys.excepthook = errors.uncaught_exception
   
   # Announce program start
   announce_start()
@@ -27,6 +31,12 @@ def initialize():
   
   # Verify that all required configuration options are set
   Configuration.check_required_configuration()
+  
+  # Start the application
+  start()
+  
+  # Exit the program
+  sys.exit(0)
 
 def start():
   """Starts the hardware manager.
@@ -43,11 +53,12 @@ def announce_start():
   
   # Print a message to the terminal
   print " ___________________________________________________ "
-  print "|        Mercury2 - Hardware Manager ("+Configuration.version+")        |"
+  print "|            Mercury2 - Hardware Manager            |"
   print "|                                                   |"
   print "| Developed by the Michigan Exploration Laboratory  |"
   print "| http://exploration.engin.umich.edu/blog/          |"
   print "|___________________________________________________|\n"
+  print "Version: "+Configuration.version+"\n"
 
 def setup_logs():
   """Sets up the logger."""
