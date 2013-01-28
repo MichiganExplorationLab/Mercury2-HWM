@@ -8,11 +8,12 @@ distribute_setup.use_setuptools()
 
 # Import the required packages
 from setuptools import setup, find_packages
+import glob
 
 # Call the setup function
 setup(
   # Project meta-data
-  name = "Mercury2 Hardware Manager",
+  name = "Mercury2HWM",
   version = "1.0dev",
   author = "Michigan Exploration Laboratory",
   description = "The hardware manager component of the Mercury2 ground station administration system.",
@@ -32,9 +33,11 @@ setup(
   # Declare dependencies
   install_requires = ['distribute', 'Twisted>=12.3.0', 'PyYAML>=3.10', 'pyOpenSSL>=0.13', 'doxypy>=0.4.2'],
   
-  # Specify patterns for data files to include
-  package_data = {
-    # Include all default configuration files and documentation
-    '': ['data/*']
-  }
+  # Specify patterns for data files to include (will be copied to a user directory during installation)
+  data_files = [
+    ('data/config', glob.glob('data/config/*')),
+    ('data/logs', glob.glob('data/logs/*')),
+    ('data/schedules', glob.glob('data/schedules/*')),
+    ('data/stream_dumps', glob.glob('data/stream_dumps/*'))
+  ]
 )

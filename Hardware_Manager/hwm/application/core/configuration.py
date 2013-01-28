@@ -26,8 +26,9 @@ class Config:
     """
     
     # Program metadata
-    self.version = "1.0dev";
-    self.verbose_startup = True;
+    self.version = "1.0dev"
+    self.verbose_startup = True
+    self.data_directory = '/var/local/Mercury2HWM'
     
     # This dictionary stores all pre-set configuration options (read from files)
     self.options = {}
@@ -48,7 +49,7 @@ class Config:
     """
     
     # Attempt to load the specified configuration file
-    config_stream = open(configuration_file, 'r')
+    config_stream = open(self.data_directory+"/"+configuration_file, 'r')
     
     # Attempt to parse the file
     try:

@@ -6,3 +6,7 @@
 
 *.pyc
 *.log
+
+Hardware_Manager/Mercury2HWM.egg-info/*
+Hardware_Manager/build/*
+Hardware_Manager/dist/*

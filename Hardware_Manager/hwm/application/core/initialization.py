@@ -6,9 +6,10 @@ application state and starting the reactor loop.
 """
 
 # Import the required modules
+from pkg_resources import Requirement, resource_filename
 from configuration import Configuration
 from hwm.application.core import errors
-import logging, sys
+import logging, sys, shutil, os
 
 def initialize():
   """Initializes the hardware manager.
@@ -22,18 +23,21 @@ def initialize():
   # Announce program start
   announce_start()
   
+  # Check for user files
+  verify_data_files()
+  
   # Setup logging
-  #setup_logs()
+  setup_logs()
   
   # Read the configuration files
-  #Configuration.read_configuration('config/configuration.yml')
-  #Configuration.read_configuration('pipelines.yaml')
+  Configuration.read_configuration('config/configuration.yml')
+  #Configuration.read_configuration('config/pipelines.yaml')
   
   # Verify that all required configuration options are set
-  #Configuration.check_required_configuration()
+  Configuration.check_required_configuration()
   
   # Start the application
-  #start()
+  start()
   
   # Exit the program
   sys.exit(0)
@@ -60,11 +64,29 @@ def announce_start():
   print "|___________________________________________________|\n"
   print "Version: "+Configuration.version+"\n"
 
+def verify_data_files():
+  """Checks for the presence of required data file directories.
+  
+  This method verifies that required data files and data file directories exist in the proper directory (/var/local on 
+  linux). If they don't (i.e. if this is the first time that the program has been run), the defaults will be copied from
+  the package folder (in python2.7/dist-packages)"""
+  
+  # Set the location of the default data directory
+  default_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"data")
+  
+  # Check if the data directory exists
+  if not os.path.exists(Configuration.data_directory):
+    shutil.copytree(default_data_directory, Configuration.data_directory)
+    print "- Data directory not found, copied defaults to: "+Configuration.data_directory
+  else:
+    if Configuration.verbose_startup:
+      print "- Data directory found at: "+Configuration.data_directory
+
 def setup_logs():
   """Sets up the logger."""
   
   # Configure the logger
-  logging.basicConfig(filename='logs/hardware_manager.log',
+  logging.basicConfig(filename=Configuration.data_directory+'/logs/hardware_manager.log',
                       format='%(asctime)s - %(levelname)s - %(message)s',
                       datefmt='%m/%d/%Y %H:%M:%S',
                       level=logging.DEBUG)
