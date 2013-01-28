@@ -23,17 +23,17 @@ def initialize():
   announce_start()
   
   # Setup logging
-  setup_logs()
+  #setup_logs()
   
   # Read the configuration files
-  Configuration.read_configuration('config/configuration.yml')
+  #Configuration.read_configuration('config/configuration.yml')
   #Configuration.read_configuration('pipelines.yaml')
   
   # Verify that all required configuration options are set
-  Configuration.check_required_configuration()
+  #Configuration.check_required_configuration()
   
   # Start the application
-  start()
+  #start()
   
   # Exit the program
   sys.exit(0)

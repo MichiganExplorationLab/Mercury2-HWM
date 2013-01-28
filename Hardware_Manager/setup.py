@@ -1,6 +1,10 @@
 ## Sets up the Mercury2 Hardware Manager
 # 
-# This script uses setuptools to install the hardware manager, and its dependencies, on the system.
+# This script uses distribute (fork of setuptools) to install the hardware manager, and its dependencies, on the system.
+
+# Install setuptools if not installed
+import distribute_setup
+distribute_setup.use_setuptools()
 
 # Import the required packages
 from setuptools import setup, find_packages
@@ -26,11 +30,11 @@ setup(
   },
 
   # Declare dependencies
-  install_requires = ['Twisted>=12.3.0', 'PyYAML>=3.10', 'pyOpenSSL>=0.13', 'doxypy>=0.4.2'],
+  install_requires = ['distribute', 'Twisted>=12.3.0', 'PyYAML>=3.10', 'pyOpenSSL>=0.13', 'doxypy>=0.4.2'],
   
   # Specify patterns for data files to include
   package_data = {
     # Include all default configuration files and documentation
-    '': ['*.default', 'docs/build/*']
+    '': ['data/*']
   }
 )
