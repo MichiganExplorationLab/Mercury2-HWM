@@ -6,10 +6,12 @@ application state and starting the reactor loop.
 """
 
 # Import the required modules
+import logging, sys, shutil, os
+from twisted.internet import reactor
+from twisted.internet.task import LoopingCall
 from pkg_resources import Requirement, resource_filename
 from configuration import Configuration
-from hwm.application.core import errors
-import logging, sys, shutil, os
+from hwm.application.core import errors, coordinator
 
 def initialize():
   """Initializes the hardware manager.
@@ -30,27 +32,36 @@ def initialize():
   setup_logs()
   
   # Read the configuration files
-  Configuration.read_configuration(self.data_directory+'/config/configuration.yml')
-  #Configuration.read_configuration(self.data_directory+'config/pipelines.yaml')
+  Configuration.read_configuration(Configuration.data_directory+'/config/configuration.yml')
+  #Configuration.read_configuration(Configuration.data_directory+'config/pipelines.yaml')
   
   # Verify that all required configuration options are set
   Configuration.check_required_configuration()
   
   # Start the application
-  start()
+  start_event_reactor()
   
   # Exit the program
   sys.exit(0)
 
-def start():
+def start_event_reactor():
   """Starts the hardware manager.
   
-  Starts the hardware manager after initialization has been performed.
+  Starts the hardware manager after performing various initialization operations related to the reactor.
   """
   
-  # Announce reactor start
+  # Initialize the session coordinator
+  session_coordinator = coordinator.SessionCoordinator()
+  
+  # Set up the session coordinator looping call
+  coordination_loop = LoopingCall(session_coordinator.coordinate)
+  coordination_loop.start(1)
+  
+  # Start the reactor
   if Configuration.verbose_startup:
-    print "- Starting the event reactor."
+    print "- Started the event reactor."
+  logging.info("Startup: Started the event reactor.")
+  reactor.run()
 
 def announce_start():
   """Announces the application start to the console and application logs."""
@@ -73,7 +84,7 @@ def verify_data_files():
   
   # Check if the data directory exists
   if not os.path.exists(Configuration.data_directory):
-    # Copy over the default data files/directories
+    # Copy over the default data files/directories from the source copies
     default_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"data")
     shutil.copytree(default_data_directory, Configuration.data_directory)
     if Configuration.verbose_startup:

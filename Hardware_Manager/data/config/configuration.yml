@@ -8,3 +8,7 @@ station-name: "MXL"
 station-longitude: -83.712076
 station-latitude: 42.293385
 station-altitude: 264
+
+# Network settings
+offline-mode: false
+schedule-update-period: 1
