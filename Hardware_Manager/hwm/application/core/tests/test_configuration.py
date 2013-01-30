@@ -1,5 +1,5 @@
 # Import required modules
-import unittest
+import unittest, logging
 from ..configuration import *
 from pkg_resources import Requirement, resource_filename
 
@@ -19,6 +19,9 @@ class TestConfiguration(unittest.TestCase):
     
     # Set the source data directory
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
+    
+    # Disable logging for most events
+    logging.disable(logging.CRITICAL)
   
   def tearDown(self):
     # Reset the configuration reference
