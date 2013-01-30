@@ -41,15 +41,19 @@ class Config:
     
     Reads in all configuration settings from the specified YAML file and stores them in the 'options' dictionary.
     
+    @throws IOError    Thrown if the specified file can't be loaded.
+    @throws Exception  Thrown if the specified file can't be parsed by the YAML parser.
+    
     @note All configuration files are in YAML format.
-    @note All configurations are assumed to be required (i.e. this throws an uncaught exception if a file can't be loaded)
+    @note All configurations are assumed to be required (i.e. this throws an exception if the file can't be loaded)
+    @note If a file is loaded that contains a previously defined protected option, the previous value will be overridden by the new value.
     @see http://en.wikipedia.org/wiki/YAML
     
-    @param configuration_file  The YAML configuration file to load.
+    @param configuration_file  The YAML configuration file to load. This is an absolute path.
     """
     
     # Attempt to load the specified configuration file
-    config_stream = open(self.data_directory+"/"+configuration_file, 'r')
+    config_stream = open(configuration_file, 'r')
     
     # Attempt to parse the file
     try:

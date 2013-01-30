@@ -30,8 +30,8 @@ def initialize():
   setup_logs()
   
   # Read the configuration files
-  Configuration.read_configuration('config/configuration.yml')
-  #Configuration.read_configuration('config/pipelines.yaml')
+  Configuration.read_configuration(self.data_directory+'/config/configuration.yml')
+  #Configuration.read_configuration(self.data_directory+'config/pipelines.yaml')
   
   # Verify that all required configuration options are set
   Configuration.check_required_configuration()
@@ -71,13 +71,13 @@ def verify_data_files():
   linux). If they don't (i.e. if this is the first time that the program has been run), the defaults will be copied from
   the package folder (in python2.7/dist-packages)"""
   
-  # Set the location of the default data directory
-  default_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"data")
-  
   # Check if the data directory exists
   if not os.path.exists(Configuration.data_directory):
+    # Copy over the default data files/directories
+    default_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"data")
     shutil.copytree(default_data_directory, Configuration.data_directory)
-    print "- Data directory not found, copied defaults to: "+Configuration.data_directory
+    if Configuration.verbose_startup:
+      print "- Data directory not found, copied defaults to: "+Configuration.data_directory
   else:
     if Configuration.verbose_startup:
       print "- Data directory found at: "+Configuration.data_directory
