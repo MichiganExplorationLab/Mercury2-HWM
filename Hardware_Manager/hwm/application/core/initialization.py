@@ -50,8 +50,11 @@ def start_event_reactor():
   Starts the hardware manager after performing various initialization operations related to the reactor.
   """
   
+  # Initialize the schedule coordinator
+  
+    
   # Initialize the session coordinator
-  session_coordinator = coordinator.SessionCoordinator()
+  session_coordinator = coordinator.SessionCoordinator(None)
   
   # Set up the session coordinator looping call
   coordination_loop = LoopingCall(session_coordinator.coordinate)

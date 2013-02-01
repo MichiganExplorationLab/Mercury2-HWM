@@ -16,11 +16,14 @@ class SessionCoordinator:
   needed (intended to be called with twisted.internet.task.LoopingCall).
   """
   
-  def __init__(self):
-    """Sets up the session coordinator instance."""
+  def __init__(self, reservation_schedule):
+    """Sets up the session coordinator instance.
     
-    # Initialize the schedule manager
+    @param reservation_schedule  A reference to the schedule to execute.
+    """
     
+    # Set the schedule manager reference
+    #self.schedule = reservation_schedule
     print 'init'
   
   def coordinate(self):
