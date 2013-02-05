@@ -7,7 +7,7 @@ This module contains a class that is used to fetch, maintain, and provide access
 # Import required modules
 from configuration import Configuration
 from twisted.internet import threads
-import logging, json
+import logging, json, threading
 
 class ScheduleManager:
   """Represents a reservation access schedule.
@@ -29,6 +29,9 @@ class ScheduleManager:
     
     # Set the local configuration object reference
     self.config = Configuration
+    
+    # Create the schedule lock
+    self.schedule_lock = threading.Lock()
     
     # Set the schedule parameters
     self.use_network_schedule = load_from_network
@@ -81,7 +84,12 @@ class ScheduleManager:
     
     # Parse the schedule JSON
     try:
-      self.schedule = json.load(schedule_file)
+      # Acquire a lock on the schedule to keep
+      self.schedule_lock.acquire(True)
+      try:
+        self.schedule = json.load(schedule_file)
+      finally:
+        self.schedule_lock.release()
     except ValueError:
       # Error parsing the schedule JSON
       logging.error("Schedule manager could not parse schedule file: "+self.schedule_location)
