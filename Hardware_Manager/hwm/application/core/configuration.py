@@ -80,7 +80,7 @@ class Config:
     """
     
     # Set some default error messages
-    error_missing_option = "Required configuration option not set: '{}'. Please add it to a configuration file."
+    error_missing_option = "Required configuration option not set: '{}'. Please add it to a loaded configuration file."
     
     # Verify that the required ground station parameters have been set
     if 'station-name' not in self.options:

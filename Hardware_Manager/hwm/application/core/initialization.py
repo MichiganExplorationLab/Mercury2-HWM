@@ -11,7 +11,7 @@ from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from pkg_resources import Requirement, resource_filename
 from configuration import Configuration
-from hwm.application.core import errors, coordinator
+from hwm.application.core import errors, coordinator, schedule
 
 def initialize():
   """Initializes the hardware manager.
