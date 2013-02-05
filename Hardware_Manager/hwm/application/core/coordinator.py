@@ -23,8 +23,7 @@ class SessionCoordinator:
     """
     
     # Set the schedule manager reference
-    #self.schedule = reservation_schedule
-    print 'init'
+    self.schedule = reservation_schedule
   
   def coordinate(self):
     """Coordinates the operation of the hardware manager.

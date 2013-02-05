@@ -2,6 +2,9 @@
 ##
 ## If any invalid options are included, they will be ignored when the file is loaded. If the parser detects a YAML 
 ## error the application will exit.
+##
+## If any required configuration options are omitted, the hardware manager will reject the configuration file and exit.
+## Reference the documentation for descriptions of available configuration parameters.
 
 # Ground station parameters
 station-name: "MXL"
@@ -10,5 +13,8 @@ station-latitude: 42.293385
 station-altitude: 264
 
 # Network settings
-offline-mode: false
+schedule-location-network: "api/schedule"
+schedule-location-local: "data/schedules/offline_schedule.yml"
+offline-mode: true
 schedule-update-period: 1
+

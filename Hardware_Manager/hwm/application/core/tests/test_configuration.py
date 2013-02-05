@@ -13,8 +13,6 @@ class TestConfiguration(unittest.TestCase):
   def setUp(self):
     # Set a local reference to Configuration (how other modules should typically access Config)
     self.config = Configuration
-    
-    # Disable verbose setup
     self.config.verbose_startup = False
     
     # Set the source data directory
@@ -84,15 +82,15 @@ class TestConfiguration(unittest.TestCase):
   
   def test_config_file_load(self):
     # Attempt to load a valid config file
-    self.config.read_configuration(self.source_data_directory+'/application/core/tests/test_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')
   
   def test_config_file_invalid_load(self):
     # Attempt to load an invalid config file
-    self.assertRaises(Exception, self.config.read_configuration, self.source_data_directory+'/application/core/tests/test_config_invalid.yml')
+    self.assertRaises(Exception, self.config.read_configuration, self.source_data_directory+'/application/core/tests/data/test_config_invalid.yml')
   
   def test_protected_option_read(self):
     # Load the test configuration file
-    self.config.read_configuration(self.source_data_directory+'/application/core/tests/test_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')
     
     # Attempt to read one of the loaded options
     read_result = self.config.get('protected-option')
@@ -100,14 +98,14 @@ class TestConfiguration(unittest.TestCase):
   
   def test_protected_option_set_protection(self):
     # Load the test configuration file
-    self.config.read_configuration(self.source_data_directory+'/application/core/tests/test_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')
     
     # Attempt to override a protected option
     self.assertRaises(OptionProtected, self.config.set, 'protected-option', 'Test Value')
   
   def test_protected_option_delete_protection(self):
     # Load the test configuration file
-    self.config.read_configuration(self.source_data_directory+'/application/core/tests/test_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')
     
     # Attempt to override a protected option
     self.assertRaises(OptionProtected, self.config.delete, 'protected-option')

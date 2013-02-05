@@ -50,11 +50,17 @@ def start_event_reactor():
   Starts the hardware manager after performing various initialization operations related to the reactor.
   """
   
-  # Initialize the schedule coordinator
+  # Setup local variables
+  schedule_manager = None
   
+  # Initialize the schedule coordinator
+  if Configuration.get('offline-mode'):
+    schedule_manager = schedule.ScheduleManager(Configuration.data_directory+Configuration.get('schedule-location-local'), False)
+  else:
+    schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-network'))
     
   # Initialize the session coordinator
-  session_coordinator = coordinator.SessionCoordinator(None)
+  session_coordinator = coordinator.SessionCoordinator(schedule_manager)
   
   # Set up the session coordinator looping call
   coordination_loop = LoopingCall(session_coordinator.coordinate)

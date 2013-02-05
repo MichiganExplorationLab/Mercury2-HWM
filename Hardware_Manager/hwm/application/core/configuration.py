@@ -92,6 +92,14 @@ class Config:
     if 'station-altitude' not in self.options:
       raise Exception(error_missing_option.format('station-altitude'))
     
+    # Verify the network parameters
+    if 'offline-mode' not in self.options:
+      raise Exception(error_missing_option.format('offline-mode'))
+    if 'schedule-update-period' not in self.options:
+      raise Exception(error_missing_option.format('schedule-update-period'))
+    if 'schedule-location-local' not in self.options:
+      raise Exception(error_missing_option.format('schedule-location-local'))
+    
     # Log and announce
     if self.verbose_startup:
       print "- Validated required configuration options."
