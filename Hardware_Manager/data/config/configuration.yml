@@ -13,6 +13,7 @@ station-latitude: 42.293385
 station-altitude: 264
 
 # Network settings
+mercury2-ui-location: "localhost"
 schedule-location-network: "api/schedule"
 schedule-location-local: "data/schedules/offline_schedule.yml"
 offline-mode: true

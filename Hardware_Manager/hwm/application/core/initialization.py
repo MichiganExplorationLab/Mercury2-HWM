@@ -55,7 +55,7 @@ def start_event_reactor():
   
   # Initialize the schedule coordinator
   if Configuration.get('offline-mode'):
-    schedule_manager = schedule.ScheduleManager(Configuration.data_directory+Configuration.get('schedule-location-local'), False)
+    schedule_manager = schedule.ScheduleManager(Configuration.data_directory+Configuration.get('schedule-location-local'))
   else:
     schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-network'))
     

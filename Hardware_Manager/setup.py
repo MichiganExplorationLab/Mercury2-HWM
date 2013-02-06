@@ -35,7 +35,8 @@ setup(
                       'Twisted>=12.3.0',
                       'PyYAML>=3.10',
                       'pyOpenSSL>=0.13',
-                      'doxypy>=0.4.2'],
+                      'doxypy>=0.4.2',
+                      'jsonschema'],
   
   # Specify patterns for data files to include (will be copied to a user directory during installation)
   data_files = [

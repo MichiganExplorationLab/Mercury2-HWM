@@ -1,0 +1,16 @@
+{
+    "reservations": [
+        {
+            "time_start": 1360096495,
+            "time_end": 1360097495,
+            "pipeline_id": 0,
+            "hardware_settings": {
+            }
+        },
+        {
+            "time_start": 1360196495,
+            "time_end": 1360197595,
+            "pipeline_id": 3,
+        }
+    ]
+}

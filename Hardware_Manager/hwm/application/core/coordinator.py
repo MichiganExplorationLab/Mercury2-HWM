@@ -11,9 +11,9 @@ class SessionCoordinator:
   """Handles the creation and management of reservation sessions.
   
   This class is used to manage the pool of active sessions and reservations for the hardware manager. It stores the 
-  references to the active schedule instance and all active session instances. In addition, it contains the method 
-  which instructs the schedule manager to update its schedule, checks for new reservations, and creates sessions as
-  needed (intended to be called with twisted.internet.task.LoopingCall).
+  references to the active schedule instance and all active session instances. In addition, it contains the main 
+  "program loop" that is responsible for periodically trigging schedule updates, checking for reservations, and 
+  creating new sessions as needed.
   """
   
   def __init__(self, reservation_schedule):

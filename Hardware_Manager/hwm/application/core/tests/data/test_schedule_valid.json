@@ -1,0 +1,18 @@
+{
+    "reservations": [
+        {
+            "time_start": 1360096495,
+            "time_end": 1360097495,
+            "pipeline_id": 0,
+            "hardware_settings": {
+                "device_id_1": {
+                    "setting_a": 10,
+                    "setting_b": "\"Test setting\""
+                },
+                "device_id_2": {
+                    "some_setting": 15
+                }
+            }
+        }
+    ]
+}
