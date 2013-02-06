@@ -1,3 +1,4 @@
 # Used to test config file loading abilities
 protected-option: "Protected Value"
 protected-option-2: "Second Protected Value"
+schedule-update-timeout: 3

@@ -36,7 +36,7 @@ def initialize():
   #Configuration.read_configuration(Configuration.data_directory+'config/pipelines.yaml')
   
   # Verify that all required configuration options are set
-  Configuration.check_required_configuration()
+  Configuration.process_configuration()
   
   # Start the application
   start_event_reactor()

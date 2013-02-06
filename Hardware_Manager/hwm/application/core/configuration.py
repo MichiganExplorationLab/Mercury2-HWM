@@ -69,11 +69,53 @@ class Config:
       print "- Read in configuration file: '"+configuration_file+"'."
     logging.info("Configuration: Read configuration file: '"+configuration_file+"'.")
   
-  def check_required_configuration(self):
+  def process_configuration(self):
     """Verifies that the required configuration elements have been set.
     
     This method verifies that the required configuration elements have properly been set. These elements were probably
-    loaded from a YAML configuration file via read_configuration().
+    loaded from a YAML configuration file via read_configuration(). In addition, 
+    
+    @note If a configuration option is missing, an exception will be thrown detailing the error. This exception will be
+          caught by the global exception handler.
+    @note Only configuration options loaded from files before this method is called will be processed.
+    """
+    
+    # Set the default configuration options
+    self._set_default_configuration()
+    
+    # Validate that the required options have been set
+    self._check_required_configuration()
+  
+  def _set_default_configuration(self):
+    """Sets the default values for configuration elements that have not been set.
+    
+    @note If a configuration option with a default value has been set (most likely from a file by read_configuration), 
+          that value will be used instead of the default.
+    """
+    
+    # Specify the option defaults
+    default_options = {
+      'offline-mode': False,
+      'schedule-update-period': 60, # seconds
+      'schedule-update-timeout': 15, # seconds
+      'schedule-location-local': 'data/schedules/offline_schedule.yml',
+      'schedule-location-network': '/test_schedule.json'
+    }
+    
+    # Set the defaults
+    for default_option in default_options:
+      if default_option not in self.options:
+        self.options[default_option] = default_options[default_option]
+    
+    # Log and announce
+    if self.verbose_startup:
+      print "- Set default configuration options."
+    logging.info("Configuration: Successfully set default configuration options.")
+  
+  def _check_required_configuration(self):
+    """Verifies that the required configuration elements have been set.
+    
+    This method verifies that the required configuration elements have properly been set.
     
     @note If a configuration option is missing, an exception will be thrown detailing the error. This exception will be
           caught by the global exception handler.
@@ -82,23 +124,17 @@ class Config:
     # Set some default error messages
     error_missing_option = "Required configuration option not set: '{}'. Please add it to a loaded configuration file."
     
-    # Verify that the required ground station parameters have been set
-    if 'station-name' not in self.options:
-      raise Exception(error_missing_option.format('station-name'))
-    if 'station-longitude' not in self.options:
-      raise Exception(error_missing_option.format('station-longitude'))
-    if 'station-latitude' not in self.options:
-      raise Exception(error_missing_option.format('station-latitude'))
-    if 'station-altitude' not in self.options:
-      raise Exception(error_missing_option.format('station-altitude'))
+    # List the required configuration options
+    required_options = [
+      'station-name', 'station-longitude', 'station-latitude', 'station-altitude', # Station parameters
+      'offline-mode', 'schedule-update-period', 'schedule-update-timeout', # Network settings
+      'mercury2-ui-location', 'schedule-location-network', 'schedule-location-local' # Resource endpoints
+    ]
     
-    # Verify the network parameters
-    if 'offline-mode' not in self.options:
-      raise Exception(error_missing_option.format('offline-mode'))
-    if 'schedule-update-period' not in self.options:
-      raise Exception(error_missing_option.format('schedule-update-period'))
-    if 'schedule-location-local' not in self.options:
-      raise Exception(error_missing_option.format('schedule-location-local'))
+    # Validate the options
+    for required_option in required_options:
+      if required_option not in self.options:
+        raise Exception(error_missing_option.format(required_option))
     
     # Log and announce
     if self.verbose_startup:

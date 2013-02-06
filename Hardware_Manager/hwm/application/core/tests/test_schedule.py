@@ -17,7 +17,7 @@ class TestSchedule(unittest.TestCase):
     logging.disable(logging.CRITICAL)
   
   def test_local_file_load(self):
-    """Tests the ability the the Schedule manager to download a valid dummy schedule from the local disk and update its 
+    """Tests the ability of the Schedule manager to download a valid dummy schedule from the local disk and update its 
     local schedule copy.
     """
     
@@ -54,6 +54,18 @@ class TestSchedule(unittest.TestCase):
     
     # Attempt to initialize an instance of the schedule manager using a local file
     schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/application/core/tests/data/test_doesnt_exist.json')
+    
+    # Try to load the file
+    update_deferred = schedule_manager.update_schedule()
+    
+    return self.assertFailure(update_deferred, schedule.ScheduleError)
+  
+  def test_remote_file_load_missing(self):
+    """Tests the schedule manager's ability to respond to an invalid schedule URL.
+    """
+    
+    # Attempt to initialize an instance of the schedule manager using a local file
+    schedule_manager = schedule.ScheduleManager('http://invalid-url.invalid')
     
     # Try to load the file
     update_deferred = schedule_manager.update_schedule()

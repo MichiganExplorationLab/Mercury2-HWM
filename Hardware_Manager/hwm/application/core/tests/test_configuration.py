@@ -88,6 +88,34 @@ class TestConfiguration(unittest.TestCase):
     # Attempt to load an invalid config file
     self.assertRaises(Exception, self.config.read_configuration, self.source_data_directory+'/application/core/tests/data/test_config_invalid.yml')
   
+  def test_default_option_set(self):
+    # Load a valid configuration file
+    self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')
+    
+    # Set the Mercury2 HWM defaults
+    self.config._set_default_configuration()
+    
+    # Make sure one of those options can be read (shouldn't raise an exception)
+    self.config.get('offline-mode')
+  
+  def test_default_option_override(self):
+    # Load a valid configuration file
+    self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')
+    
+    # Set the Mercury2 HWM defaults
+    self.config._set_default_configuration()
+    
+    # Verify the option has the correct value (the one set in the file)
+    read_result = self.config.get('schedule-update-timeout')
+    self.assertEqual(read_result, 3, 'The configuration option value does not match what was set in the file.')
+  
+  def test_required_option_not_set(self):
+    # Load a valid configuration file
+    self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')
+    
+    # Validate required elements
+    self.assertRaises(Exception, self.config._check_required_configuration)
+  
   def test_protected_option_read(self):
     # Load the test configuration file
     self.config.read_configuration(self.source_data_directory+'/application/core/tests/data/test_config.yml')

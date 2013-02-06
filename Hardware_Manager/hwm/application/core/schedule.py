@@ -8,7 +8,7 @@ This module contains a class that is used to fetch, maintain, and provide access
 from configuration import Configuration
 from twisted.internet import threads
 from jsonschema import Draft3Validator
-import logging, json, threading
+import logging, json, threading, urllib2
 
 class ScheduleManager:
   """Represents a reservation access schedule.
@@ -52,8 +52,7 @@ class ScheduleManager:
     
     # Attempt to download the schedule
     if self.use_network_schedule:
-      print 'test'
-      #_download_remote_schedule()
+      defer_download = threads.deferToThread(self._download_remote_schedule)
     else:
       defer_download = threads.deferToThread(self._download_local_schedule)
     
@@ -140,6 +139,43 @@ class ScheduleManager:
     # Update the local schedule copy and pass it along
     self.schedule = schedule_load_result
     return schedule_load_result
+  
+  def _download_remote_schedule(self):
+    """Loads the schedule from the schedule's URL.
+    
+    This method loads the the schedule from a URL (e.g. the mercury2 user interface) and returns it.
+    
+    @throw Throws ScheduleError if an error occurs while downloading or parsing the schedule.
+    
+    @note This method is intended to be called with threads.deferToThread. The returned schedule will be passed to the 
+          resulting deferred's callback chain.
+    
+    @return Returns a python object representing the downloaded schedule.
+    """
+    
+    # Setup local variables
+    temp_schedule = None
+    schedule_file = None
+    
+    # Attempt to download the JSON file
+    try:
+      schedule_request = urllib2.Request(self.schedule_location)
+      schedule_opener = urllib2.build_opener()
+      schedule_file = schedule_opener.open(schedule_request, None, Configuration.get('schedule-update-timeout'))
+    except:
+      # Error downloading the file
+      logging.error("There was an error downloading the schedule: "+self.schedule_location)
+      raise ScheduleError('Could not download schedule from URL.')
+    
+    # Parse the schedule JSON
+    try:
+      temp_schedule = json.load(schedule_file)
+    except ValueError:
+      # Error parsing the schedule JSON
+      logging.error("Schedule manager could not parse remote schedule file: "+self.schedule_location)
+      raise ScheduleError('Could not parse remote schedule file (invalid JSON).')
+    
+    return temp_schedule
   
   def _download_local_schedule(self):
     """Loads the schedule from the local disk.
