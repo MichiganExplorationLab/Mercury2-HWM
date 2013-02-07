@@ -8,7 +8,7 @@ This module contains a class that is used to fetch, maintain, and provide access
 from configuration import Configuration
 from twisted.internet import threads
 from jsonschema import Draft3Validator
-import logging, json, threading, urllib2
+import logging, json, threading, urllib2, time
 
 class ScheduleManager:
   """Represents a reservation access schedule.
@@ -62,6 +62,31 @@ class ScheduleManager:
     
     return defer_download
   
+  def get_active_reservations(self):
+    """Returns a list of the currently active reservations (by timestamp).
+    
+    @note This method will return all active reservations whether or not the session coordinator is all ready responding
+          to them. It is the responsibility of the coordinator to handle duplicates.
+    
+    @return Returns a list of the reservations that are currently active. If no reservations are active, an empty list
+            will be returned.
+    """
+    
+    # Setup local variables
+    temp_active_reservations = []
+    current_time = time.time()
+    
+    # Loop through the schedule and find active reservations
+    if self.schedule['reservations']:
+      for reservation_id in self.schedule['reservations']:
+        # Test the reservation
+        temp_reservation = self.schedule['reservations'][reservation_id]
+        
+        if temp_reservation['time_start'] < current_time and temp_reservation['time_end'] > current_time:
+          temp_active_reservations.append(temp_reservation)
+    
+    return temp_active_reservations
+  
   def _validate_schedule(self, schedule_load_result):
     """Validates the newly loaded schedule JSON.
     
@@ -80,19 +105,28 @@ class ScheduleManager:
       "required": True,
       "properties": {
         "reservations": {
-          "type": "array",
+          "type": "object",
           "id": "reservations",
           "required": True,
-          "items": {
-            # additionalProperties not set so any keys may be added in addition to the following
+          "additionalProperties": {
             "type": "object",
-            "required": False,
+            "additionalProperties": True, # Allows extra properties to be added to each reservation object
             "properties": {
               "hardware_settings": {
-                # additionalProperties not set so any options for any devices can be set here (object key = device ID)
                 "type": "object",
                 "id": "hardware_settings",
                 "required": True,
+                "additionalProperties": {
+                  # Device settings defined with these additional properties
+                  "type": "object",
+                  "additionalProperties": True, # Allows extra device properties to be set
+                  "properties": {
+                    "device_id": {
+                      "type": "string",
+                      "required": True
+                    }
+                  }
+                }
               },
               "pipeline_id": {
                 "type": "number",
@@ -107,6 +141,11 @@ class ScheduleManager:
               "time_start": {
                 "type": "number",
                 "id": "time_start",
+                "required": True
+              },
+              "reservation_id": {
+                "type": "string",
+                "id": "reservation_id",
                 "required": True
               }
             }

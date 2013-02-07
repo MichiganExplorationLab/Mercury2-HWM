@@ -71,3 +71,31 @@ class TestSchedule(unittest.TestCase):
     update_deferred = schedule_manager.update_schedule()
     
     return self.assertFailure(update_deferred, schedule.ScheduleError)
+  
+  def test_get_active_reservations(self):
+    """Tests that the schedule manager returns the reservations that are active (i.e. time_start < current time < time_end), while
+    ignoring the inactive ones.
+    
+    @note The end time of one of the reservations in the test schedule is set to 2019 to make this test pass.
+    """
+    
+    # Initialize an instance of the schedule manager using a local file
+    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/application/core/tests/data/test_schedule_valid_one_active.json')
+    
+    # Load the file
+    update_deferred = schedule_manager.update_schedule()
+    
+    # Define an inline function to verify the active reservation return feature
+    def check_schedule_update(update_results):
+      # Attempt to get the active reservations
+      active_reservations = schedule_manager.get_active_reservations()
+      
+      # Verify only one reservation was returned
+      self.assertEqual(len(active_reservations), 1, "Too many active reservations were returned based on the test JSON file.")
+      
+      # Verify that that reservation was reservation 2 (the active one)
+      self.assertEqual(active_reservations[0]['reservation_id'], 'RES.2', "An active reservation in the test schedule file could not be retrieved from the schedule manager.")
+    
+    update_deferred.addCallback(check_schedule_update)
+    
+    return update_deferred
