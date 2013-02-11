@@ -1,11 +1,11 @@
-""" @package hwm.application.core.schedule
+""" @package hwm.sessions.schedule
 Stores and maintains the reservation access schedule.
 
 This module contains a class that is used to fetch, maintain, and provide access to the reservation schedule.
 """
 
 # Import required modules
-from configuration import Configuration
+from hwm.core.configuration import Configuration
 from twisted.internet import threads
 from jsonschema import Draft3Validator
 import logging, json, threading, urllib2, time

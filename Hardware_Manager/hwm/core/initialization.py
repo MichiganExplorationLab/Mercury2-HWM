@@ -1,4 +1,4 @@
-""" @package hwm.application.core.initialization
+""" @package hwm.core.initialization
 Initializes the Hardware Manager application.
  
 This module contains the methods responsible for initializing the Hardware Manager. This entails setting up the 
@@ -11,7 +11,8 @@ from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from pkg_resources import Requirement, resource_filename
 from configuration import Configuration
-from hwm.application.core import errors, coordinator, schedule
+from hwm.core import errors
+from hwm.sessions import coordinator, schedule
 
 def initialize():
   """Initializes the hardware manager.

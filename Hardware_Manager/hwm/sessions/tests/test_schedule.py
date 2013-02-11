@@ -1,6 +1,6 @@
 # Import required modules
 from twisted.trial import unittest
-from hwm.application.core import schedule
+from hwm.sessions import schedule
 from pkg_resources import Requirement, resource_filename
 import logging
 
@@ -22,7 +22,7 @@ class TestSchedule(unittest.TestCase):
     """
     
     # Attempt to initialize an instance of the schedule manager using a local file
-    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/application/core/tests/data/test_schedule_valid.json')
+    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
     
     # Try to load the file
     update_deferred = schedule_manager.update_schedule()
@@ -41,7 +41,7 @@ class TestSchedule(unittest.TestCase):
     """
     
     # Attempt to initialize an instance of the schedule manager using a local file
-    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/application/core/tests/data/test_schedule_invalid.json')
+    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_invalid.json')
     
     # Try to load the file
     update_deferred = schedule_manager.update_schedule()
@@ -53,7 +53,7 @@ class TestSchedule(unittest.TestCase):
     """
     
     # Attempt to initialize an instance of the schedule manager using a local file
-    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/application/core/tests/data/test_doesnt_exist.json')
+    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_doesnt_exist.json')
     
     # Try to load the file
     update_deferred = schedule_manager.update_schedule()
@@ -80,7 +80,7 @@ class TestSchedule(unittest.TestCase):
     """
     
     # Initialize an instance of the schedule manager using a local file
-    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/application/core/tests/data/test_schedule_valid_one_active.json')
+    schedule_manager = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid_one_active.json')
     
     # Load the file
     update_deferred = schedule_manager.update_schedule()

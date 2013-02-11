@@ -26,7 +26,7 @@ setup(
   # Specify the script entry locations
   entry_points = {
     'console_scripts': [
-      'HardwareManager = hwm.application.core.initialization:initialize'
+      'HardwareManager = hwm.core.initialization:initialize'
     ]
   },
 

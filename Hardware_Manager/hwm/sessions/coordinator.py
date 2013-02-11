@@ -1,4 +1,4 @@
-""" @package hwm.application.core.coordinator
+""" @package hwm.sessions.coordinator
 Coordinates various periodic tasks used by the hardware manager.
  
 This module contains a class that is used to coordinate the various sessions.

@@ -1,4 +1,4 @@
-""" @package hwm.application.core.configuration
+""" @package hwm.core.configuration
 Contains a class to store the hardware manager configuration.
 
 This module contains a class that provides methods for storing, modifying, and retrieving application configuration and
