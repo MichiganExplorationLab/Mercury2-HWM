@@ -200,7 +200,7 @@ class ScheduleManager:
     try:
       schedule_request = urllib2.Request(self.schedule_location)
       schedule_opener = urllib2.build_opener()
-      schedule_file = schedule_opener.open(schedule_request, None, Configuration.get('schedule-update-timeout'))
+      schedule_file = schedule_opener.open(schedule_request, None, self.config.get('schedule-update-timeout'))
     except:
       # Error downloading the file
       logging.error("There was an error downloading the schedule: "+self.schedule_location)

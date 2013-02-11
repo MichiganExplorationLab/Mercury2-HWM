@@ -13,6 +13,7 @@ from pkg_resources import Requirement, resource_filename
 from configuration import Configuration
 from hwm.core import errors
 from hwm.sessions import coordinator, schedule
+from hwm.hardware.pipelines import manager
 
 def initialize():
   """Initializes the hardware manager.
@@ -34,7 +35,7 @@ def initialize():
   
   # Read the configuration files
   Configuration.read_configuration(Configuration.data_directory+'/config/configuration.yml')
-  #Configuration.read_configuration(Configuration.data_directory+'config/pipelines.yaml')
+  Configuration.read_configuration(Configuration.data_directory+'/config/pipelines.yml')
   
   # Verify that all required configuration options are set
   Configuration.process_configuration()
@@ -59,9 +60,12 @@ def start_event_reactor():
     schedule_manager = schedule.ScheduleManager(Configuration.data_directory+Configuration.get('schedule-location-local'))
   else:
     schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-network'))
-    
+  
+  # Initialize the pipeline manager
+  pipeline_manager = manager.PipelineManager()
+  
   # Initialize the session coordinator
-  session_coordinator = coordinator.SessionCoordinator(schedule_manager)
+  session_coordinator = coordinator.SessionCoordinator(schedule_manager, pipeline_manager)
   
   # Set up the session coordinator looping call
   coordination_loop = LoopingCall(session_coordinator.coordinate)

@@ -1,0 +1,3 @@
+# Contains an empty pipeline configuration array.
+
+pipelines: []

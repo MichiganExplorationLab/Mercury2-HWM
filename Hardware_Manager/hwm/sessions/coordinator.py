@@ -16,14 +16,16 @@ class SessionCoordinator:
   creating new sessions as needed.
   """
   
-  def __init__(self, reservation_schedule):
+  def __init__(self, reservation_schedule, pipeline_manager):
     """Sets up the session coordinator instance.
     
     @param reservation_schedule  A reference to the schedule to execute.
+    @param pipeline_manager      A reference to the pipeline manager object.
     """
     
-    # Set the schedule manager reference
+    # Set the resource references
     self.schedule = reservation_schedule
+    self.pipelines = pipeline_manager
   
   def coordinate(self):
     """Coordinates the operation of the hardware manager.
