@@ -18,7 +18,9 @@ from hwm.hardware.pipelines import manager
 def initialize():
   """Initializes the hardware manager.
   
-  Initializes the hardware manager by setting up the state and starting the event reactor.
+  This method initializes the hardware manager by initializing the required resources (e.g. pipeline manager, schedule 
+  manager, configuration, etc.) and starting the event reactor. This is the main entry location for the hardware 
+  manager.
   """
   
   # Set the default uncaught exception handler
@@ -39,21 +41,6 @@ def initialize():
   
   # Verify that all required configuration options are set
   Configuration.process_configuration()
-  
-  # Start the application
-  start_event_reactor()
-  
-  # Exit the program
-  sys.exit(0)
-
-def start_event_reactor():
-  """Starts the hardware manager.
-  
-  Starts the hardware manager after performing various initialization operations related to the reactor.
-  """
-  
-  # Setup local variables
-  schedule_manager = None
   
   # Initialize the schedule coordinator
   if Configuration.get('offline-mode'):
@@ -76,6 +63,9 @@ def start_event_reactor():
     print "- Started the event reactor."
   logging.info("Startup: Started the event reactor.")
   reactor.run()
+  
+  # Exit the program
+  sys.exit(0)
 
 def announce_start():
   """Announces the application start to the console and application logs."""
