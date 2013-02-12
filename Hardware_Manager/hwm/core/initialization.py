@@ -35,12 +35,8 @@ def initialize():
   # Setup logging
   setup_logs()
   
-  # Read the configuration files
-  Configuration.read_configuration(Configuration.data_directory+'/config/configuration.yml')
-  Configuration.read_configuration(Configuration.data_directory+'/config/pipelines.yml')
-  
-  # Verify that all required configuration options are set
-  Configuration.process_configuration()
+  # Setup the configuration
+  setup_configuration()
   
   # Initialize the schedule coordinator
   if Configuration.get('offline-mode'):
@@ -96,6 +92,20 @@ def verify_data_files():
   else:
     if Configuration.verbose_startup:
       print "- Data directory found at: "+Configuration.data_directory
+
+def setup_configuration():
+  """Sets up the configuration object.
+  
+  This function sets up the configuration object (a singleton) by loading the required configuration files, validating 
+  the required options, and populating the unspecified default options.
+  """
+  
+  # Read the configuration files
+  Configuration.read_configuration(Configuration.data_directory+'/config/configuration.yml')
+  Configuration.read_configuration(Configuration.data_directory+'/config/pipelines.yml')
+  
+  # Verify that all required configuration options are set
+  Configuration.process_configuration()
 
 def setup_logs():
   """Sets up the logger."""
