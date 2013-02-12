@@ -22,15 +22,9 @@ class PipelineManager:
   def __init__(self):
     """Sets up the pipeline manager.
     
-    This constructor sets up the pipeline manager. It is responsible for initializing the available pipelines (defined
-    in the pipeline configuration file).
+    This constructor sets up the pipeline manager and calls a method that initializes the available pipelines.
     
-    @throw Throws PipelinesNotDefined if no pipelines are defined in the runtime configuration.
-    @throw May pass on PipelineConfigInvalid if a pipeline constructor is supplied with an invalid configuration 
-          dictionary.
-    
-    @note If no pipelines are defined in the configuration by the time this class is initialized, and exception will be
-          generated.
+    @note This constructor may pass on exceptions from the pipeline initialization (see _initialize_pipelines).
     """
     
     # Set the local configuration reference
@@ -38,6 +32,45 @@ class PipelineManager:
     
     # Initialize class variables
     self.pipelines = {}
+    
+    # Initialize 
+    self._initialize_pipelines()
+  
+  def get_pipeline(self, pipeline_id):
+    """Returns a reference to the specified pipeline.
+    
+    @note This method does not perform any pipeline locking. That occurs during the sessions initialization.
+    
+    @throw Throws PipelineNotFound when the requested pipeline can't be found.
+    
+    @param pipeline_id  The ID of the requested pipeline.
+    @return Returns a reference to the specified pipeline object.
+    """
+    
+    # Verify that the pipeline exists
+    if pipeline_id not in self.pipelines:
+      raise PipelineNotFound
+    
+    return self.pipelines[pipeline_id]
+  
+  def _initialize_pipelines(self):
+    """Initializes the configured pipelines.
+    
+    This method initializes all of the configured pipelines (i.e. available in the configuration) and adds their 
+    references to a class attribute.
+    
+    @throw Throws PipelinesAllReadyInitialized if this method is called after pipelines have been initialized.
+    @throw Throws PipelinesNotDefined if no pipelines are defined in the runtime configuration.
+    @throw May pass on PipelineConfigInvalid if a pipeline constructor is supplied with an invalid configuration 
+          dictionary.
+    
+    @note If no pipelines are defined in the configuration by the time this class is initialized, an exception will be
+          generated.
+    """
+    
+    # Verify that no pipelines have been initialized yet
+    if len(self.pipelines) > 0:
+      raise PipelinesAllReadyInitialized
     
     # Load the pipeline configuration
     try:
@@ -54,7 +87,13 @@ class PipelineManager:
     for pipeline_config in pipeline_settings:
       # Initialize the new pipeline. If the configuration contains an error, the pipeline initializer will deal with it.
       temp_pipeline = pipeline.Pipeline(pipeline_config)
+      
+      self.pipelines[pipeline_config['id']] = temp_pipeline
 
 # Define PipelineManager exceptions
 class PipelinesNotDefined(Exception):
+  pass
+class PipelinesAllReadyInitialized(Exception):
+  pass
+class PipelineNotFound(Exception):
   pass

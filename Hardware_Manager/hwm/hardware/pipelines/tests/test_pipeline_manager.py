@@ -22,6 +22,10 @@ class TestPipelineManager(unittest.TestCase):
     logging.disable(logging.CRITICAL)
   
   def tearDown(self):
+    # Reset the recorded configuration values
+    self.config.options = {}
+    self.config.user_options = {}
+    
     # Reset the configuration reference
     self.config = None
   
@@ -35,3 +39,33 @@ class TestPipelineManager(unittest.TestCase):
     # Load an empty pipeline configuration and ensure the correct error is raised
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_empty.yml')
     self.assertRaises(manager.PipelinesNotDefined, manager.PipelineManager)
+  
+  def test_reinitialization_errors(self):
+    """Tests that the pipeline manager raises the expected exceptions if the pipeline initialization function is called 
+    a second time.
+    """
+    
+    # Load a valid pipeline configuration
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_test.yml')
+    
+    # Initialize the pipeline manager
+    temp_pipeline_manager = manager.PipelineManager()
+    
+    # Verify the re-initialization error
+    self.assertRaises(manager.PipelinesAllReadyInitialized, temp_pipeline_manager._initialize_pipelines)
+  
+  def test_pipeline_get(self):
+    """Tests that the pipeline manager can correctly return a specified pipeline.
+    """
+    
+    # Load a valid pipeline configuration
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_test.yml')
+    
+    # Initialize the pipeline manager
+    temp_pipeline_manager = manager.PipelineManager()
+    
+    # Try to load a missing pipeline
+    self.assertRaises(manager.PipelineNotFound, temp_pipeline_manager.get_pipeline, 'missing_pipeline')
+    
+    # Try to load a valid pipeline
+    temp_pipeline = temp_pipeline_manager.get_pipeline('test_pipeline')

@@ -22,6 +22,10 @@ class TestConfiguration(unittest.TestCase):
     logging.disable(logging.CRITICAL)
   
   def tearDown(self):
+    # Reset the recorded configuration values
+    self.config.options = {}
+    self.config.user_options = {}
+    
     # Reset the configuration reference
     self.config = None
   
