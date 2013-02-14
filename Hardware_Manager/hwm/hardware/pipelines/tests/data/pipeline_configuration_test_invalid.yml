@@ -1,0 +1,9 @@
+# This configuration file contains a invalid pipeline configuration and is used to test the pipeline manager
+
+pipelines:
+  - id: "test_pipeline"
+    hardware:
+      - device_id: "device_1"
+  - id: "test_pipeline_2"
+    # Should generate a validation error because the hardware list is empty
+    hardware: [] 

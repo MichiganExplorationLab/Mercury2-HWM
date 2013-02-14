@@ -4,7 +4,7 @@
         "reservation_id": "RES.1",
         "time_start": 1360096495,
         "time_end": 1660097495,
-        "pipeline_id": 0,
+        "pipeline_id": "test_pipeline",
         "hardware_settings": {
             "device_id_1": {
                 "device_id": "device_id_1",
@@ -20,8 +20,8 @@
     "RES.2": {
       "reservation_id": "RES.2",
       "time_start": 1360096495,
-      "time_end": 1560097495,
-      "pipeline_id": 1,
+      "time_end": 1360097495,
+      "pipeline_id": "test_pipeline",
       "hardware_settings": {
         "device_id_4": {
           "device_id": "device_id_4",

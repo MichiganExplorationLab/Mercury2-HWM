@@ -86,6 +86,75 @@ class Config:
     # Validate that the required options have been set
     self._check_required_configuration()
   
+  def set(self, option_key, option_value):
+    """Sets the indicated configuration option to the provided value.
+    
+    @throws OptionProtected Thrown if the user tries to modify or set a protected run-time key.
+    
+    @param option_key    The key (name) of the option to set.
+    @param option_value  The value to assign to the indicated option.
+    @return Returns True if the option was successfully set.
+    """
+    
+    # Make sure the key isn't protected (i.e. that it wasn't loaded from a configuration file)
+    if option_key in self.options:
+      raise OptionProtected("The option you tried to set ("+option_key+") is protected and can't be set or modified.")
+    
+    # Set the option value
+    self.user_options[option_key] = option_value
+    
+    # Log the event
+    logging.info("Set the value of a configuration option ("+option_key+").")
+    
+    return True
+  
+  def get(self, option_key):
+    """Retrieves the specified configuration option.
+    
+    This method returns the value of the specified option from either the user defined options or pre-set runtime 
+    options.
+    
+    @throws OptionNotFound Thrown if the specified option can't be located in either configuration value dictionary.
+    
+    @param option_key  The key of the option to query for.
+    @return Returns the value of the specified option if found.
+    """
+    
+    # Check if the option was pre-set
+    if option_key in self.options:
+      return self.options[option_key]
+    
+    # Check if the option is a user option
+    if option_key in self.user_options: 
+      return self.user_options[option_key]
+    
+    # Option not found
+    raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
+  
+  def delete(self, option_key):
+    """Removes the specified configuration option from the user options dictionary.
+    
+    @throws OptionProtected Thrown if the user tries to delete a protected run-time option.
+    @throws OptionNotFound Thrown if the option can't be located.
+    
+    @param option_key  The key of the option to remove.
+    @return Returns True if the option was successfully deleted.
+    """
+    
+    # Check if the option was pre-set (protected)
+    if option_key in self.options:
+      raise OptionProtected("The option you tried to set ("+option_key+") is protected and can't be deleted.")
+    
+    # Check if the option is a valid user option
+    if option_key in self.user_options:
+      # Delete the option
+      del self.user_options[option_key]
+      logging.info("Deleted a user configuration option ("+option_key+").")
+      return True
+    
+    # Option not found
+    raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
+  
   def _set_default_configuration(self):
     """Sets the default values for configuration elements that have not been set.
     
@@ -140,77 +209,6 @@ class Config:
     if self.verbose_startup:
       print "- Validated required configuration options."
     logging.info("Configuration: Successfully validated required configuration options.")
-  
-  def set(self, option_key, option_value):
-    """Sets the indicated configuration option to the provided value.
-    
-    @throws OptionProtected Thrown if the user tries to modify or set a protected run-time key.
-    
-    @param option_key    The key (name) of the option to set.
-    @param option_value  The value to assign to the indicated option.
-    @return Returns True if the option was successfully set.
-    """
-    
-    # Make sure the key isn't protected (i.e. that it wasn't loaded from a configuration file)
-    if option_key in self.options:
-      raise OptionProtected("The option you tried to set ("+option_key+") is protected and can't be set or modified.")
-    
-    # Set the option value
-    self.user_options[option_key] = option_value
-    
-    # Log the event
-    logging.info("Configuration: Set the value of a configuration option ("+option_key+").")
-    
-    return True
-  
-  def get(self, option_key):
-    """Retrieves the specified configuration option.
-    
-    This method returns the value of the specified option from either the user defined options or pre-set runtime 
-    options.
-    
-    @throws OptionNotFound Thrown if the specified option can't be located in either configuration value dictionary.
-    
-    @param option_key  The key of the option to query for.
-    @return Returns the value of the specified option if found.
-    """
-    
-    # Check if the option was pre-set
-    if option_key in self.options:
-      logging.info("Configuration: Read a configuration option ("+option_key+").")
-      return self.options[option_key]
-    
-    # Check if the option is a user option
-    if option_key in self.user_options: 
-      logging.info("Configuration: Read a user configuration option ("+option_key+").")
-      return self.user_options[option_key]
-    
-    # Option not found
-    raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
-  
-  def delete(self, option_key):
-    """Removes the specified configuration option from the user options dictionary.
-    
-    @throws OptionProtected Thrown if the user tries to delete a protected run-time option.
-    @throws OptionNotFound Thrown if the option can't be located.
-    
-    @param option_key  The key of the option to remove.
-    @return Returns True if the option was successfully deleted.
-    """
-    
-    # Check if the option was pre-set (protected)
-    if option_key in self.options:
-      raise OptionProtected("The option you tried to set ("+option_key+") is protected and can't be deleted.")
-    
-    # Check if the option is a valid user option
-    if option_key in self.user_options:
-      # Delete the option
-      del self.user_options[option_key]
-      logging.info("Configuration: Deleted a user configuration option ("+option_key+").")
-      return True
-    
-    # Option not found
-    raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
 
 # Define configuration exceptions
 class OptionProtected(Exception):

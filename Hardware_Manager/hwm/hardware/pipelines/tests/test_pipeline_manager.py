@@ -1,7 +1,7 @@
 # Import required modules
 import unittest, logging
 from hwm.core.configuration import *
-from hwm.hardware.pipelines import manager
+from hwm.hardware.pipelines import manager, pipeline
 from pkg_resources import Requirement, resource_filename
 
 class TestPipelineManager(unittest.TestCase):
@@ -53,6 +53,16 @@ class TestPipelineManager(unittest.TestCase):
     
     # Verify the re-initialization error
     self.assertRaises(manager.PipelinesAllReadyInitialized, temp_pipeline_manager._initialize_pipelines)
+  
+  def test_pipeline_invalid_config(self):
+    """Tests that the pipeline manager correctly rejects an invalid pipeline configuration (as validated by 
+    Pipeline._validate_configuration())."""
+    
+    # Load the invalid pipeline configuration
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_test_invalid.yml')
+    
+    # Verify the correct exception is thrown
+    self.assertRaises(pipeline.PipelineInvalidConfiguration, manager.PipelineManager)
   
   def test_pipeline_get(self):
     """Tests that the pipeline manager can correctly return a specified pipeline.

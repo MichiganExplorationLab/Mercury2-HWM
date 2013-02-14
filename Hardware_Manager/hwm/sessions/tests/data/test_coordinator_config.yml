@@ -1,0 +1,6 @@
+# This configuration is used to test the session coordinator
+
+pipelines:
+  - id: "test_pipeline"
+    hardware:
+      - device_id: "device_1"

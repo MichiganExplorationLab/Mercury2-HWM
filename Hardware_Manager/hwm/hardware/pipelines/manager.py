@@ -39,7 +39,7 @@ class PipelineManager:
   def get_pipeline(self, pipeline_id):
     """Returns a reference to the specified pipeline.
     
-    @note This method does not perform any pipeline locking. That occurs during the sessions initialization.
+    @note This method does not perform any pipeline locking. That occurs when the session manager creates a new session.
     
     @throw Throws PipelineNotFound when the requested pipeline can't be found.
     
@@ -70,6 +70,7 @@ class PipelineManager:
     
     # Verify that no pipelines have been initialized yet
     if len(self.pipelines) > 0:
+      logging.error("The PipelineManager has all ready initialized the pipelines.")
       raise PipelinesAllReadyInitialized
     
     # Load the pipeline configuration
@@ -81,14 +82,14 @@ class PipelineManager:
     
     # Verify at least one pipeline has been defined
     if len(pipeline_settings) == 0:
+      logging.error("Can't initialize PipelineManager because no pipelines have been configured.")
       raise PipelinesNotDefined
     
     # Loop through and create a Pipeline object for each configured pipeline
     for pipeline_config in pipeline_settings:
       # Initialize the new pipeline. If the configuration contains an error, the pipeline initializer will deal with it.
       temp_pipeline = pipeline.Pipeline(pipeline_config)
-      
-      self.pipelines[pipeline_config['id']] = temp_pipeline
+      self.pipelines[temp_pipeline.id] = temp_pipeline
 
 # Define PipelineManager exceptions
 class PipelinesNotDefined(Exception):

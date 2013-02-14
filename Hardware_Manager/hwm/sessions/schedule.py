@@ -129,7 +129,7 @@ class ScheduleManager:
                 }
               },
               "pipeline_id": {
-                "type": "number",
+                "type": "string",
                 "id": "pipeline_id",
                 "required": True
               },
