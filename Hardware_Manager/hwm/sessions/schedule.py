@@ -36,6 +36,7 @@ class ScheduleManager:
     # Set the schedule parameters
     self.schedule_location = schedule_endpoint
     self.schedule = {}
+    self.last_updated = 0
   
   def update_schedule(self):
     """Downloads the most recent version of the schedule from the active source.
@@ -77,10 +78,10 @@ class ScheduleManager:
     current_time = time.time()
     
     # Loop through the schedule and find active reservations
-    if self.schedule['reservations']:
-      for reservation_id in self.schedule['reservations']:
+    if len(self.schedule) > 0:
+      for reservation_id in self.schedule:
         # Test the reservation
-        temp_reservation = self.schedule['reservations'][reservation_id]
+        temp_reservation = self.schedule[reservation_id]
         
         if temp_reservation['time_start'] < current_time and temp_reservation['time_end'] > current_time:
           temp_active_reservations.append(temp_reservation)
@@ -105,10 +106,10 @@ class ScheduleManager:
       "required": True,
       "properties": {
         "reservations": {
-          "type": "object",
+          "type": "array",
           "id": "reservations",
           "required": True,
-          "additionalProperties": {
+          "items": {
             "type": "object",
             "additionalProperties": True, # Allows extra properties to be added to each reservation object
             "properties": {
@@ -160,7 +161,7 @@ class ScheduleManager:
       schema_validator.validate(schedule_load_result)
     except:
       # Invalid schedule JSON
-      logging.error("Local schedule file did not meet JSON schema requirements: "+self.schedule_location)
+      logging.error("Provided schedule did not meet JSON schema requirements: "+self.schedule_location)
       raise ScheduleError('Local schedule file did not contain a valid schedule (invalid schema).')
     
     return schedule_load_result
@@ -172,11 +173,18 @@ class ScheduleManager:
           methods.
     
     @param schedule_load_result  The result of the attempted schedule download.
-    @return Returns a python object representing the new schedule.
+    @return Returns a python object representing the new schedule. Note this is represents the raw JSON objects before
+            and filters or modifications have been applied.
     """
     
+    # Set the update time
+    self.last_updated = time.time()
+    
+    # Loop through the schedule and build the dictionary
+    for schedule_reservation in schedule_load_result['reservations']:
+      self.schedule[schedule_reservation['reservation_id']] = schedule_reservation
+    
     # Update the local schedule copy and pass it along
-    self.schedule = schedule_load_result
     return schedule_load_result
   
   def _download_remote_schedule(self):

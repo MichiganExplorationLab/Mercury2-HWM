@@ -32,7 +32,6 @@ class SessionCoordinator:
     self.config = configuration.Configuration
     
     # Initialize required attributes
-    self.last_updated = 0
     self.active_sessions = {}
   
   def coordinate(self):
@@ -44,9 +43,19 @@ class SessionCoordinator:
     """
     
     # Update the schedule if required
-    if (time.time()-self.last_updated) > self.config.get('schedule-update-period'):
-      schedule_update_deferred = self.schedule.update_schedule()
-      schedule_update_deferred.addCallback(self._update_schedule_update_time)
+    self._update_schedule()
+    
+    # Create new session if needed
+    self._check_for_new_reservations()
+  
+  def _check_for_new_reservations(self):
+    """This method checks for newly active reservations in the schedule.
+    
+    This method checks for newly active reservations in the reservation schedule and creates sessions for them.
+    
+    @note If an error is encountered when loading or reserving a pipeline (to pass to the new session object) the 
+          exception will be logged gracefully.
+    """
     
     # Get the list of active reservations
     active_reservations = self.schedule.get_active_reservations()
@@ -73,10 +82,29 @@ class SessionCoordinator:
         # Create a session object for the new reservation
         self.active_sessions[active_reservation['reservation_id']] = session.Session(requested_pipeline)
   
-  def _update_schedule_update_time(self, downloaded_schedule):
-    """This callback updates the schedule last fetched time.
+  def _update_schedule(self):
+    """Updates the schedule if required.
     
-    @param downloaded_schedule  The new schedule from the schedule downloader. Ignored.
+    This method instructs the schedule manager to update its schedule if it hasn't been updated recently.
+    
+    @return Returns the schedule update deferred from the schedule manager.
     """
     
-    self.last_updated = time.time()
+    # Forward declarations
+    schedule_update_deferred = None
+    
+    # Check if the schedule needs to be updates
+    if (time.time()-self.schedule.last_updated) > self.config.get('schedule-update-period'):
+      schedule_update_deferred = self.schedule.update_schedule()
+      schedule_update_deferred.addErrback(self._error_updating_schedule)
+    
+    return schedule_update_deferred
+  
+  def _error_updating_schedule(self, failure):
+    """Handles failed schedule updates.
+    
+    @param failure  The Failure object wrapping the generated exception.
+    """
+    
+    print 'TESTTESTTEST'
+    
