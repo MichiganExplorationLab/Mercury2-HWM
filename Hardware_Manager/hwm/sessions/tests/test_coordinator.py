@@ -34,14 +34,14 @@ class TestCoordinator(unittest.TestCase):
     """
     
     # Load in a test configuration & set defaults
-    self.config.read_configuration(self.source_data_directory+'/sessions/tests/data/test_coordinator_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     self.config._set_default_configuration()
     
     # Setup the pipeline manager
     test_pipelines = manager.PipelineManager()
     
     # Setup the schedule manager
-    test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_coordinator_schedule1234.json')
+    test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
     
     # Initialize the session coordinator instance
     session_coordinator = coordinator.SessionCoordinator(test_schedule, test_pipelines)
@@ -64,14 +64,14 @@ class TestCoordinator(unittest.TestCase):
     """
     
     # Load in a test configuration & set defaults
-    self.config.read_configuration(self.source_data_directory+'/sessions/tests/data/test_coordinator_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     self.config._set_default_configuration()
     
     # Setup the pipeline manager
     test_pipelines = manager.PipelineManager()
     
     # Setup the schedule manager
-    test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_coordinator_schedule.json')
+    test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
     
     # Initialize the session coordinator
     session_coordinator = coordinator.SessionCoordinator(test_schedule, test_pipelines)

@@ -121,6 +121,5 @@ def setup_logs():
     print "- Setting up the logging system."
   
   # Log the program start
-  logging.info("=======================================")
   logging.info("Startup: Starting the hardware manager.")
   logging.info("Startup: Setup the logging system.")

@@ -46,7 +46,7 @@ class TestPipelineManager(unittest.TestCase):
     """
     
     # Load a valid pipeline configuration
-    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_test.yml')
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     
     # Initialize the pipeline manager
     temp_pipeline_manager = manager.PipelineManager()
@@ -59,7 +59,7 @@ class TestPipelineManager(unittest.TestCase):
     Pipeline._validate_configuration())."""
     
     # Load the invalid pipeline configuration
-    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_test_invalid.yml')
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid.yml')
     
     # Verify the correct exception is thrown
     self.assertRaises(pipeline.PipelineInvalidConfiguration, manager.PipelineManager)
@@ -69,7 +69,7 @@ class TestPipelineManager(unittest.TestCase):
     """
     
     # Load a valid pipeline configuration
-    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_test.yml')
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     
     # Initialize the pipeline manager
     temp_pipeline_manager = manager.PipelineManager()

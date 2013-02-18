@@ -1,4 +1,5 @@
-# Used to test config file loading abilities
+# This data file contains a valid configuration used to test the configuration manager
+
 protected-option: "Protected Value"
 protected-option-2: "Second Protected Value"
 schedule-update-timeout: 3

@@ -8,7 +8,7 @@ This module contains a class that is used to coordinate the various sessions.
 import logging, time
 from hwm.core import configuration
 from hwm.hardware.pipelines import pipeline, manager
-from hwm.sessions import session
+from hwm.sessions import session, schedule
 
 class SessionCoordinator:
   """Handles the creation and management of reservation sessions.
@@ -93,7 +93,7 @@ class SessionCoordinator:
     # Forward declarations
     schedule_update_deferred = None
     
-    # Check if the schedule needs to be updates
+    # Check if the schedule needs to be updated
     if (time.time()-self.schedule.last_updated) > self.config.get('schedule-update-period'):
       schedule_update_deferred = self.schedule.update_schedule()
       schedule_update_deferred.addErrback(self._error_updating_schedule)
@@ -106,5 +106,6 @@ class SessionCoordinator:
     @param failure  The Failure object wrapping the generated exception.
     """
     
-    print 'TESTTESTTEST'
-    
+    # An error occured updating the schedule, just catch and log the error
+    logging.error("The session coordinator's schedule update request has failed: "+failure.getErrorMessage())
+    failure.trap(schedule.ScheduleError)

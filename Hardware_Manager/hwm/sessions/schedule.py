@@ -178,7 +178,7 @@ class ScheduleManager:
     """
     
     # Set the update time
-    self.last_updated = time.time()
+    self.last_updated = int(time.time())
     
     # Loop through the schedule and build the dictionary
     for schedule_reservation in schedule_load_result['reservations']:
