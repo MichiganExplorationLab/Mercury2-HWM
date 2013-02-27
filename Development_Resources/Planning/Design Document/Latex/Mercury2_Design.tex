@@ -8,7 +8,7 @@
 % Setup document
 \title{Mercury2 Revised Design}
 \author{Jimmy Blanchard, Tatyana Dobreva}
-\docnum{0.3.0}
+\docnum{0.3.1}
 \setcounter{secnumdepth}{4}
 
 % Start the document
@@ -23,6 +23,7 @@
 	\hline
 	\bf Rev & \bf Date & \bf Notes & \bf Authors \\ 
 	\hline
+	0.3.1 & February 26, 2013 & Updates to Mercury2 architecture based on new research. & jimblanc \\ \hline
 	0.3.0 & December 2, 2012 & Mercury2 design revisions. & jimblanc \\ \hline
 \end{tabular}
 \end{center}
@@ -115,7 +116,7 @@ The hardware manager component of Mercury2 will run on a computer physically con
 	\item Buffer and record telemetry data
 	\item Periodically sync schedules from the user interface	
 	\item Provide sockets (defined by the schedule) to allow satellite operators to transmit commands to and receive telemetry from the ground station
-	\item Key encrypted security for all data streams (using keys from the user interface)
+	\item Certificate based encryption for all connections and data streams
 \end{itemize}
 
 %==================================%
@@ -135,7 +136,7 @@ This section will explain each component of the Mercury2 system depicted in figu
 %=== User Interface ===%
 \section{User Interface}
 \label{sec:user_interface}
-The user interface for Mercury2 will consist of an application running on a web server that will allow satellite and ground station operators to interact with the ground station. This web application will be responsible for managing user permissions, maintaining the ground station reservation schedule, providing ground station feedback to satellite operators during reservations, and sending commands to the hardware manager. Each major component of the user interface (illustrated in figure \ref{architecture_diagram}) will be described in further detail in the following sections.
+The user interface for Mercury2 will consist of an application running on a web server that will allow satellite and ground station operators to interact with the ground station. This web application will be responsible for managing user permissions, maintaining the ground station reservation schedule, providing ground station feedback to satellite operators during reservations, and providing an interface to allow users to send commands to the hardware manager. Each major component of the user interface (illustrated in figure \ref{architecture_diagram}) will be described in further detail in the following sections.
 
 \subparagraph{Platform Details}
 The user interface application will be developed on top of a popular Python MVC web framework, known as \textit{Django}, running on an Apache web server. Django comes with many useful features right out of the box such as user management, user input sterilization, and a well developed templating system which will greatly reduce development time. The application will make use of a MySQL database to store user information, schedule details, and user activity logs, among other things.
@@ -187,19 +188,23 @@ The user permission system will manage the permissions that determine what any g
 		\textbullet~ Create and manage user groups (explained in the next section) \par
 		\textbullet~ Modify own account \par
 		\textbullet~ Access read only version of ground station schedule \par
-		\textbullet~ Create ground station access keys (explained in the \textit{Security} section below)
+		\textbullet~ Upload TLS certificates \par
 	\\
 \end{tabular}}
 \end{center}
 \end{table}
 
-\subsubsection{User Groups}
+\subsubsection{User Teams}
 \label{sec:user_groups}
 Because the majority of satellites are operated by a team, users will be able to create custom user groups to share information with their team members. Users will be able to add members to their groups as they please. When creating reservations, users will have the option of making the reservation available to any of their groups. This will allow other group members to view the satellite tracking page when the reservation becomes active. Users will also be able to share their saved reservation preferences (e.g. tracking information, pipeline selection, hardware settings, etc.) with their group. Each group will receive a simple page containing a group member list, a history of prior reservations, and a calendar containing all of the group's upcoming reservations.
 
+\subsubsection{Hardware Command Access}
+\label{sec:command_access}
+Each hardware manager status update that the user interface receives will contain a list of commands that that particular hardware manager instance can respond to along with the schema used to validate them. The command schema information will be used to build the interactive forms available on the satellite tracking page. These commands will either be associated with the station (e.g. get the current station time) or specific devices (e.g. rotate antenna 'ANT\_01' 10 degrees). From the user interface, ground station administrators will be able to select which commands a specific user group or user has access to. Then, when the user connects to the hardware manager's command socket, the hardware manager will query the user interface for a list of commands that the user (or his group) has access to. This list will then be used for the remainder of the command session to determine if a user can execute a specific command (in addition to checking if the use has access to the pipeline, etc.). See section \ref{sec:connection_c2_commands} for more on this.
+
 \subsubsection{Security}
 \label{sec:user_security}
-As user security is very important for Mercury2, all user passwords will be salted and hashed before being stored in the database. To ensure that only the correct user can control the ground station during their reservation, a key based authentication system will be used (HMAC-SHA256). The account management panel will contain a section for creating and deleting ground station access keys. When a user creates a reservation they will be able to select which key pair they want to use for the connection. Whenever the user attempts to connect to the hardware manager, it will send the keys to the user interface for validation. Data stream encryption is explained in greater detail in section \ref{sec:connection_c2}.
+As user security is very important for Mercury2, all user passwords will be salted and hashed before being stored in the database. To ensure that only the correct user can control the ground station during their reservation, a standard TLS certificate authentication system will be used. The account management panel will contain a section for uploading and managing certificates. When a user creates a reservation they will be able to select which certificate they want to use for the connection. Whenever the user attempts to connect to the hardware manager, it will send the provided certificate to the user interface for validation. Data stream encryption is explained in greater detail in section \ref{sec:connection_c2}.
 
 \subparagraph{Logging}
 Every action that any user performs in the user interface will be logged to a collection of log files. The administration panel will include a small utility for browsing these logs. 
@@ -225,7 +230,7 @@ This feature will safe guard the ground station from hazardous weather such as t
 \label{sec:tracking_panel}
 Every reservation created has an associated tracking page. When a user visits this page before the reservation begins, it contains information about the reservation as well as the ground station connection settings (IP address, port, which key to use, etc.). In addition, a retroTrack style tracker with a Az/El chart will be displayed if a TLE was specified in the reservation. Once the reservation begins additional data streams from the ground station will become available, primarily the status of each of the active pipeline's hardware devices. Many other data streams are possible such as web cam feeds and signal strength waterfall plots. What data streams are available will depend on the ground station configuration and available bandwidth.
 
-Satellite operators will also be able to command the ground station from the satellite tracking page. Each controllable hardware device in the pipeline will have an associated command form in the user interface that will be displayed on the tracking page. When the user commands a hardware device, the command will be sent to the hardware manager via an AJAX request. Although multiple users can view the tracking page at once, only one user will be able to submit commands from it.
+Satellite operators will also be able to command the ground station from the satellite tracking page. Each controllable hardware device in the pipeline will have an associated command form in the user interface that will be displayed on the tracking page. When the user commands a hardware device, the command will be sent to the hardware manager via an AJAX request. The forms for these commands will be generated based on the JSON schema (data type, format, etc.) that the hardware manager sends to the user interface for each available command. Although multiple users can view the tracking page at once, only one user will be able to submit commands from it.
 
 \subsection{Ground Station Manager}
 \label{sec:ground_station_manager}
@@ -243,7 +248,7 @@ The user interface will include an administration panel to configure the website
 The hardware manager component of Mercury2 will consist of a relatively simple python application running on a computer physically attached to the ground station hardware. Its responsibilities will include synchronizing its reservation schedule with the user interface's, configuring hardware and network sockets when a reservation begins, and recording and transmitting satellite telemetry throughout the course of the reservation. Mercury2 will support multiple instances of the hardware manager running on separate computers. This is useful for decentralized ground stations. Each major component of the hardware manager (illustrated in figure \ref{architecture_diagram}) will be described in further detail in the following sections. 
 
 \subparagraph{Hardware Pipelines}
-One of the core concepts of the Mercury2 ground station system is that of a hardware pipeline. A hardware pipeline is simply a set of hardware devices, attached to the computer running an instance of the hardware manager, that are needed to perform a given task. The available hardware pipelines and their dependencies are defined by the ground station administrator when they first setup the hardware manager instance. Each hardware pipeline must also have specified "data in" and "data out" hardware devices which indicate where in the pipeline the user data stream should be fed into, and read out of. When a user creates a reservation in the user interface, they are reserving access a hardware pipeline. Multiple pipelines can be reserved for the same time slot, however only if they don't share any hardware devices.
+One of the core concepts of the Mercury2 ground station system is that of a hardware pipeline. A hardware pipeline is simply a set of hardware devices, attached to the computer running an instance of the hardware manager, that are needed to perform a given task. The available hardware pipelines and their dependencies are defined in a YAML configuration file by the ground station administrator when they first setup the hardware manager instance. Each hardware pipeline must also have specified "data in" and "data out" hardware devices which indicate where in the pipeline the user data stream should be fed into, and read out of. When a user creates a reservation in the user interface, they are reserving access to a hardware pipeline. Multiple pipelines can be reserved for the same time slot, however only if they don't share any hardware devices.
 
 \subparagraph{Twisted Framework}
 The hardware manager will be built on top of an asynchronous event-driven Python framework known as \textit{Twisted}\footnote{For a comprehensive tutorial on Twisted see: http://krondo.com/blog/?page\_id=1327}. Twisted will be used because it will allow data to be passed from the network manager to the drivers (and vice versa) in asynchronous fashion with relative ease. Twisted represents all connections made with users or hardware devices as instances of a "protocol" class. These protocol classes asynchronously respond to events from the protocol (i.e. network or hardware device) as they arrive.
@@ -257,37 +262,38 @@ The hardware manager will be built on top of an asynchronous event-driven Python
 
 \subsection{Network Manager}
 \label{sec:network_manager}
-The network manager component of the hardware manager is responsible for providing the mechanisms to periodically update the hardware manager's reservation schedule, open command and data sockets for satellite and ground station operators, and report the hardware manager's state and health to the user interface. As stated above, Twisted programming methodologies will be used to create the network interface.  Each connection type that the network manager will make will be explained further in \ref{sec:data_flow}.
+The network manager component of the hardware manager will consist of a standard Python sub-package containing modules used when establishing network connections. It will contain the classes and Twisted protocol-factory pairs used to respond to network events. These include the ground station command connection and telemetry stream connection protocols and factories. It will also contain the mechanism for authenticating users as they connect or send commands. Each connection type that the network manager will make will be explained further in \ref{sec:data_flow}.
 
-\subsection{Schedule Manager}
-\label{sec:schedule_manager}
-The schedule manager will be responsible for parsing and responding to changes in the schedule fetched from the user interface (via the network manager). It will consist of a main program loop (based on the \textit{twisted.internet.task.LoopingCall} class) that coordinates the various components of the hardware manager. The schedule manager can be said to "run" the hardware manager instance because it is responsible for running the other components of the application. Each of the scheduler manager's primary functions are described in the list below. In addition, an example reservation flow is illustrated in figure \ref{schedule_flow} that shows how the schedule manager (in yellow) interacts with the other components.
+\subsection{Session Manager}
+\label{sec:session_manager}
+The session manager is a python package that will be responsible for coordinating the ground station by setting up new sessions (as per the schedule), updating the local schedule copy, and periodically packaging health updates to send to the user interface, among other things. It will contain a main program loop (based on the \textit{twisted.internet.task.LoopingCall} class) that coordinates the various components of the hardware manager. The session manager can be said to "run" the hardware manager instance because it is responsible for running the other components of the application. Each of the session manager's primary functions are described in the list below. In addition, an example reservation flow is illustrated in figure \ref{schedule_flow} that shows how the session manager (in yellow) interacts with the other components.
 
 \begin{description}
-	\item[Synchronize Reservation Schedule] Periodically, the schedule manager will instruct the network manager to download a new copy of the hardware manager's reservation schedule. The new schedule will then be parsed and merged in with local schedule.
-	\item[Report Station Health \& State] The schedule manager will also occasionally serialize its state (most likely into JSON) and send it to the user interface (via the network manager). This state will include the parameters of each connected hardware device and of the hardware manager itself (e.g. currently executing task, buffer size, etc.). The user manager will display subsets of the state on various pages such as the ground station manager (section \ref{sec:ground_station_manager}) and satellite tracking pages (section \ref{sec:tracking_panel}).
-	\item[Execute Reservations] When the schedule manager checks the schedule and determines that a reservation has begun, it will first create a new instance of the "session" class (which is used to represent each reservation). The session object will first verify that each hardware item in the reservation's pipeline is active and responding to commands. Next, it will configure each hardware item as per the schedule. Finally, the session object will create (Twisted) protocols for the ground station command and satellite command/telemetry streams, link them to the appropriate buffers, and update the application state.
-	\item[Ending Running Reservations] Once the schedule manager determines that a reservation has ended, it will instruct the reservation's session object to destroy itself and the protocol objects that it created. However, this will only happen once all data from the reservation period has been transmitted to the ground station or satellite operator. Regardless of whether or not all of the data has been transmitted, the schedule manager will then unlock itself and update its state to indicate that it is ready to begin another reservation. The data transfer from the previous reservation will continue in the background until it is completed.
+	\item[Synchronize Reservation Schedule] Periodically, the session manager will instruct the schedule manager (a class in the session manager package) to download a new copy of the hardware manager's reservation schedule. The new schedule will then be parsed and merged in with local schedule.
+	\item[Report Station Health \& State] The session manager will also occasionally serialize the ground station state (most likely into JSON) and send it to the user interface (via the network manager). This state will include the parameters of each connected hardware device and of the hardware manager itself (e.g. currently executing task, buffer size, etc.). The user interface will display subsets of the state on various pages such as the ground station management (section \ref{sec:ground_station_manager}) and satellite tracking pages (section \ref{sec:tracking_panel}).
+	\item[Execute Reservations] When the session manager checks the schedule and determines that a reservation has begun, it will first create a new instance of the "session" class (which is used to represent each reservation). The session object will first verify that the pipeline is available and responsive. Next, it will configure each hardware item as per the schedule. Finally, the new session will be associated with the user's telemetry stream connection protocol and appropriate buffers.
+	\item[Ending Running Reservations] Once the session manager determines that a reservation has ended, it will instruct the reservation's session object to free up the reserved pipeline and destroy itself. A session will only be destroyed once all data from the reservation period has been transmitted to the ground station or satellite operator. However, the pipeline that the session used will be freed for use by the next reservation in the schedule.
 \end{description}
 
 \subsubsection{Representing Ground Station State}
 \label{sec:state}
-The hardware manager's state will be maintained in a singleton class that gets initiated at run time. This class will contain the methods needed to read and update the following state items.
+The hardware manager's state will be maintained in several classes throughout the application such as the session manager, configuration singleton class, and pipeline manager. A central "health" module will be responsible for packaging the appropriate state for transmission to the user interface. Items that will be included in health updates include:
 
 \begin{itemize}
-	\item Local reservation schedule
 	\item Currently executing task
+	\item Pipeline list and status
 	\item Hardware device parameters
 	\item Ground station configuration (loaded at run time)
+	\item List of commands that each device and the ground station itself support (and the JSON schemas used to validate them)
 \end{itemize}
 
-The state class will also provide a method to serialize the state (most likely into a JSON string) for periodic transmission to the user interface. The ground station configuration mentioned in the list above will stored in a YAML file and loaded at run time.
+The ground station configuration mentioned in the list above will stored in a YAML file and loaded at run time.
 
 \subsection{Hardware Drivers}
 \label{sec:drivers}
-Each hardware device that is connected to the hardware manager will require its own driver class. The amount of functionality that this driver exposes is dependent on what the device supports and how developed the driver is. At the very least, each driver must be able to report the state of its associated hardware device (e.g. power on/off, frequency, etc.). In addition, many drivers will include methods to change the device configuration. Some drivers, such as radio drivers, must also provide the means to pass and receive data to and from the device. Because the hardware manager is asynchronous, it is important that the hardware drivers take steps avoid blocking the program execution.
+Each hardware device that is connected to the hardware manager will require its own driver class. The amount of functionality that this driver exposes is dependent on what the device supports and how developed the driver is. At the very least, each driver must be able to report the state of its associated hardware device (e.g. power on/off, frequency, etc.) and return a list of commands that it supports. In addition, many drivers will include methods to change the device configuration. Some drivers, such as radio drivers, must also provide the means to pass and receive data to and from the device. Because the hardware manager is asynchronous, it is important that the hardware drivers take steps avoid blocking the program execution.
 
-Because the functionality of devices can vary so dramatically, each driver will be responsible for parsing ground station commands for that device. When the hardware manager receives a ground station command, it will determine which hardware device it is addressed to and pass it to the that device's driver. The driver will then be responsible for executing the command and reporting the status back to the hardware manager. See section \ref{sec:connection_c2_commands} for more on this.
+Because the functionality of devices can vary so dramatically, each driver will be responsible for parsing ground station commands for that device. When the network manager receives a ground station command, it will determine which hardware device it is addressed to and pass it to the that device's driver. The driver will then be responsible for executing the command and reporting the status back to the network manager. See section \ref{sec:connection_c2_commands} for more on this.
 
 \subsection{Custom Propagators, Decoders, and Signal Processors}
 \label{sec:custom_scripts}
@@ -317,17 +323,19 @@ This is the connection that the satellite or ground station operator will use to
 
 \subsubsection{Ground Station Commands}
 \label{sec:connection_c2_commands}
-When the hardware manager is first started, it will open a ground station command socket that users will use to submit commands to the hardware manager. A key based authentication system (HMAC-SHA256) will be used to encrypt this connection using the key for the user specified in the schedule (see section \ref{sec:user_security} for how the user generates the keys). When a connection is made, the hardware manager will send the key to the user interface (via connection C3) for authentication. Multiple users may command the ground station at the same time. However, normal users will only be able to execute a few commands unless they have an active reservation. A few read-only commands, such as reporting the current ground station time, can be made at any time. In addition, other users may not submit commands that would interfere with the current reservation. This includes administrators and ground station operators. If they want to take manual control of the ground station without a reservation, they must switch it to manual mode in the user interface. During a reservation, a user may submit commands to the ground station using the tracking interface (section \ref{sec:tracking_panel}). The user interface builds the command for the the user and sends it with the user's key using the process explained above.
+When the hardware manager is first started, it will open a ground station command socket that users will use to submit commands to the hardware manager. Standard TLS certificates will be used to authenticate users and encrypt the stream. When a connection is made, the hardware manager will send the certificate to the user interface (via connection C3) for authentication and permission recovery. The interface will respond with a list of the commands that the particular user has permission to execute. This list will contain general ground station commands (such as the current station time) and hardware device specific commands (identified by the device ID). Users will only be able to execute the listed commands if they have access to the specified hardware device (via an active pipeline reservation). 
+
+Multiple users may command the ground station at the same time. However, normal users will only be able to execute a few general station commands unless they have an active reservation. A few read-only commands, such as reporting the current ground station time, can be made at any time. In addition, other users may not submit commands that would interfere with the current reservation. This includes administrators and ground station operators. If they want to take manual control of the ground station without a reservation, they must switch it to manual mode in the user interface. During a reservation, a user may submit commands to the ground station using the tracking interface (section \ref{sec:tracking_panel}). The user interface builds the command for the the user and sends it with the active user's certificate using the process explained above. All commands will be transmitted as JSON strings over standard HTTP/TCP.
 
 \paragraph{Ground Station Command Language}
-Commands will be sent to the hardware manager using a ground station command language. This language will consist of JSON structures containing the user key and meta data about the command. When a command is received, the user key is first validated. If the user key is valid, the command is then parsed and redirected to the appropriate component or driver. The driver then executes the command and returns the result.
+Commands will be sent to the hardware manager in a "ground station command language" over standard HTTP. This language will consist of JSON structures containing the meta data about the command. When a command is received, the command parser verifies that the active user has permission to execute the command. It does this by comparing the command against a list of commands the user has permission to run (this list is fetched from the user interface when they first connect). If the user can execute the command, it is then parsed and redirected to the appropriate component or driver which executes the command and returns the result. The details of the JSON schema for commands are currently undecided.
 
 \subsubsection{Hardware Pipeline Connection}
-During a reservation, users will be able to use this connection to send and receive data directly to the hardware pipeline. As explained in section \ref{sec:hardware_manager}, hardware pipelines have defined "data in" or "data out" devices. When a user submits data to the pipeline, it will be fed to the "data in" device. Likewise, when the "data out" device generates data it will be transmitted to the user over this socket. Like the ground station command socket, this connection will be encrypted using the same key based encryption system described in the previous section. Multiple users may be connected to the same hardware pipeline, but only one may send data during any given period (i.e. the reservation period). However, if a reservation ends without all of the data being transmitted back to the user the connection will be maintained in a read-only mode until the data buffer has been completely transmitted.
+During a reservation, users will be able to use this connection to send and receive data directly to the hardware pipeline. As explained in section \ref{sec:hardware_manager}, hardware pipelines have defined "data in" or "data out" devices. When a user submits data to the pipeline, it will be fed to the "data in" device. Likewise, when the "data out" device generates data it will be transmitted to the user over this socket. Like the ground station command socket, this connection will be encrypted using the same certificate based encryption system described in the previous section. Multiple users may be connected to the same hardware pipeline, but only one may send data during any given period (i.e. the reservation period). However, if a reservation ends without all of the data being transmitted back to the user the connection will be maintained in a read-only mode until the data buffer has been completely transmitted.
 
-\subsection{C3: Schedule Updates, Health Reports, and Key Validations}
+\subsection{C3: Schedule Updates, Health Reports, and Certificate Validations}
 \label{sec:connection_c3}
-This connection will consist of a SSL encrypted HTTP connection that the hardware manager will use for several maintenance operations. The primary function of this connection will be to maintain the ground station state. Periodically (a few times a minute), the hardware manager will package its state (section \ref{sec:state}) into a JSON structure. It will then transmit this state to the user interface which will store it in its database. The user interface will respond with the latest version of the hardware manager's schedule. In addition, the hardware manager will use this connection to submit user connection keys to the user interface for authentication. 
+This connection will consist of a SSL encrypted HTTP connection that the hardware manager will use for several maintenance operations. The primary function of this connection will be to maintain the ground station state. Periodically (a few times a minute), the hardware manager will package its state (section \ref{sec:state}) into a JSON structure. It will then transmit this state to the user interface which will sync it with its database. The user interface will respond with the latest version of the hardware manager's schedule. In addition, the hardware manager will use this connection to submit user certificates to the user interface for authentication and permission evaluation.
 
 % End the document
 \end{document}
