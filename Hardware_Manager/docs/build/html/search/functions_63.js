@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['check_5frequired_5fconfiguration',['check_required_configuration',['../classhwm_1_1application_1_1core_1_1configuration_1_1_config.html#abc7cdccad6ab2ff1a2106bec0298c492',1,'hwm::application::core::configuration::Config']]]
+  ['coordinate',['coordinate',['../classhwm_1_1sessions_1_1coordinator_1_1_session_coordinator.html#ab62005ec016aea7fe48a4e3b903c068a',1,'hwm::sessions::coordinator::SessionCoordinator']]]
 ];

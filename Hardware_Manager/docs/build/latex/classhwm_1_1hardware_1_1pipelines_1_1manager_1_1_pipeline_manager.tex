@@ -1,0 +1,124 @@
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager}{\section{hwm.\-hardware.\-pipelines.\-manager.\-Pipeline\-Manager Class Reference}
+\label{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager}\index{hwm.\-hardware.\-pipelines.\-manager.\-Pipeline\-Manager@{hwm.\-hardware.\-pipelines.\-manager.\-Pipeline\-Manager}}
+}
+
+
+Provides access the collection of available hardware pipelines.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a88a42b5d8f14bb37d5618cd29452126d}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Sets up the pipeline manager. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_acd2d1d93204110d7256c8cbb34cde804}{get\-\_\-pipeline}
+\begin{DoxyCompactList}\small\item\em Returns a reference to the specified pipeline. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a11e66d6149717d994105088073f3233b}{{\bfseries config}}\label{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a11e66d6149717d994105088073f3233b}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a3984be455a8589fa8cc5ec28cb2ffb80}{{\bfseries pipelines}}\label{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a3984be455a8589fa8cc5ec28cb2ffb80}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a19b0c2d59d9b7168523647ef3dffe5ad}{\-\_\-initialize\-\_\-pipelines}
+\begin{DoxyCompactList}\small\item\em Initializes the configured pipelines. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Provides access the collection of available hardware pipelines. 
+
+This class manages the collection of loaded hardware pipelines. When initialized, this class uses the available runtime pipeline configuration to setup each pipeline. It also provides methods to query for pipelines.
+
+\begin{DoxyNote}{Note}
+This class does not load the pipeline configuration file itself. Instead, Configuration is instructed to load it at runtime and this class accesses it via configuration. 
+\end{DoxyNote}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a88a42b5d8f14bb37d5618cd29452126d}{\index{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager@{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::hardware::pipelines::manager::PipelineManager@{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-manager.\-Pipeline\-Manager.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a88a42b5d8f14bb37d5618cd29452126d}
+
+
+Sets up the pipeline manager. 
+
+\begin{DoxyVerb} This constructor sets up the pipeline manager and calls a method that initializes the available pipelines.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+This constructor may pass on exceptions from the pipeline initialization (see \-\_\-initialize\-\_\-pipelines). 
+\end{DoxyNote}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a19b0c2d59d9b7168523647ef3dffe5ad}{\index{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager@{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager}!\-\_\-initialize\-\_\-pipelines@{\-\_\-initialize\-\_\-pipelines}}
+\index{\-\_\-initialize\-\_\-pipelines@{\-\_\-initialize\-\_\-pipelines}!hwm::hardware::pipelines::manager::PipelineManager@{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager}}
+\subsubsection[{\-\_\-initialize\-\_\-pipelines}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-manager.\-Pipeline\-Manager.\-\_\-initialize\-\_\-pipelines (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_a19b0c2d59d9b7168523647ef3dffe5ad}
+
+
+Initializes the configured pipelines. 
+
+\begin{DoxyVerb} This method initializes all of the configured pipelines (i.e. available in the configuration) and adds their 
+ references to a class attribute.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipelines_all_ready_initialized}{Pipelines\-All\-Ready\-Initialized} if this method is called after pipelines have been initialized. \\
+\hline
+{\em Throws} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipelines_not_defined}{Pipelines\-Not\-Defined} if no pipelines are defined in the runtime configuration. \\
+\hline
+{\em May} & pass on Pipeline\-Config\-Invalid if a pipeline constructor is supplied with an invalid configuration dictionary.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyNote}{Note}
+If no pipelines are defined in the configuration by the time this class is initialized, an exception will be generated. 
+\end{DoxyNote}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_acd2d1d93204110d7256c8cbb34cde804}{\index{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager@{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager}!get\-\_\-pipeline@{get\-\_\-pipeline}}
+\index{get\-\_\-pipeline@{get\-\_\-pipeline}!hwm::hardware::pipelines::manager::PipelineManager@{hwm\-::hardware\-::pipelines\-::manager\-::\-Pipeline\-Manager}}
+\subsubsection[{get\-\_\-pipeline}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-manager.\-Pipeline\-Manager.\-get\-\_\-pipeline (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{pipeline\-\_\-id}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_manager_acd2d1d93204110d7256c8cbb34cde804}
+
+
+Returns a reference to the specified pipeline. 
+
+\begin{DoxyNote}{Note}
+This method does not perform any pipeline locking. That occurs when the session manager creates a new session.
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1manager_1_1_pipeline_not_found}{Pipeline\-Not\-Found} when the requested pipeline can't be found.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em pipeline\-\_\-id} & The I\-D of the requested pipeline. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns a reference to the specified pipeline object. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+C\-:/\-Users/\-Jimmy/\-Documents/\-Files/\-Work/\-Active Projects/\-M\-X\-L/mercury2/\-Hardware\-\_\-\-Manager/hwm/hardware/pipelines/manager.\-py\end{DoxyCompactItemize}

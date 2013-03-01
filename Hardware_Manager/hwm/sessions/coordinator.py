@@ -83,7 +83,7 @@ class SessionCoordinator:
         self.active_sessions[active_reservation['reservation_id']] = session.Session(requested_pipeline)
   
   def _update_schedule(self):
-    """Updates the schedule if required.
+    """Updates the schedule if appropriate.
     
     This method instructs the schedule manager to update its schedule if it hasn't been updated recently.
     

@@ -1,0 +1,83 @@
+\hypertarget{namespacehwm_1_1core_1_1initialization}{\section{hwm.\-core.\-initialization Namespace Reference}
+\label{namespacehwm_1_1core_1_1initialization}\index{hwm.\-core.\-initialization@{hwm.\-core.\-initialization}}
+}
+
+
+Initializes the Hardware Manager application.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacehwm_1_1core_1_1initialization_ae81383c152b341507c55ef3cb8cf7123}{initialize}
+\begin{DoxyCompactList}\small\item\em Initializes the hardware manager. \end{DoxyCompactList}\item 
+def \hyperlink{namespacehwm_1_1core_1_1initialization_a7edc944436e31525a995216455432dc7}{announce\-\_\-start}
+\begin{DoxyCompactList}\small\item\em Announces the application start to the console and application logs. \end{DoxyCompactList}\item 
+def \hyperlink{namespacehwm_1_1core_1_1initialization_a8a19289c66bb5780589d66859cecbfb3}{verify\-\_\-data\-\_\-files}
+\begin{DoxyCompactList}\small\item\em Checks for the presence of required data file directories. \end{DoxyCompactList}\item 
+def \hyperlink{namespacehwm_1_1core_1_1initialization_a5c42fc78a42bf209608f5a56286994fc}{setup\-\_\-configuration}
+\begin{DoxyCompactList}\small\item\em Sets up the configuration object. \end{DoxyCompactList}\item 
+def \hyperlink{namespacehwm_1_1core_1_1initialization_a208f248b1b09e33ca99f203abe4e8058}{setup\-\_\-logs}
+\begin{DoxyCompactList}\small\item\em Sets up the logger. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Initializes the Hardware Manager application. This module contains the methods responsible for initializing the Hardware Manager. This entails setting up the application state and starting the reactor loop. 
+
+\subsection{Function Documentation}
+\hypertarget{namespacehwm_1_1core_1_1initialization_a7edc944436e31525a995216455432dc7}{\index{hwm\-::core\-::initialization@{hwm\-::core\-::initialization}!announce\-\_\-start@{announce\-\_\-start}}
+\index{announce\-\_\-start@{announce\-\_\-start}!hwm::core::initialization@{hwm\-::core\-::initialization}}
+\subsubsection[{announce\-\_\-start}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-initialization.\-announce\-\_\-start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{namespacehwm_1_1core_1_1initialization_a7edc944436e31525a995216455432dc7}
+
+
+Announces the application start to the console and application logs. 
+
+\hypertarget{namespacehwm_1_1core_1_1initialization_ae81383c152b341507c55ef3cb8cf7123}{\index{hwm\-::core\-::initialization@{hwm\-::core\-::initialization}!initialize@{initialize}}
+\index{initialize@{initialize}!hwm::core::initialization@{hwm\-::core\-::initialization}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-initialization.\-initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{namespacehwm_1_1core_1_1initialization_ae81383c152b341507c55ef3cb8cf7123}
+
+
+Initializes the hardware manager. 
+
+This method initializes the hardware manager by initializing the required resources (e.\-g. pipeline manager, schedule manager, configuration, etc.) and starting the event reactor. This is the main entry location for the hardware manager. \hypertarget{namespacehwm_1_1core_1_1initialization_a5c42fc78a42bf209608f5a56286994fc}{\index{hwm\-::core\-::initialization@{hwm\-::core\-::initialization}!setup\-\_\-configuration@{setup\-\_\-configuration}}
+\index{setup\-\_\-configuration@{setup\-\_\-configuration}!hwm::core::initialization@{hwm\-::core\-::initialization}}
+\subsubsection[{setup\-\_\-configuration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-initialization.\-setup\-\_\-configuration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{namespacehwm_1_1core_1_1initialization_a5c42fc78a42bf209608f5a56286994fc}
+
+
+Sets up the configuration object. 
+
+This function sets up the configuration object (a singleton) by loading the required configuration files, validating the required options, and populating the unspecified default options. \hypertarget{namespacehwm_1_1core_1_1initialization_a208f248b1b09e33ca99f203abe4e8058}{\index{hwm\-::core\-::initialization@{hwm\-::core\-::initialization}!setup\-\_\-logs@{setup\-\_\-logs}}
+\index{setup\-\_\-logs@{setup\-\_\-logs}!hwm::core::initialization@{hwm\-::core\-::initialization}}
+\subsubsection[{setup\-\_\-logs}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-initialization.\-setup\-\_\-logs (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{namespacehwm_1_1core_1_1initialization_a208f248b1b09e33ca99f203abe4e8058}
+
+
+Sets up the logger. 
+
+\hypertarget{namespacehwm_1_1core_1_1initialization_a8a19289c66bb5780589d66859cecbfb3}{\index{hwm\-::core\-::initialization@{hwm\-::core\-::initialization}!verify\-\_\-data\-\_\-files@{verify\-\_\-data\-\_\-files}}
+\index{verify\-\_\-data\-\_\-files@{verify\-\_\-data\-\_\-files}!hwm::core::initialization@{hwm\-::core\-::initialization}}
+\subsubsection[{verify\-\_\-data\-\_\-files}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-initialization.\-verify\-\_\-data\-\_\-files (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{namespacehwm_1_1core_1_1initialization_a8a19289c66bb5780589d66859cecbfb3}
+
+
+Checks for the presence of required data file directories. 
+
+This method verifies that required data files and data file directories exist in the proper directory (/var/local on linux). If they don't (i.\-e. if this is the first time that the program has been run), the defaults will be copied from the package folder (in python2.\-7/dist-\/packages) 

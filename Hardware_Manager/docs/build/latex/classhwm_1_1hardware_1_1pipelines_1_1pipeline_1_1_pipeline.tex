@@ -1,0 +1,101 @@
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline}{\section{hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline Class Reference}
+\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline}\index{hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline@{hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline}}
+}
+
+
+Represents and provides access to hardware pipelines.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aed56445fa619c9390ffeba92d924c861}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Initializes the pipeline with the supplied configuration. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a75e2d36779704a689c0695a3065a69b9}{reserve\-\_\-pipeline}
+\begin{DoxyCompactList}\small\item\em Locks the pipeline. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a06d0e6687fa8cf71f730ba65704ecc81}{{\bfseries in\-\_\-use}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a06d0e6687fa8cf71f730ba65704ecc81}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6a975003dd74bf7c6f201627d61fdc71}{{\bfseries configuration}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6a975003dd74bf7c6f201627d61fdc71}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a3227f17d687d49dd432118445e715e29}{{\bfseries id}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a3227f17d687d49dd432118445e715e29}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a89de1b7f4df55a320771c6a4ab928dc2}{\-\_\-validate\-\_\-configuration}
+\begin{DoxyCompactList}\small\item\em Validates the pipeline's supplied configuration. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents and provides access to hardware pipelines. 
+
+This class represents and provides an interface to the hardware pipelines and associated hardware devices. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aed56445fa619c9390ffeba92d924c861}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{pipeline\-\_\-configuration}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aed56445fa619c9390ffeba92d924c861}
+
+
+Initializes the pipeline with the supplied configuration. 
+
+\begin{DoxyNote}{Note}
+The pipelines are initialized by the pipeline manager, not individually. 
+
+This method may pass on exceptions from the pipeline configuration validator.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em pipeline\-\_\-configuration} & A dictionary containing the settings to initialize the pipeline with. This is supplied by the pipeline manager and is loaded from the pipeline configuration file. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a89de1b7f4df55a320771c6a4ab928dc2}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!\-\_\-validate\-\_\-configuration@{\-\_\-validate\-\_\-configuration}}
+\index{\-\_\-validate\-\_\-configuration@{\-\_\-validate\-\_\-configuration}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{\-\_\-validate\-\_\-configuration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-\_\-validate\-\_\-configuration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a89de1b7f4df55a320771c6a4ab928dc2}
+
+
+Validates the pipeline's supplied configuration. 
+
+\begin{DoxyVerb} This method validates the pipeline's supplied configuration against the requirements.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_invalid_configuration}{Pipeline\-Invalid\-Configuration} is the supplied configuration is invalid. \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a75e2d36779704a689c0695a3065a69b9}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!reserve\-\_\-pipeline@{reserve\-\_\-pipeline}}
+\index{reserve\-\_\-pipeline@{reserve\-\_\-pipeline}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{reserve\-\_\-pipeline}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-reserve\-\_\-pipeline (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a75e2d36779704a689c0695a3065a69b9}
+
+
+Locks the pipeline. 
+
+When called, this method checks if the pipeline is currently being used. If it is, an exception is generated. If it isn't then the pipeline is locked. 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+C\-:/\-Users/\-Jimmy/\-Documents/\-Files/\-Work/\-Active Projects/\-M\-X\-L/mercury2/\-Hardware\-\_\-\-Manager/hwm/hardware/pipelines/pipeline.\-py\end{DoxyCompactItemize}

@@ -1,0 +1,254 @@
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config}{\section{hwm.\-core.\-configuration.\-Config Class Reference}
+\label{classhwm_1_1core_1_1configuration_1_1_config}\index{hwm.\-core.\-configuration.\-Config@{hwm.\-core.\-configuration.\-Config}}
+}
+
+
+Provides access to the hardware manager application configuration.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_a06460bf2af249c6601827b2afde8b291}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Initializes the dictionaries and other member variables used to hold the configuration. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_a805d1df7708afb305e85079d729d8369}{read\-\_\-configuration}
+\begin{DoxyCompactList}\small\item\em Loads and parses the specified configuration file. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_ada75769149ea06f7142856fa0a73f5a3}{process\-\_\-configuration}
+\begin{DoxyCompactList}\small\item\em Verifies that the required configuration elements have been set. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_ac34da53e95cd38ebc84368e42cbcd95a}{set}
+\begin{DoxyCompactList}\small\item\em Sets the indicated configuration option to the provided value. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_a384f394128523c4395e4a6e9f3d5d906}{get}
+\begin{DoxyCompactList}\small\item\em Retrieves the specified configuration option. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_a59b1c4c8c34be86e011dd9102e07cfbd}{delete}
+\begin{DoxyCompactList}\small\item\em Removes the specified configuration option from the user options dictionary. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a427c9c68035e6d28a05f255593de86aa}{{\bfseries version}}\label{classhwm_1_1core_1_1configuration_1_1_config_a427c9c68035e6d28a05f255593de86aa}
+
+\item 
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a0fe0c0b9d227f184980e77d7d0854edc}{{\bfseries verbose\-\_\-startup}}\label{classhwm_1_1core_1_1configuration_1_1_config_a0fe0c0b9d227f184980e77d7d0854edc}
+
+\item 
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_affca9301b207c467333b9d8b53e63da1}{{\bfseries data\-\_\-directory}}\label{classhwm_1_1core_1_1configuration_1_1_config_affca9301b207c467333b9d8b53e63da1}
+
+\item 
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_ac08fab7b96bd0ff4f31b3b357b281dda}{{\bfseries options}}\label{classhwm_1_1core_1_1configuration_1_1_config_ac08fab7b96bd0ff4f31b3b357b281dda}
+
+\item 
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a76b155d8d10ead2dc5a90fc602a33ffb}{{\bfseries user\-\_\-options}}\label{classhwm_1_1core_1_1configuration_1_1_config_a76b155d8d10ead2dc5a90fc602a33ffb}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_af270a1b7fcd55ca884587e9e19411813}{\-\_\-set\-\_\-default\-\_\-configuration}
+\begin{DoxyCompactList}\small\item\em Sets the default values for configuration elements that have not been set. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_a95235089ef316715ed60938ebb262fd4}{\-\_\-check\-\_\-required\-\_\-configuration}
+\begin{DoxyCompactList}\small\item\em Verifies that the required configuration elements have been set. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Provides access to the hardware manager application configuration. 
+
+This class stores and provides access to the configuration and shared state used by the hardware manager such as the configuration, reservation schedules, and pipeline configuration. In addition, it allows users to store their own configuration options as needed. To use this class import this module (configuration) and assign a local variable to 'Configuration' (makes code easier to test). 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a06460bf2af249c6601827b2afde8b291}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1core_1_1configuration_1_1_config_a06460bf2af249c6601827b2afde8b291}
+
+
+Initializes the dictionaries and other member variables used to hold the configuration. 
+
+\begin{DoxyNote}{Note}
+Only user\-\_\-options can be modified during program execution (using the setter/getter). This keeps prevents configuration options from getting altered/deleted. 
+\end{DoxyNote}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a95235089ef316715ed60938ebb262fd4}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!\-\_\-check\-\_\-required\-\_\-configuration@{\-\_\-check\-\_\-required\-\_\-configuration}}
+\index{\-\_\-check\-\_\-required\-\_\-configuration@{\-\_\-check\-\_\-required\-\_\-configuration}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{\-\_\-check\-\_\-required\-\_\-configuration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-\_\-check\-\_\-required\-\_\-configuration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1core_1_1configuration_1_1_config_a95235089ef316715ed60938ebb262fd4}
+
+
+Verifies that the required configuration elements have been set. 
+
+\begin{DoxyVerb} This method verifies that the required configuration elements have properly been set.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+If a configuration option is missing, an exception will be thrown detailing the error. This exception will be caught by the global exception handler. 
+\end{DoxyNote}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_af270a1b7fcd55ca884587e9e19411813}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!\-\_\-set\-\_\-default\-\_\-configuration@{\-\_\-set\-\_\-default\-\_\-configuration}}
+\index{\-\_\-set\-\_\-default\-\_\-configuration@{\-\_\-set\-\_\-default\-\_\-configuration}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{\-\_\-set\-\_\-default\-\_\-configuration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-\_\-set\-\_\-default\-\_\-configuration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1core_1_1configuration_1_1_config_af270a1b7fcd55ca884587e9e19411813}
+
+
+Sets the default values for configuration elements that have not been set. 
+
+\begin{DoxyNote}{Note}
+If a configuration option with a default value has been set (most likely from a file by read\-\_\-configuration), that value will be used instead of the default. 
+\end{DoxyNote}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a59b1c4c8c34be86e011dd9102e07cfbd}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!delete@{delete}}
+\index{delete@{delete}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{delete}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-delete (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{option\-\_\-key}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1core_1_1configuration_1_1_config_a59b1c4c8c34be86e011dd9102e07cfbd}
+
+
+Removes the specified configuration option from the user options dictionary. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \hyperlink{classhwm_1_1core_1_1configuration_1_1_option_protected}{Option\-Protected}} & Thrown if the user tries to delete a protected run-\/time option. \\
+\hline
+{\em \hyperlink{classhwm_1_1core_1_1configuration_1_1_option_not_found}{Option\-Not\-Found}} & Thrown if the option can't be located.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em option\-\_\-key} & The key of the option to remove. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns True if the option was successfully deleted. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a384f394128523c4395e4a6e9f3d5d906}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!get@{get}}
+\index{get@{get}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{get}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-get (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{option\-\_\-key}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1core_1_1configuration_1_1_config_a384f394128523c4395e4a6e9f3d5d906}
+
+
+Retrieves the specified configuration option. 
+
+\begin{DoxyVerb} This method returns the value of the specified option from either the user defined options or pre-set runtime 
+ options.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \hyperlink{classhwm_1_1core_1_1configuration_1_1_option_not_found}{Option\-Not\-Found}} & Thrown if the specified option can't be located in either configuration value dictionary.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em option\-\_\-key} & The key of the option to query for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the value of the specified option if found. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_ada75769149ea06f7142856fa0a73f5a3}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!process\-\_\-configuration@{process\-\_\-configuration}}
+\index{process\-\_\-configuration@{process\-\_\-configuration}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{process\-\_\-configuration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-process\-\_\-configuration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1core_1_1configuration_1_1_config_ada75769149ea06f7142856fa0a73f5a3}
+
+
+Verifies that the required configuration elements have been set. 
+
+\begin{DoxyVerb} This method verifies that the required configuration elements have properly been set. These elements were probably
+ loaded from a YAML configuration file via read_configuration(). In addition, 
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+If a configuration option is missing, an exception will be thrown detailing the error. This exception will be caught by the global exception handler. 
+
+Only configuration options loaded from files before this method is called will be processed. 
+\end{DoxyNote}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_a805d1df7708afb305e85079d729d8369}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!read\-\_\-configuration@{read\-\_\-configuration}}
+\index{read\-\_\-configuration@{read\-\_\-configuration}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{read\-\_\-configuration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-read\-\_\-configuration (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{configuration\-\_\-file}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1core_1_1configuration_1_1_config_a805d1df7708afb305e85079d729d8369}
+
+
+Loads and parses the specified configuration file. 
+
+\begin{DoxyVerb} Reads in all configuration settings from the specified YAML file and stores them in the 'options' dictionary.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-O\-Error} & Thrown if the specified file can't be loaded. \\
+\hline
+{\em Exception} & Thrown if the specified file can't be parsed by the Y\-A\-M\-L parser.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyNote}{Note}
+All configuration files are in Y\-A\-M\-L format. 
+
+All configurations are assumed to be required (i.\-e. this throws an exception if the file can't be loaded) 
+
+If a file is loaded that contains a previously defined protected option, the previous value will be overridden by the new value. 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See Also}
+\href{http://en.wikipedia.org/wiki/YAML}{\tt http\-://en.\-wikipedia.\-org/wiki/\-Y\-A\-M\-L}
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+{\em configuration\-\_\-file} & The Y\-A\-M\-L configuration file to load. This is an absolute path. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1core_1_1configuration_1_1_config_ac34da53e95cd38ebc84368e42cbcd95a}{\index{hwm\-::core\-::configuration\-::\-Config@{hwm\-::core\-::configuration\-::\-Config}!set@{set}}
+\index{set@{set}!hwm::core::configuration::Config@{hwm\-::core\-::configuration\-::\-Config}}
+\subsubsection[{set}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-core.\-configuration.\-Config.\-set (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{option\-\_\-key, }
+\item[{}]{option\-\_\-value}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1core_1_1configuration_1_1_config_ac34da53e95cd38ebc84368e42cbcd95a}
+
+
+Sets the indicated configuration option to the provided value. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \hyperlink{classhwm_1_1core_1_1configuration_1_1_option_protected}{Option\-Protected}} & Thrown if the user tries to modify or set a protected run-\/time key.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em option\-\_\-key} & The key (name) of the option to set. \\
+\hline
+{\em option\-\_\-value} & The value to assign to the indicated option. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns True if the option was successfully set. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+C\-:/\-Users/\-Jimmy/\-Documents/\-Files/\-Work/\-Active Projects/\-M\-X\-L/mercury2/\-Hardware\-\_\-\-Manager/hwm/core/configuration.\-py\end{DoxyCompactItemize}

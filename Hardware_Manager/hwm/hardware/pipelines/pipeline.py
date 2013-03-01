@@ -31,7 +31,7 @@ class Pipeline:
     self._validate_configuration()
   
   def reserve_pipeline(self):
-    """Reserves access to the pipeline.
+    """Locks the pipeline.
     
     When called, this method checks if the pipeline is currently being used. If it is, an exception is generated. If it
     isn't then the pipeline is locked.
