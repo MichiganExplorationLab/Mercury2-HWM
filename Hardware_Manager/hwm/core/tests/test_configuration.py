@@ -1,5 +1,6 @@
 # Import required modules
-import unittest, logging
+import logging
+from twisted.trial import unittest
 from ..configuration import *
 from pkg_resources import Requirement, resource_filename
 

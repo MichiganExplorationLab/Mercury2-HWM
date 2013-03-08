@@ -7,13 +7,14 @@ application state and starting the reactor loop.
 
 # Import the required modules
 import logging, sys, shutil, os
-from twisted.internet import reactor
+from twisted.internet import reactor, ssl
 from twisted.internet.task import LoopingCall
 from pkg_resources import Requirement, resource_filename
 from configuration import Configuration
 from hwm.core import errors
 from hwm.sessions import coordinator, schedule
 from hwm.hardware.pipelines import manager
+from hwm.network import command
 
 def initialize():
   """Initializes the hardware manager.
@@ -27,16 +28,16 @@ def initialize():
   sys.excepthook = errors.uncaught_exception
   
   # Announce program start
-  announce_start()
+  _announce_start()
   
-  # Check for user files
-  verify_data_files()
+  # Check for user data (config, etc.) files
+  _verify_data_files()
   
   # Setup logging
-  setup_logs()
+  _setup_logs()
   
   # Setup the configuration
-  setup_configuration()
+  _setup_configuration()
   
   # Initialize the schedule coordinator
   if Configuration.get('offline-mode'):
@@ -49,6 +50,9 @@ def initialize():
   
   # Initialize the session coordinator
   session_coordinator = coordinator.SessionCoordinator(schedule_manager, pipeline_manager)
+  
+  # Initialize the command and telemetry network listeners
+  _setup_network_listeners();
   
   # Set up the session coordinator looping call
   coordination_loop = LoopingCall(session_coordinator.coordinate)
@@ -63,7 +67,7 @@ def initialize():
   # Exit the program
   sys.exit(0)
 
-def announce_start():
+def _announce_start():
   """Announces the application start to the console and application logs."""
   
   # Print a message to the terminal
@@ -75,12 +79,13 @@ def announce_start():
   print "|___________________________________________________|\n"
   print "Version: "+Configuration.version+"\n"
 
-def verify_data_files():
+def _verify_data_files():
   """Checks for the presence of required data file directories.
   
   This method verifies that required data files and data file directories exist in the proper directory (/var/local on 
   linux). If they don't (i.e. if this is the first time that the program has been run), the defaults will be copied from
-  the package folder (in python2.7/dist-packages)"""
+  the package folder (in python2.7/dist-packages).
+  """
   
   # Check if the data directory exists
   if not os.path.exists(Configuration.data_directory):
@@ -93,7 +98,20 @@ def verify_data_files():
     if Configuration.verbose_startup:
       print "- Data directory found at: "+Configuration.data_directory
 
-def setup_configuration():
+def _setup_network_listeners():
+  """ Initializes the various network listeners used by the hardware manager.
+  
+  This method initializes the network listeners required to accept ground station commands and relay ground station 
+  data streams.
+  """
+  
+  # Initialize the system command handlers
+  system_command_handler = command.handlers.system.SystemCommandHandler()
+  
+  # Initialize the command parser
+  command_parser = command.parser.CommandParser(system_command_handler)
+
+def _setup_configuration():
   """Sets up the configuration object.
   
   This function sets up the configuration object (a singleton) by loading the required configuration files, validating 
@@ -107,7 +125,7 @@ def setup_configuration():
   # Verify that all required configuration options are set
   Configuration.process_configuration()
 
-def setup_logs():
+def _setup_logs():
   """Sets up the logger."""
   
   # Configure the logger

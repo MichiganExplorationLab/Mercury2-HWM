@@ -1,5 +1,6 @@
 # Import required modules
-import unittest, logging
+import logging
+from twisted.trial import unittest
 from hwm.core.configuration import *
 from hwm.hardware.pipelines import manager, pipeline
 from pkg_resources import Requirement, resource_filename
