@@ -7,6 +7,7 @@ application state and starting the reactor loop.
 
 # Import the required modules
 import logging, sys, shutil, os
+from OpenSSL import SSL
 from twisted.internet import reactor, ssl
 from twisted.internet.task import LoopingCall
 from pkg_resources import Requirement, resource_filename
@@ -110,6 +111,22 @@ def _setup_network_listeners():
   
   # Initialize the command parser
   command_parser = command.parser.CommandParser(system_command_handler)
+  
+  # Create an SSL context for the server
+  server_context_factory = ssl.DefaultOpenSSLContextFactory('keys/server.key', 'keys/server.crt')
+
+    ctx = myContextFactory.getContext()
+
+    ctx.set_verify(
+        SSL.VERIFY_PEER | SSL.VERIFY_FAIL_IF_NO_PEER_CERT,
+        verifyCallback
+        )
+
+    # Since we have self-signed certs we have to explicitly
+    # tell the server to trust them.
+    ctx.load_verify_locations("keys/ca.pem")
+
+    reactor.listenSSL(8000, factory, myContextFactory)
 
 def _setup_configuration():
   """Sets up the configuration object.
