@@ -47,6 +47,8 @@ class SessionCoordinator:
     
     # Create new session if needed
     self._check_for_new_reservations()
+    
+    print 'test'
   
   def _check_for_new_reservations(self):
     """This method checks for newly active reservations in the schedule.

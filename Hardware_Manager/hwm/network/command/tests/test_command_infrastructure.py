@@ -1,4 +1,5 @@
 # To Test:
+# - Sending command with invalid JSON
 # - Sending command with invalid schema
 # - Sending command with invalid device ID
 # - Sending valid command schema with unrecognized command

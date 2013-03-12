@@ -167,8 +167,11 @@ class Config:
       'offline-mode': False,
       'schedule-update-period': 60, # seconds
       'schedule-update-timeout': 15, # seconds
-      'schedule-location-local': 'data/schedules/offline_schedule.yml',
-      'schedule-location-network': '/test_schedule.json'
+      'schedule-location-local': '/schedules/offline_schedule.yml',
+      'schedule-location-network': '/test_schedule.json',
+      'ssl-private-cert-location': self.data_directory+'/certs/mercury2_hwm.key',
+      'ssl-public-cert-location': self.data_directory+'/certs/mercury2_hwm.crt',
+      'network-command-port': 8080
     }
     
     # Set the defaults
@@ -196,8 +199,9 @@ class Config:
     # List the required configuration options
     required_options = [
       'station-name', 'station-longitude', 'station-latitude', 'station-altitude', # Station parameters
-      'offline-mode', 'schedule-update-period', 'schedule-update-timeout', # Network settings
-      'mercury2-ui-location', 'schedule-location-network', 'schedule-location-local' # Resource endpoints
+      'offline-mode', 'schedule-update-period', 'schedule-update-timeout', 'network-command-port', # Network settings
+      'mercury2-ui-location', 'schedule-location-network', 'schedule-location-local', # Resource endpoints
+      'ssl-private-cert-location', 'ssl-public-cert-location' # Security settings
     ]
     
     # Validate the options

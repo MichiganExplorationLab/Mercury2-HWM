@@ -15,7 +15,9 @@ from configuration import Configuration
 from hwm.core import errors
 from hwm.sessions import coordinator, schedule
 from hwm.hardware.pipelines import manager
-from hwm.network import command
+from hwm.network.command import parser as command_parser_system, connection as command_connection
+from hwm.network.command.handlers import system as command_handler_system
+from hwm.network.security import verification
 
 def initialize():
   """Initializes the hardware manager.
@@ -107,26 +109,18 @@ def _setup_network_listeners():
   """
   
   # Initialize the system command handlers
-  system_command_handler = command.handlers.system.SystemCommandHandler()
+  system_command_handler = command_handler_system.SystemCommandHandler()
   
   # Initialize the command parser
-  command_parser = command.parser.CommandParser(system_command_handler)
+  command_parser = command_parser_system.CommandParser(system_command_handler)
   
   # Create an SSL context for the server
-  server_context_factory = ssl.DefaultOpenSSLContextFactory('keys/server.key', 'keys/server.crt')
-
-    ctx = myContextFactory.getContext()
-
-    ctx.set_verify(
-        SSL.VERIFY_PEER | SSL.VERIFY_FAIL_IF_NO_PEER_CERT,
-        verifyCallback
-        )
-
-    # Since we have self-signed certs we have to explicitly
-    # tell the server to trust them.
-    ctx.load_verify_locations("keys/ca.pem")
-
-    reactor.listenSSL(8000, factory, myContextFactory)
+  server_context_factory = ssl.DefaultOpenSSLContextFactory(Configuration.get('ssl-private-cert-location'), Configuration.get('ssl-public-cert-location'))
+  server_context = server_context_factory.getContext()
+  server_context.set_verify(SSL.VERIFY_NONE, verification.authentication_callback)
+  
+  # Create the listeners
+  reactor.listenSSL(Configuration.get('network-command-port'), command_connection.CommandFactory(command_parser), server_context_factory)
 
 def _setup_configuration():
   """Sets up the configuration object.
