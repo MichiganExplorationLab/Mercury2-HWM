@@ -2,6 +2,9 @@
 Contains a class that handles various system commands received by the ground station.
 """
 
+# Import required modules
+import time
+
 class SystemCommandHandler:
   """ A command handler that responds to system commands.
   
@@ -14,3 +17,5 @@ class SystemCommandHandler:
     
     @return Returns the current time on the computer that is running the hardware manager.
     """
+    
+    return time.time()

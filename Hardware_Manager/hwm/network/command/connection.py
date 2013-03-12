@@ -1,11 +1,30 @@
 """ @package hwm.network.command.connection
-Contains the protocol and factory that provides access to ground station command connections.
+Contains a resource for processing commands.
 
-This module contains a Twisted protocol and factory class that provide an interface to user command connections.
+This module contains a Twisted resource for responding to received ground station commands.
 """
 
 # Import required modules
+from twisted.web.resource import Resource
 from twisted.web.http import HTTPClient, HTTPFactory
+
+class CommandResource(Resource):
+  """ Handles commands received over the network.
+  
+  This Resource handles commands received over the hardware manager's command connection.
+  """
+  
+  # Set the resource attributes
+  isLeaf = True
+  
+  def render_POST(self, request):
+    """ Responds to POST'd command requests.
+    
+    @note All submitted commands must be POST'd to the hardware manager's root address.
+    
+    @param request  The request object for the submitted command.
+    """
+
 
 class CommandConnection(HTTPClient):
   """ Represents a command connection with a user.
@@ -22,7 +41,8 @@ class CommandConnection(HTTPClient):
     @param data  The body of the HTML request.
     """
     
-    print 'Data Received: '+data
+    # Pass the command to the command parser
+    
   
   def set_command_parser(self, command_parser):
     """ Sets the protocol's command parser reference.
@@ -33,6 +53,15 @@ class CommandConnection(HTTPClient):
     """
     
     self.command_parser = command_parser
+  
+  def _command_response_ready(self, command_response):
+    """ A callback that writes the response of a command back back to the protocol's transport.
+    
+    @param command_response  The results of the command. Should be a JSON string.
+    """
+    
+    # Write the results onto the transport
+    self.transport
 
 class CommandFactory(HTTPFactory):
   """ Manages command protocol instances as needed.

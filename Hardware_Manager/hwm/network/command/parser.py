@@ -6,7 +6,7 @@ This module contains a class that validates, parses, and delegates ground statio
 
 # Import required modules
 import json, time
-from twisted.internet import defer
+from twisted.internet import defer, threads
 from jsonschema import Draft3Validator
 
 class CommandParser:
@@ -52,7 +52,6 @@ class CommandParser:
     try:
       command_json = json.loads(raw_command)
     except ValueError:
-      # Error parsing the command JSON
       logging.error("A received command contained invalid JSON and could not be parsed.")
       command_deferred = self._command_error(time_command_received, "The submitted command did not contain a valid JSON string.")
       
@@ -66,12 +65,27 @@ class CommandParser:
       return command_deferred
     
     # Determine command type
+    if 'device_id' in command_json:
+      # Load the corresponding device command handler
+      print 'LOAD DEVICE HANDLER'
+    else:
+      # Load the system command handler
+      command_handler = self.system_handler
     
     # Verify that the command exists
+    if not hasattr(command_handler, 'command_'+command_json['command']):
+      if 'device_id' in command_json:
+        handler_string = "'"+command_json['device_id']+"' device"
+      else:
+        handler_string = "system"
+      
+      logging.error("A received command could not be located in the "+handler_string+" command handler: "+command_json['command'])
+      command_deferred = self._command_error(time_command_received, "The submitted command could not be located in the "+handler_string+" command handler: "+command_json['command'])
     
     # Check the user permissions
     
     # Execute the command in a new thread
+    command_deferred = threads.deferToThread(getattr(command_handler, 'command_'+command_json['command']))
     
     return command_deferred
   
