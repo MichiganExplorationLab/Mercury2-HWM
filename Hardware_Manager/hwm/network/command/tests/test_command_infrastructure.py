@@ -7,11 +7,13 @@
 
 # Import required modules
 import logging
+from pkg_resources import Requirement, resource_filename
 from twisted.trial import unittest
 from twisted.test import proto_helpers
+from twisted_web_test_utils import DummySite
 from hwm.core.configuration import *
-from hwm.network.command.connection import CommandFactory
-from pkg_resources import Requirement, resource_filename
+from hwm.network.command import parser as command_parser_system, connection as command_connection
+from hwm.network.command.handlers import system as command_handler_system
 
 class TestCommandInfrastructure(unittest.TestCase):
   """ This test suite tests the base command receiving and processing functionality of the hardware manager. These tests
@@ -28,12 +30,12 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
-    
-    # Construct an instance of the protocol
-    command_factory = CommandFactory()
-    self.protocol = command_factory.buildProtocol(('127.0.0.1', 0))
-    self.transport = proto_helpers.StringTransport()
-    self.protocol.makeConnection(self.transport)
+  
+    # Initialize the command parser
+    command_parser = command_parser_system.CommandParser(None)
+  
+    # Create a new Site factory
+    self.command_factory_test = DummySite(command_connection.CommandResource(command_parser))
   
   def tearDown(self):
     # Reset the recorded configuration values

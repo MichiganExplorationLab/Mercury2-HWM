@@ -10,6 +10,7 @@ import logging, sys, shutil, os
 from OpenSSL import SSL
 from twisted.internet import reactor, ssl
 from twisted.internet.task import LoopingCall
+from twisted.web.server import Site
 from pkg_resources import Requirement, resource_filename
 from configuration import Configuration
 from hwm.core import errors
@@ -119,8 +120,11 @@ def _setup_network_listeners():
   server_context = server_context_factory.getContext()
   server_context.set_verify(SSL.VERIFY_NONE, verification.authentication_callback)
   
+  # Create a new Site factory
+  command_factory = Site(command_connection.CommandResource(command_parser))
+  
   # Create the listeners
-  reactor.listenSSL(Configuration.get('network-command-port'), command_connection.CommandFactory(command_parser), server_context_factory)
+  reactor.listenSSL(Configuration.get('network-command-port'), command_factory, server_context_factory)
 
 def _setup_configuration():
   """Sets up the configuration object.

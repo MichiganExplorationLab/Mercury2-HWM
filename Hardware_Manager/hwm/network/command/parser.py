@@ -26,7 +26,7 @@ class CommandParser:
     # Set the class attributes
     self.system_handler = system_command_handler
 
-  def parse_command(self, raw_command):
+  def parse_command(self, raw_command, request = None):
     """ Processes all commands received by the ground station.
     
     When a raw JSON command is passed to this function, it performs the following operations:
@@ -42,6 +42,7 @@ class CommandParser:
           (not the errback chain). However, if an unhandled error occurs the errback chain will still be fired.
     
     @param raw_command  A raw JSON string containing metadata about the command.
+    @param request      The request object associated with the command, if any.
     @return Returns the results of the command (in JSON) using a deferred. May be the output of the command or an error 
             message.
     """
@@ -53,14 +54,14 @@ class CommandParser:
       command_json = json.loads(raw_command)
     except ValueError:
       logging.error("A received command contained invalid JSON and could not be parsed.")
-      command_deferred = self._command_error(time_command_received, "The submitted command did not contain a valid JSON string.")
+      command_deferred = self._command_error(request, time_command_received, "The submitted command did not contain a valid JSON string.")
       
       return command_deferred
     
     # Validate the command schema
     if not self._valid_command_schema(raw_command):
       logging.error("A received command did not conform to the command schema.")
-      command_deferred = self._command_error(time_command_received, "The submitted command did not conform to the defined command schema.")
+      command_deferred = self._command_error(request, time_command_received, "The submitted command did not conform to the defined command schema.")
       
       return command_deferred
     
@@ -80,33 +81,83 @@ class CommandParser:
         handler_string = "system"
       
       logging.error("A received command could not be located in the "+handler_string+" command handler: "+command_json['command'])
-      command_deferred = self._command_error(time_command_received, "The submitted command could not be located in the "+handler_string+" command handler: "+command_json['command'])
+      command_deferred = self._command_error(request, time_command_received, "The submitted command could not be located in the "+handler_string+" command handler: "+command_json['command'])
     
     # Check the user permissions
     
     # Execute the command in a new thread
     command_deferred = threads.deferToThread(getattr(command_handler, 'command_'+command_json['command']))
+    command_deferred.addCallback(self._command_complete)
     
     return command_deferred
   
-  def _command_error(self, time_received, error_message):
+  def _command_complete(self, command_results){
+    """ A callback that packages the results of a command.
+    
+    This callback packages up the results of a command and builds the command response, which it then passes down the
+    call back chain.
+    
+    @param command_results  A dictionary containing the results of the executed command.
+    """
+    
+    # Build the command response
+    command_response = self._build_command_response(True, time_received, command_results
+  }
+  
+  def _command_error(self, request, time_received, error_message):
     """ Generates a JSON error message and returns it using a deferred.
     
+    @param request        The request associated with the command.
     @param time_received  A unix timestamp indicating the time the command was received.
     @param error_message  A string containing information about the error.
     @return Returns a deferred that has been triggered with the JSON error string.
     """
     
-    # Construct the JSON error message
-    json_error_response = json.dumps({
-      "status": "error",
-      "error_message": error_message,
-      "time_received": time_received,
-      "time_completed": time.time()
-    })
+    # Set the error message
+    error_results = {
+      "error_message": error_message
+    }
+    
+    # Build the response
+    error_response = self._build_command_response(False, time_received, error_results, None, request)
     
     # Return the fired deferred
-    return defer.succeed(json_error_response)
+    return defer.succeed(error_response)
+  
+  def _build_command_response(self, success, time_received, command_results = {}, device_id = None, request = None):
+    """ Constructs a dictionary to encapsulate command results.
+    
+    This method builds a dictionary containing the command JSON response as well as the associated request object, if 
+    any. The returned dictionary will probably be fed into a deferred which will be used by the command Resource.
+    
+    @param success          Whether or not the command was successful (True or False).
+    @param time_received    The time (UNIX timestamp) when the command was first received (passed to the parser)
+    @param command_results  A dictionary containing the results of the command.
+    @param device_id        The ID of the device the command was addressed to, if any.
+    @param request          The request associated with the command, if any.
+    """
+    
+    # Set the request reference
+    command_response['request'] = request
+    
+    # Construct the command response
+    json_response['time_received'] = time_received
+    json_response['time_completed'] = time.time()
+    
+    if success:
+      json_response['status'] = 'okay'
+    else:
+      json_response['status'] = 'error'
+    
+    if device_id:
+      json_response['device_id'] = device_id
+    
+    json_response['result'] = command_results
+    
+    # Convert the response JSON 
+    command_response['response'] = json.dumps(json_response)
+    
+    return command_response
   
   def _valid_command_schema(self, raw_command):
     """ Validates the provided command schema.
