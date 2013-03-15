@@ -3,7 +3,7 @@
 # - Sending command with invalid schema
 # - Sending command with invalid device ID
 # - Sending valid command schema with unrecognized command
-# - Sending valid command schema with valid commands (add tests per command)
+# - Sending valid command schema with valid command (put actual command test code in test suite for command handler)
 
 # Import required modules
 import logging

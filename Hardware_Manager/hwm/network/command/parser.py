@@ -8,6 +8,7 @@ This module contains a class that validates, parses, and delegates ground statio
 import json, time
 from twisted.internet import defer, threads
 from jsonschema import Draft3Validator
+from hwm.network.command import command
 
 class CommandParser:
   """ Processes all commands received by the hardware manager.
@@ -48,22 +49,32 @@ class CommandParser:
     """
     
     time_command_received = time.time()
+    new_command = None
     
-    # Convert the JSON string
+    # Create the new command
+    new_command = command.Command(request, time_command_received, raw_command)
+    
+    # Attempt to validate the command
     try:
-      command_json = json.loads(raw_command)
-    except ValueError:
-      logging.error("A received command contained invalid JSON and could not be parsed.")
-      command_deferred = self._command_error(request, time_command_received, "The submitted command did not contain a valid JSON string.")
+      new_command.validate_command()
+    except command.CommandInvalidSchema:
+      # Command did not contain a valid schema
+      logging.error("A command was received that didn't conform to the specified command schema.")
+      command_deferred = self._command_error(new_command, "The submitted command did not conform to the command schema.")
+      
+      return command_deferred
+    except command.CommandMalformed:
+      # Command was malformed and couldn't be validated
+      logging.error("A malformed command was received.")
+      command_deferred = self._command_error(new_command, "The submitted command was malformed and couldn't be parsed.")
       
       return command_deferred
     
-    # Validate the command schema
-    if not self._valid_command_schema(raw_command):
-      logging.error("A received command did not conform to the command schema.")
-      command_deferred = self._command_error(request, time_command_received, "The submitted command did not conform to the defined command schema.")
-      
-      return command_deferred
+    
+    
+    
+    
+    
     
     # Determine command type
     if 'device_id' in command_json:
@@ -88,10 +99,11 @@ class CommandParser:
     # Execute the command in a new thread
     command_deferred = threads.deferToThread(getattr(command_handler, 'command_'+command_json['command']))
     command_deferred.addCallback(self._command_complete)
+    #command_deferred.addErrback(yourFunction, request)
     
     return command_deferred
   
-  def _command_complete(self, command_results){
+  def _command_complete(self, command_results):
     """ A callback that packages the results of a command.
     
     This callback packages up the results of a command and builds the command response, which it then passes down the
@@ -102,7 +114,6 @@ class CommandParser:
     
     # Build the command response
     command_response = self._build_command_response(True, time_received, command_results
-  }
   
   def _command_error(self, request, time_received, error_message):
     """ Generates a JSON error message and returns it using a deferred.
@@ -159,44 +170,3 @@ class CommandParser:
     
     return command_response
   
-  def _valid_command_schema(self, raw_command):
-    """ Validates the provided command schema.
-    
-    This method verifies that the submitted schema conforms to the command schema.
-    
-    @param raw_command  The raw JSON string for the command.
-    @return Returns True if the provided command schema is valid and False otherwise.
-    """
-    
-    # Define the command schema
-    command_schema = {
-      "type": "object",
-      "$schema": "http://json-schema.org/draft-03/schema",
-      "required": True,
-      "properties": {
-        "command": {
-          "type": "string",
-          "id": "command"
-        },
-        "device_id": {
-          "type": "string",
-          "id": "device_id",
-          "required": False
-        },
-        "parameters": {
-          "type": "object",
-          "additionalProperties": True,
-          "required": False
-        }
-      }
-    }
-    
-    # Validate the JSON schema
-    command_validator = Draft3Validator(command_schema)
-    try:
-      command_validator.validate(raw_command)
-    except:
-      # Invalid command schema
-      return False
-    
-    return True
