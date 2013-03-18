@@ -4,6 +4,9 @@
 # - Sending command with invalid device ID
 # - Sending valid command schema with unrecognized command
 # - Sending valid command schema with valid command (put actual command test code in test suite for command handler)
+# - Test callbacks
+# - Test _command_error for both normal exceptions and CommandError
+# ? Test unhandled error (i.e. errback fired in connection from deferred returned from parse_command)
 
 # Import required modules
 import logging

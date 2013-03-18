@@ -12,10 +12,13 @@ class SystemCommandHandler:
   be called directly by the command parser.
   """
   
-  def command_station_time(self):
+  def command_station_time(self, command):
     """ Returns the current ground station time.
     
+    @note The timestamp is returned in the 'timestamp' field of the response 'result' dictionary.
+    
+    @param command  The Command object associated with the executing command.
     @return Returns the current time on the computer that is running the hardware manager.
     """
     
-    return time.time()
+    return {'timestamp': time.time()}
