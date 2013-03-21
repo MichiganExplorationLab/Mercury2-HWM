@@ -2,7 +2,7 @@
 from twisted.trial import unittest
 from hwm.core.configuration import *
 from hwm.sessions import schedule, coordinator
-from hwm.hardware.pipelines import manager
+from hwm.hardware.pipelines import manager, pipeline
 from pkg_resources import Requirement, resource_filename
 
 class TestCoordinator(unittest.TestCase):
@@ -93,6 +93,9 @@ class TestCoordinator(unittest.TestCase):
       
       # Verify that the expired reservation was not added
       self.assertTrue(('RES.1' not in session_coordinator.active_sessions), "An expired reservation was found in the session manager.")
+      
+      # Attempt to reserve a pipeline that RES.2 or RES.3 is using
+      self.assertRaises(pipeline.PipelineInUse, test_pipelines.pipelines['test_pipeline'].reserve_pipeline)
     
     # Update the schedule
     schedule_update_deferred = test_schedule.update_schedule()

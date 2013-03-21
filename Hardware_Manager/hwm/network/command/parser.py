@@ -1,11 +1,12 @@
 """ @package hwm.network.command.parser
 Parses system and hardware commands and passes them to the appropriate command handler.
 
-This module contains a class that validates, parses, and delegates ground station commands as they're received.
+This module contains a class that validates, parses, and delegates ground station commands to the appropriate handler 
+as they're received. Once a command has been executed, it returns the results of the command.
 """
 
 # Import required modules
-import time
+import time, logging
 from twisted.internet import defer, threads
 from hwm.network.command import command
 
@@ -98,7 +99,7 @@ class CommandParser:
       else:
         handler_string = "system"
       
-      raise command.CommandNotFound("The received command ("+valid_command.command+") could not be located in the "+handler_string+" command handler.")
+      raise command.CommandError("The received command could not be located in the "+handler_string+" command handler.", {"invalid_command": valid_command.command})
     
     # Check the user permissions
     # todo
@@ -145,7 +146,7 @@ class CommandParser:
     }
     
     # Check if there are any extra error parameters
-    if hasattr(failure.value, error_parameters):
+    if hasattr(failure.value, 'error_parameters'):
       # Merge the parameter dictionaries
       error_results = dict(failure.value.error_parameters.items() + error_message.items())
     else:

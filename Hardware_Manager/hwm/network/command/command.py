@@ -29,6 +29,7 @@ class Command:
     self.time_received = time_received
     self.command_raw = raw_command
     self.command_json = None
+    self.valid = False
     
     # Convenience attributes set after validate_command
     self.command = None
@@ -51,9 +52,9 @@ class Command:
     
     # Try to convert the command string to JSON
     try:
-      self.command_json = json.loads(raw_command)
+      self.command_json = json.loads(self.command_raw)
     except ValueError:
-      return defer.fail(CommandMalformed("The submitted command did not contain a valid JSON string."))
+      return defer.fail(CommandMalformed("The submitted command contained a malformed JSON string."))
     
     # Define the command schema
     command_schema = {
@@ -63,7 +64,8 @@ class Command:
       "properties": {
         "command": {
           "type": "string",
-          "id": "command"
+          "id": "command",
+          "required": True
         },
         "device_id": {
           "type": "string",
@@ -82,13 +84,14 @@ class Command:
     command_validator = Draft3Validator(command_schema)
     try:
       command_validator.validate(self.command_json)
+      self.valid = True
     except:
       # Invalid command schema
       return defer.fail(CommandInvalidSchema("The submitted command did not conform to the command schema for command type: "+self.__class__.__name__))
     
     self._populate_command_attributes()
     
-    return True
+    return defer.succeed(True)
   
   def build_command_response(self, success, command_results = {}):
     """ Constructs a dictionary to encapsulate the command results.
@@ -100,6 +103,9 @@ class Command:
     @param command_results  A dictionary containing the results of the command.
     @return Returns a dictionary containing the command's results and the associated HTTP request.
     """
+    
+    command_response = {}
+    json_response = {}
     
     # Set the request reference
     command_response['request'] = self.request
@@ -128,12 +134,20 @@ class Command:
     
     This method copies some information from the command JSON object into class attributes for programmer convenience. 
     It should be called after the command's schema has been validated.
+    
+    @note If this method is called before the command has been validated, it will return False.
+    
+    @return Returns True on success or False otherwise.
     """
     
-    if self.command_json is not None:
-      self.device_id = self.command_json['device_id']
+    if self.valid and (self.command_json is not None):
       self.command = self.command_json['command']
-      self.parameters = self.command_json['parameters']
+      self.device_id = self.command_json['device_id'] if ('device_id' in self.command_json) else None
+      self.parameters = self.command_json['parameters'] if ('parameters' in self.command_json) else None
+      
+      return True
+    else:
+      return False
 
 # Create some exceptions for the Command class
 class CommandNotFound(Exception):

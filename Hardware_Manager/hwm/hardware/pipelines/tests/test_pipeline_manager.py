@@ -62,7 +62,7 @@ class TestPipelineManager(unittest.TestCase):
     # Load the invalid pipeline configuration
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid.yml')
     
-    # Verify the correct exception is thrown
+    # Verify the correct exception is thrown when trying to initialize the pipelines
     self.assertRaises(pipeline.PipelineInvalidConfiguration, manager.PipelineManager)
   
   def test_pipeline_get(self):
