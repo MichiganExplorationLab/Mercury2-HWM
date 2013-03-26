@@ -169,8 +169,8 @@ class Config:
       'schedule-update-timeout': 15, # seconds
       'schedule-location-local': '/schedules/offline_schedule.yml',
       'schedule-location-network': '/test_schedule.json',
-      'ssl-private-cert-location': self.data_directory+'/certs/mercury2_hwm.key',
-      'ssl-public-cert-location': self.data_directory+'/certs/mercury2_hwm.crt',
+      'ssl-private-key-location': self.data_directory+'/ssl/mercury2_hwm-key.pem',
+      'ssl-public-cert-location': self.data_directory+'/ssl/mercury2_hwm-cert.pem',
       'network-command-port': 8080
     }
     

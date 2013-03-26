@@ -1,0 +1,11 @@
+This file contains notes on the format of reservation schedule JSON structures. The settings available for each device 
+will be documented in the driver documentation. For the schema used in validations, see hwm.application.core.schedule.
+
+- reservations (array of reservations):
+  - reservation:
+    - time_start (UNIX)
+    - time_end (UNIX)
+    - pipeline_id
+    - hardware_settings (array of configuration options for pipeline hardware devices):
+      - "[device_id]":
+        - "[setting_name]": "initial value"
