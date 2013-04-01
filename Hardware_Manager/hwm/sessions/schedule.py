@@ -105,6 +105,11 @@ class ScheduleManager:
       "$schema": "http://json-schema.org/draft-03/schema",
       "required": True,
       "properties": {
+        "generated_at": {
+          "type": "number",
+          "id": "generated_at",
+          "required": True
+        },
         "reservations": {
           "type": "array",
           "id": "reservations",

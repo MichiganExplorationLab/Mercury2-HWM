@@ -21,4 +21,5 @@ This file is a general todo list for the hardware manager component of Mercury2.
       - Raising errors and success in command handlers
     - Command schema
   - Writing custom drivers
+    - Command handler interface
   - Custom decoders and propagators

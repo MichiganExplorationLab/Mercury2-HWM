@@ -111,8 +111,8 @@ class Command:
     command_response['request'] = self.request
     
     # Construct the command response
-    json_response['time_received'] = self.time_received
-    json_response['time_completed'] = time.time()
+    json_response['received_at'] = self.time_received
+    json_response['completed_at'] = time.time()
     
     if success:
       json_response['status'] = 'okay'
