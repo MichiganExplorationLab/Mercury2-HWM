@@ -34,14 +34,12 @@ class SystemCommandHandler:
     # Define the command handler's attributes
     self.name = "system"
   
-  def command_station_time(self, command, active_session):
+  def command_station_time(self, command):
     """ Returns the current ground station time.
     
     @note The timestamp is returned in the 'timestamp' field of the response 'result' dictionary.
     
     @param command         The Command object associated with the executing command. Contains the command parameters.
-    @param active_session  The active Session object for the user that submitted the request, if any (None if the user
-                           doesn't have an active session).
     @return Returns the current time on the computer that is running the hardware manager.
     """
     

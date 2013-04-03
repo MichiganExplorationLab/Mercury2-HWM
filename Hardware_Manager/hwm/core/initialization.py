@@ -43,7 +43,7 @@ def initialize():
   # Setup the configuration
   _setup_configuration()
   
-  # Initialize the schedule coordinator
+  # Initialize the main reservation schedule
   if Configuration.get('offline-mode'):
     schedule_manager = schedule.ScheduleManager(Configuration.data_directory+Configuration.get('schedule-location-local'))
   else:

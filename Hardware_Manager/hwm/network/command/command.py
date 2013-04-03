@@ -15,14 +15,15 @@ class Command:
   This default Command type represents JSON formatted commands.
   """
   
-  def __init__(self, request, time_received, raw_command):
+  def __init__(self, request, time_received, raw_command, active_session = None):
     """ Constructs a new Command object.
     
     This method sets up a new command based on the raw command received.
     
-    @param request        The twisted.web.http.Request associated with the command.
-    @param time_received  The time (UNIX timestamp) when the command was received.
-    @param raw_command    A JSON string representing the command.
+    @param request         The twisted.web.http.Request associated with the command.
+    @param time_received   The time (UNIX timestamp) when the command was received.
+    @param raw_command     A JSON string representing the command.
+    @param active_session  A reference to the active Session for the connected user, if any.
     """
     
     self.request = request
@@ -30,6 +31,7 @@ class Command:
     self.command_raw = raw_command
     self.command_json = None
     self.valid = False
+    self.session = active_session
     
     # Convenience attributes set after validate_command
     self.command = None
