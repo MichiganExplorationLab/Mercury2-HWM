@@ -67,6 +67,11 @@ class Command:
           "id": "command",
           "required": True
         },
+        "system_command_handler": {
+          "type": "string",
+          "id": "system_command_handler",
+          "required": False
+        },
         "device_id": {
           "type": "string",
           "id": "device_id",
@@ -84,6 +89,11 @@ class Command:
     command_validator = Draft3Validator(command_schema)
     try:
       command_validator.validate(self.command_json)
+      
+      # Make sure an address was set
+      if 'system_command_handler' not in self.command_json and 'device_id' not in self.command_json:
+        return defer.fail(CommandInvalidSchema("The submitted command did not specify an address (either a command handler or device ID): "+self.command_json['command']))
+      
       self.valid = True
     except:
       # Invalid command schema

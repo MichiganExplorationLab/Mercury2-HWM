@@ -153,6 +153,11 @@ class ScheduleManager:
                 "type": "string",
                 "id": "reservation_id",
                 "required": True
+              },
+              "user_id": {
+                "type": "string",
+                "id": "user_id",
+                "required": True
               }
             }
           }

@@ -30,7 +30,7 @@ class CommandParser:
   def parse_command(self, raw_command, request = None):
     """ Processes all commands received by the ground station.
     
-    When a raw JSON command is passed to this function, it performs the following operations using a series of callbacks:
+    When a raw JSON command is passed to this function, it performs the following operations via a series of callbacks:
     * Validates command schema
     * Verifies that the command is valid (exists)
     * Checks that the user can execute the command

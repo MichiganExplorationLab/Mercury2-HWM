@@ -9,7 +9,7 @@ from pkg_resources import Requirement, resource_filename
 from twisted.trial import unittest
 from twisted.test import proto_helpers
 from hwm.core.configuration import *
-from hwm.network.command import parser, command, connection
+from hwm.network.command import parser, command, connection, metadata
 from hwm.network.command.handlers import system as command_handler
 
 class TestCommandInfrastructure(unittest.TestCase):
@@ -47,6 +47,89 @@ class TestCommandInfrastructure(unittest.TestCase):
     self.config = None
     self.command_parser = None
   
+  def test_metadata_errors(self):
+    """ Test that the command metadata generation function correctly returns errors when appropriate. If there are some
+    subtle errors that don't get detected by the build_metadata_dict function, they will be handled when the command 
+    is processed.
+    """
+    
+    # Try to create a metadata structure without a location
+    self.assertRaises(metadata.InvalidCommandAddress, metadata.build_metadata_dict, [{}], 'test_command', False, None, None)
+    
+    # Don't specify a command ID
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, [{}], '', False, 'system', None)
+    
+    # Include some parameters with invalid types
+    test_parameters = [
+      {'title': 'test_argument',
+       'type': 'string',
+       'required:': True,
+       'maxlength': 10},
+      {'title': 'test_argument2',
+       'type': 'invalid_type'}
+    ]
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+    
+    # Specify a parameter without a title (required to represent the parameter in the UI)
+    test_parameters = [
+      {'title': 'test_argument',
+       'type': 'string',
+       'required:': True,
+       'maxlength': 10},
+      {'type': 'boolean'}
+    ]
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+    
+    # Specify a select with no options
+    test_parameters = [
+      {'title': 'test_argument',
+       'type': 'select',
+       'required:': False,
+       'options': []}
+    ]
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+    
+    # Specify a select with a malformed option
+    test_parameters = [
+      {'title': 'test_argument',
+       'type': 'select',
+       'required:': False,
+       'options': [
+         ['option_title', 'value'],
+         ['option_title2', 'value1', 'value2']
+       ]}
+    ]
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+  
+  def test_metadata_types(self):
+    """ Tests that the command metadata generation function accepts the types that it should.
+    """
+    
+    # Assemble some parameters that use every valid type with some random restrictors thrown in
+    test_parameters = [
+      {'title': 'test_string',
+       'type': 'string',
+       'required': True,
+       'minlength': 5,
+       'maxlength': 25},
+      {'title': 'test_number',
+       'type': 'number',
+       'integer': True},
+      {'title': 'test_boolean',
+       'type': 'boolean',
+       'description': 'Just a test boolean, nothing to see here citizen.',
+       'required': False},
+      {'title': 'test_select',
+       'type': 'select',
+       'multiselect': True,
+       'options': [
+         ['First Option', 'option_a'],
+         ['Second Option', 'option_b']
+       ]}
+    ]
+    
+    metadata.build_metadata_dict(test_parameters, 'test_command', False, 'system', None)
+  
   def test_parser_unrecognized_command(self):
     """ This test ensures that the command parser correctly rejects unrecognized commands. In addition, it verifies the 
     functionality of the optional CommandError exception which allows additional meta-data to be embedded with the 
@@ -67,8 +150,8 @@ class TestCommandInfrastructure(unittest.TestCase):
     return test_deferred
   
   def test_parser_malformed(self):
-    """ This test verifies that CommandParser correctly returns an error response when a malformed command is submitted 
-    to it.
+    """ This test verifies that CommandParser correctly returns the correct error response when a malformed command is 
+    submitted to it.
     """
     
     # Define a callback to test the parser results
@@ -85,8 +168,8 @@ class TestCommandInfrastructure(unittest.TestCase):
     return test_deferred
   
   def test_parser_invalid_schema(self):
-    """ This test verifies that CommandParser correctly returns the correct error response when a malformed command is 
-    submitted to it.
+    """ This test verifies that CommandParser correctly returns an error when an invalid command is submitted to it (i.e.
+    a command that doesn't conform to the schema).
     """
     
     # Define a callback to test the parser results
@@ -95,8 +178,8 @@ class TestCommandInfrastructure(unittest.TestCase):
       
       self.assertEqual(json_response['status'], 'error')
     
-    # Parse a malformed command the to parser
-    test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}")
+    # Parse an invalid command the to parser (doesn't contain an address i.e. a system command handler or device ID)
+    test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -124,13 +207,25 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     return self.assertFailure(test_deferred, command.CommandInvalidSchema)
   
+  def test_command_missing_address(self):
+    """ Verifies that the Command class validator correctly rejects a command that does not provide an address of one 
+    sort.
+    """
+    
+    # Create a new malformed command
+    test_command = command.Command(None, time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}")
+    
+    test_deferred = test_command.validate_command()
+    
+    return self.assertFailure(test_deferred, command.CommandInvalidSchema)
+  
   def test_command_valid_schema(self):
     """ This test verifies that the Command class correctly parses a valid schema and updates the Command attributes. In
     addition, it verifies that the build_command_response method works as intended. 
     """
     
     # Create a valid command
-    test_command = command.Command(None, time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}")
+    test_command = command.Command(None, time.time(), "{\"command\":\"test_command\",\"system_command_handler\":\"system\",\"parameters\":{\"test_parameter\":5}}")
     
     # Define a callback to verify the Command after validation is complete
     def validation_complete(validation_results):
