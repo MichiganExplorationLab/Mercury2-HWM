@@ -270,11 +270,6 @@ class ScheduleManager:
     
     return temp_schedule
 
+# Define schedule related exceptions
 class ScheduleError(Exception):
-  """Thrown if an error occurs while updating the schedule."""
-  
-  def __init__(self, schedule_error_message):
-    self.message = schedule_error_message
-  
-  def __str__(self):
-    return self.message
+  pass

@@ -30,5 +30,14 @@ class TestPermissionManager(unittest.TestCase):
     # Reset the object references
     self.config = None
   
-  def test_
-  
+  def test_local_file_load_missing(self):
+    """ Verifies that the correct error is generated when the offline permissions file can't be found.
+    """
+    
+    # Initialize the permission manager
+    permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_doesnt_exist.json')
+    
+    # Force a file load
+    update_deferred = permission_manager.add_user_permissions('test_user')
+    
+    return self.assertFailure(update_deferred, permissions.PermissionsError)
