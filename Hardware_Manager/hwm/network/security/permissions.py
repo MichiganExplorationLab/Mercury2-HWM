@@ -6,6 +6,7 @@ This module contains a class used to manage and cache user command permissions.
 import time, json, urllib2, urllib
 from jsonschema import Draft3Validator
 from twisted.internet import threads
+from hwm.core import configuration
 
 class PermissionManager:
   """ Stores and provides access to user permission settings.
@@ -27,6 +28,7 @@ class PermissionManager:
     self.permissions = {}
     self.use_remote_permissions = permissions_endpoint.startswith('http')
     self.permissions_location = permissions_endpoint
+    self.config = configuration.Configuration
   
   def add_user_permissions(self, user_id):
     """ Records permission settings for the indicated user.
@@ -86,7 +88,7 @@ class PermissionManager:
     
     # Loop through the permissions and purge any old entries
     for temp_user_id in self.permissions.keys():
-      if (current_time - self.permissions[temp_user_id][generated_at]) >= age:
+      if (current_time - self.permissions[temp_user_id]['generated_at']) >= age:
         # Delete the permission entry
         del self.permissions[temp_user_id]
   
@@ -116,9 +118,9 @@ class PermissionManager:
       # Encode the request parameters
       encoded_params = urllib.urlencode({'user_id': user_id})
       
-      permissions_request = urllib2.Request(self.permissions_location)
+      permissions_request = urllib2.Request(self.permissions_location+'?'+encoded_params)
       permissions_opener = urllib2.build_opener()
-      permissions_file = permissions_opener.open(permissions_request+'?'+encoded_params, None, self.config.get('permissions-update-timeout'))
+      permissions_file = permissions_opener.open(permissions_request, None, self.config.get('permissions-update-timeout'))
     except:
       # Error downloading the file
       raise PermissionsError('There was an error downloading the permissions for user: '+user_id)
@@ -275,6 +277,8 @@ class PermissionManager:
     except:
       # Invalid permission list JSON
       raise PermissionsInvalidSchema("The provided permission list did not conform to the defined schema.")
+    
+    return permission_settings
 
 # Define permission related exceptions
 class PermissionsInvalidSchema(Exception):

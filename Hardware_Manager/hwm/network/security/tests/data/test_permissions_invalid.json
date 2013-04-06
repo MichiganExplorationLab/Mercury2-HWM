@@ -16,7 +16,7 @@
   },
   {
     "generated_at": 1265262590,
-    "user_id": "test_user",
+    "user_id_invalid": "test_user",
     "ignore_session_protections": false,
     "permitted_commands": [
       {
