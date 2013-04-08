@@ -202,7 +202,7 @@ class Config:
     # List the required configuration options
     required_options = [
       'station-name', 'station-longitude', 'station-latitude', 'station-altitude',
-      'offline-mode', 'network-command-port', 'mercury2-ui-location', 'ssl-private-cert-location', 'ssl-public-cert-location', 
+      'offline-mode', 'network-command-port', 'mercury2-ui-location', 'ssl-private-key-location', 'ssl-public-cert-location', 
       'schedule-update-period', 'schedule-update-timeout', 'schedule-location-network', 'schedule-location-local',  
       'permissions-update-timeout', 'permissions-location-local', 'permissions-location-network'
     ]

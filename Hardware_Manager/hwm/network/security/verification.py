@@ -6,7 +6,7 @@ This module functions for authenticating users based on their provided SSL certi
 
 # Import required modules
 import logging
-from configuration import Configuration
+from hwm.core.configuration import Configuration
 from OpenSSL import SSL
 from twisted.internet import ssl
 
