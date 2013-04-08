@@ -190,7 +190,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new malformed command
-    test_command = command.Command(None, time.time(), "{\"invalid_json\":true,invalid_element}")
+    test_command = command.Command(time.time(), "{\"invalid_json\":true,invalid_element}")
     
     test_deferred = test_command.validate_command()
     
@@ -201,7 +201,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new malformed command
-    test_command = command.Command(None, time.time(), "{\"message\": \"This schema is invalid\"}")
+    test_command = command.Command(time.time(), "{\"message\": \"This schema is invalid\"}")
     
     test_deferred = test_command.validate_command()
     
@@ -213,7 +213,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new malformed command
-    test_command = command.Command(None, time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}")
+    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}")
     
     test_deferred = test_command.validate_command()
     

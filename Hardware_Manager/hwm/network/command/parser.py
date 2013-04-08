@@ -27,12 +27,12 @@ class CommandParser:
     # Set the class attributes
     self.system_handler = system_command_handler
 
-  def parse_command(self, raw_command, request = None):
+  def parse_command(self, raw_command, user_id):
     """ Processes all commands received by the ground station.
     
-    When a raw JSON command is passed to this function, it performs the following operations via a series of callbacks:
-    * Validates command schema
-    * Verifies that the command is valid (exists)
+    When a raw command is passed to this function, it performs the following operations via a series of callbacks:
+    * Constructs a new Command and validates it against that command's schema
+    * Verifies that the indicated command exists
     * Checks that the user can execute the command
     * Executes the command in a new thread
     * Returns a deferred that will be fired with the results of the command
@@ -42,20 +42,22 @@ class CommandParser:
     @note Even if the command generates an error response, the returned deferred's callback chain will be called with
           the contents of the error (instead of the errback chain). 
     @note The callback chain from the deferred returned from this function will return a dictionary representing the 
-          results of the command. The 'request' key will provide a reference to the HTTP request associated with the 
-          command. The 'response' key will contain a JSON string with the results of the command.
+          results of the command. The 'response' key will contain a string with the results of the command (in JSON).
     
-    @param raw_command  A raw JSON string containing metadata about the command.
-    @param request      The request object associated with the command, if any.
+    @param raw_command  A raw command string containing metadata about the command in an arbitrary format.
+    @param user_id      The user's ID for the purpose of loading command execution settings. This probably came from 
+                        the user's SSL certificate.
     @return Returns the results of the command (in JSON) using a deferred. May be the output of the command or an error 
             message.
     """
     
+    
+    # Local variables
     time_command_received = time.time()
     new_command = None
     
     # Create the new command
-    new_command = command.Command(request, time_command_received, raw_command)
+    new_command = command.Command(time_command_received, raw_command)
     
     # Asynchronously validate the command (format and schema)
     validation_deferred = new_command.validate_command()
@@ -131,9 +133,9 @@ class CommandParser:
   def _command_error(self, failure, failed_command):
     """ Generates an appropriate error response for the failure.
     
-    This errback generates an error response for the indicated failure, which it then returns (thus passing the request
-    to the callback chain of the deferred returned from parse_command). If the failure is wrapping an exception of type
-    CommandError then it may contain a dictionary with additional information about the error.
+    This errback generates an error response for the indicated failure, which it then returns (thus passing the error
+    response to the callback chain of the deferred returned from parse_command). If the failure is wrapping an exception
+    of type CommandError then it may contain a dictionary with additional information about the error.
     
     @param failure         The Failure object representing the error.
     @param failed_command  The Command object of the failed command.

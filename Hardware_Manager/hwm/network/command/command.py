@@ -15,18 +15,17 @@ class Command:
   This default Command type represents JSON formatted commands.
   """
   
-  def __init__(self, request, time_received, raw_command, active_session = None):
+  def __init__(self, time_received, raw_command, active_session = None):
     """ Constructs a new Command object.
     
     This method sets up a new command based on the raw command received.
     
-    @param request         The twisted.web.http.Request associated with the command.
     @param time_received   The time (UNIX timestamp) when the command was received.
     @param raw_command     A JSON string representing the command.
     @param active_session  A reference to the active Session for the connected user, if any.
     """
     
-    self.request = request
+    # Set command attributes
     self.time_received = time_received
     self.command_raw = raw_command
     self.command_json = None
@@ -108,19 +107,16 @@ class Command:
   def build_command_response(self, success, command_results = {}):
     """ Constructs a dictionary to encapsulate the command results.
     
-    This method builds a dictionary containing the command JSON response as well as the associated request object, if 
-    any. The returned dictionary will probably be fed into a deferred which will be used by the command Resource.
+    This method builds a dictionary containing the command's JSON response. CommandResource will use the returned 
+    dictionary to send the response to the user.
     
     @param success          Whether or not the command was successful (True or False).
     @param command_results  A dictionary containing the results of the command.
-    @return Returns a dictionary containing the command's results and the associated HTTP request.
+    @return Returns a dictionary containing the command's results.
     """
     
     command_response = {}
     json_response = {}
-    
-    # Set the request reference
-    command_response['request'] = self.request
     
     # Construct the command response
     json_response['received_at'] = self.time_received

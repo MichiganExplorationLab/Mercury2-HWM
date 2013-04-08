@@ -5,7 +5,7 @@ This module contains a class used to manage and cache user command permissions.
 # Include required modules
 import time, json, urllib2, urllib
 from jsonschema import Draft3Validator
-from twisted.internet import threads
+from twisted.internet import threads, defer
 from hwm.core import configuration
 
 class PermissionManager:
@@ -16,12 +16,14 @@ class PermissionManager:
   forcing a redownload.
   """
   
-  def __init__(self, permissions_endpoint):
+  def __init__(self, permissions_endpoint, update_frequency):
     """ Sets up the permission manager.
     
     @param permissions_endpoint  The location that can be queried to find user command permissions. This can either be
                                  the mercury2 user interface API or a file. If this points to the mercury2 API, it must 
                                  start with http or https.
+    @param update_frequency      How often the user's permissions should be updated (i.e. if a user's permissions are 
+                                 requested and they are older than this value, update them). Specified in seconds.
     """
     
     # Set up the manager attributes
@@ -29,9 +31,69 @@ class PermissionManager:
     self.use_remote_permissions = permissions_endpoint.startswith('http')
     self.permissions_location = permissions_endpoint
     self.config = configuration.Configuration
+    self.update_frequency = update_frequency
   
-  def add_user_permissions(self, user_id):
-    """ Records permission settings for the indicated user.
+  def get_user_permissions(self, user_id):
+    """ Returns the permissions structure for the indicated user.
+    
+    If the user does not have any permissions loaded, they will be downloaded/loaded in a thread and returned via a 
+    deferred. If the user does have permissions in the system, they will be fired immediately into the returned 
+    deferred (and get updated in the background if they are too old).
+    
+    @note The permissions returned from this function are a copy. That is, they don't reference the permission manager's
+          main permission dictionary.
+    
+    @throws Throws PermissionsUserNotFound if the specified user doesn't have any permission settings saved.
+    
+    @param user_id  The ID of the user to fetch permissions for.
+    @return Returns a deferred that will be fired with the user's permissions (or an error, if one occurs). 
+    """
+    
+    # Local variables
+    current_time = int(time.time())
+    permissions_deferred = None
+    
+    # Check if the user has cached permissions
+    if user_id not in self.permissions:
+      # Update the user's permissions and return the results in a deferred
+      permissions_deferred = self._update_user_permissions(user_id)
+    else:
+      # Update the permissions in the background, if needed
+      if (current_time - self.permissions[user_id]['loaded_at']) >= self.update_frequency:
+        background_deferred = self._update_user_permissions(user_id)
+        background_deferred.addErrback(self._background_update_error)
+      
+      # Create a deferred and fire the user's cached permissions into it
+      permissions_deferred = defer.succeed(self.permissions[user_id].copy())
+    
+    # Return the user's permissions via a deferred
+    return permissions_deferred
+  
+  def purge_user_permissions(self, age):
+    """ Removes all old permission settings.
+    
+    This method removes all permission settings entries older than the specified value. Once the permissions have been 
+    removed, calls to get_user_permissions will fail and the permissions will need to be re-downloaded.
+    
+    @note The preferred way to update user permissions is to simply let get_user_permissions do it automatically. It 
+          will return the old cached user permissions while they're being updated. If purge_user_permissions is used 
+          instead, the deferred returned from get_user_permissions will take longer more often as the permissions are
+          being updated.
+    
+    @param age  Any permission entries older than age will be purged. The age is specified in seconds.
+    """
+    
+    # Set the current time
+    current_time = int(time.time())
+    
+    # Loop through the permissions and purge any old entries
+    for temp_user_id in self.permissions.keys():
+      if (current_time - self.permissions[temp_user_id]['loaded_at']) >= age:
+        # Delete the permission entry
+        del self.permissions[temp_user_id]
+  
+  def _update_user_permissions(self, user_id):
+    """ Updates the permissions for the indicated user.
     
     This method downloads (or loads), validates, and saves the specified user's permission settings.
     
@@ -44,7 +106,7 @@ class PermissionManager:
     
     @param user_id  The ID of the user that the command permissions are for.
     @return Returns a deferred that will be fired with the results of the permission settings load/download. That is,
-            an error of the permissions object for the indicated user.
+            an error or the permissions object for the indicated user.
     """
     
     # Attempt to load the user's permissions
@@ -58,39 +120,6 @@ class PermissionManager:
     defer_download.addCallback(self._save_permissions, user_id)
     
     return defer_download
-  
-  def get_user_permissions(self, user_id):
-    """ Returns the permissions structure for the indicated user, if it exists.
-    
-    @throws Throws PermissionsUserNotFound if the specified user doesn't have any permission settings saved.
-    
-    @param user_id  The ID of the user to fetch permissions for.
-    """
-    
-    # Make sure the user has some permission settings
-    if user_id not in self.permissions:
-      raise PermissionsUserNotFound("The indicated user does not have any permission settings saved.")
-    
-    # Return the permissions
-    return self.permissions[user_id]
-  
-  def purge_user_permissions(self, age):
-    """ Removes all old permission settings.
-    
-    This method removes all permission settings entries older than the specified value. Once the permissions have been 
-    removed, calls to get_user_permissions will fail and the permissions will need to be re-downloaded.
-    
-    @param age  Any permission entries older than age will be purged. The age is specified in seconds.
-    """
-    
-    # Set the current time
-    current_time = int(time.time())
-    
-    # Loop through the permissions and purge any old entries
-    for temp_user_id in self.permissions.keys():
-      if (current_time - self.permissions[temp_user_id]['generated_at']) >= age:
-        # Delete the permission entry
-        del self.permissions[temp_user_id]
   
   def _download_remote_permissions(self, user_id):
     """ Loads the user's permissions from a remote location.
@@ -171,6 +200,15 @@ class PermissionManager:
     
     return temp_permissions
   
+  def _background_update_error(self, update_error):
+    """ This callback responds to errors when updating the permissions in the background.
+    
+    @param update_error  A Failure object containing the error.
+    @return Simply returns True to keep the error from getting collected. 
+    """
+    
+    return True
+  
   def _save_permissions(self, permission_settings, user_id):
     """ Saves the user command execution permission settings in the PermissionManager.
     
@@ -191,10 +229,14 @@ class PermissionManager:
     """
     
     target_user_permissions = None
+    current_time = int(time.time())
     
     # Loop through and save every permission object
     for user_permissions in permission_settings:
       self.permissions[user_permissions['user_id']] = user_permissions
+      
+      # Set the load time
+      self.permissions[user_permissions['user_id']]['loaded_at'] = current_time
       
       if user_permissions['user_id'] == user_id:
         target_user_permissions = user_permissions
@@ -204,7 +246,8 @@ class PermissionManager:
       raise PermissionsUserNotFound("The permissions for user '"+user_id+"' could not be found upon loading the latest "
                                     "version of the permissions resource.")
     
-    return target_user_permissions
+    # Return a copy of the user's permission
+    return target_user_permissions.copy()
   
   def _validate_permissions(self, permission_settings):
     """ Validates the provided permission settings.

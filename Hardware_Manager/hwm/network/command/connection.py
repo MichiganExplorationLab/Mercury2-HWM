@@ -35,24 +35,32 @@ class CommandResource(Resource):
     @note All submitted commands must be POST'd to the hardware manager's root address.
     
     @param request  The request object for the submitted command.
-    @return Returns NOT_DONE_YET, indicating that the results of the request may not be ready yet.
+    @return Returns NOT_DONE_YET, indicating that the results of the request may not be ready yet (results handled by
+            _command_response_ready).
     """
     
+    # Store the user's ID
+    user_id = None
+    user_certificate = self.transport.getPeerCertificate()
+    if user_certificate:
+      user_id = user_certificate.get_subject().commonName.decode()
+    
     # Pass the request body to the parser
-    response_deferred = self.command_parser.parse_command(request.content.read(), request)
-    response_deferred.addCallback(self._command_response_ready)
+    response_deferred = self.command_parser.parse_command(request.content.read(), user_id)
+    response_deferred.addCallback(self._command_response_ready, request)
     
     return NOT_DONE_YET
   
-  def _command_response_ready(self, command_response):
+  def _command_response_ready(self, command_response, request):
     """ A callback that writes the response of a command back back to the protocol's transport.
     
     @param command_response  The results of the command. A dictionary containing the command response and the associated
                              request.
+    @param request           The original HTTP request for the connection.
     """
     
     # Write the response to the client
-    command_response['request'].write(command_request['response'])
+    request.write(command_request['response'])
     
     # Close the request
-    command_response['request'].finish()
+    request.finish()

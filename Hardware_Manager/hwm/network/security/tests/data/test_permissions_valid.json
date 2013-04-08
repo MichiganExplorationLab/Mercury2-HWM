@@ -16,7 +16,18 @@
   },
   {
     "generated_at": 1265262590,
-    "user_id": "test_user",
+    "user_id": "test_user_old",
+    "ignore_session_protections": false,
+    "permitted_commands": [
+      {
+        "command": "station_time",
+        "system_command_handler": "system"
+      }
+    ]
+  },
+  {
+    "generated_at": 1265447177,
+    "user_id": "test_user_old_2",
     "ignore_session_protections": false,
     "permitted_commands": [
       {

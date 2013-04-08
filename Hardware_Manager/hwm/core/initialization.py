@@ -109,21 +109,15 @@ def _setup_network_listeners():
   data streams.
   """
   
-  # Initialize the system command handlers
+  # Initialize the command resources
   system_command_handler = command_handler_system.SystemCommandHandler()
-  
-  # Initialize the command parser
   command_parser = command_parser_system.CommandParser(system_command_handler)
   
   # Create an SSL context for the server
-  server_context_factory = ssl.DefaultOpenSSLContextFactory(Configuration.get('ssl-private-key-location'), Configuration.get('ssl-public-cert-location'))
-  server_context = server_context_factory.getContext()
-  server_context.set_verify(SSL.VERIFY_PEER | SSL.VERIFY_FAIL_IF_NO_PEER_CERT, verification.authentication_callback)
+  server_context_factory = verification.create_ssl_context_factory()
   
-  # Create a new Site factory
+  # Setup the command listener
   command_factory = Site(command_connection.CommandResource(command_parser))
-  
-  # Create the listeners
   reactor.listenSSL(Configuration.get('network-command-port'), command_factory, server_context_factory)
 
 def _setup_configuration():
