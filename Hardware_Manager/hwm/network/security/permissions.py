@@ -116,7 +116,7 @@ class PermissionManager:
       defer_download = threads.deferToThread(self._load_local_permissions, user_id)
     
     # Validate & save
-    defer_download.addCallback(self._validate_permissions)
+    defer_download.addCallback(self._validate_permissions, user_id)
     defer_download.addCallback(self._save_permissions, user_id)
     
     return defer_download
@@ -139,7 +139,6 @@ class PermissionManager:
     """
     
     # Setup local variables
-    temp_permissions = None
     permissions_file = None
     
     # Attempt to download the JSON resource
@@ -154,14 +153,7 @@ class PermissionManager:
       # Error downloading the file
       raise PermissionsError('There was an error downloading the permissions for user: '+user_id)
     
-    # Parse the schedule JSON
-    try:
-      temp_permissions = json.load(permissions_file)
-    except ValueError:
-      # Error parsing the schedule JSON
-      raise PermissionsError('The permissions file for user \''+user_id+'\' did not contain a valid JSON object.')
-    
-    return temp_permissions
+    return permissions_file
   
   def _load_local_permissions(self, user_id):
     """ Load the user's permissions from a local file.
@@ -182,7 +174,6 @@ class PermissionManager:
     
     # Setup local variables
     permissions_file = None
-    temp_permissions = None
     
     # Attempt to open the permissions file
     try:
@@ -191,14 +182,7 @@ class PermissionManager:
       # Error loading the file
       raise PermissionsError('There was an error loading the user permissions file.')
     
-    # Parse the permissions JSON
-    try:
-      temp_permissions = json.load(permissions_file)
-    except ValueError:
-      # Error parsing the permissions JSON
-      raise PermissionsError('Could not parse local permissions file (invalid JSON).')
-    
-    return temp_permissions
+    return permissions_file
   
   def _background_update_error(self, update_error):
     """ This callback responds to errors when updating the permissions in the background.
@@ -249,16 +233,26 @@ class PermissionManager:
     # Return a copy of the user's permission
     return target_user_permissions.copy()
   
-  def _validate_permissions(self, permission_settings):
+  def _validate_permissions(self, raw_permissions, user_id):
     """ Validates the provided permission settings.
     
     This method makes sure that the provided permission structure conforms to the defined JSON schema.
     
     @throws Throws PermissionsInvalidSchema if the dictionary defined in permission_settings does not conform to the 
             permission settings schema.
+    @throws Throws PermissionsError if the raw permissions resource can't be parsed.
     
-    @param permission_settings  A dictionary containing a parsed JSON permission object.
+    @param raw_permissions  A raw, unparsed, permissions resource file (either from net or local machine).
+    @param user_id          The ID of the user who's permissions are being queried for.
+    @return Returns a dictionary containing the parsed permissions.
     """
+    
+    # Parse the schedule JSON
+    try:
+      permission_settings = json.load(raw_permissions)
+    except ValueError:
+      # Error parsing the permissions JSON
+      raise PermissionsError('The permissions resource for user \''+user_id+'\' did not contain a parsable JSON object.')
     
     # Define the schema
     permission_list_schema = {
@@ -296,15 +290,10 @@ class PermissionManager:
                   "id": "command",
                   "required": True
                 },
-                "device_id": {
+                "destination": {
                   "type": "string",
-                  "id": "device_id",
-                  "required": False
-                },
-                "system_command_handler": {
-                  "type": "string",
-                  "id": "system_command_handler",
-                  "required": False
+                  "id": "destination",
+                  "required": True
                 }
               }
             }

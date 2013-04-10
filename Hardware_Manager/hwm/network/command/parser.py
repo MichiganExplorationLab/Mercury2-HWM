@@ -17,15 +17,18 @@ class CommandParser:
   appropriate.
   """
   
-  def __init__(self, system_command_handler):
+  def __init__(self, system_command_handlers, permission_manager):
     """ Sets up the command parser instance.
     
-    @param system_command_handler  A reference to the command handler that is responsible for handling system commands 
-                                   (i.e. commands not addressed to a specific device).
+    @param system_command_handlers  A dictionary containing references to all of the system command handlers. If a
+                                    command's destination field references an element in this dictionary, that command
+                                    handler will be used. Otherwise, it will be delegated to a device command handler.
+    @param permission_manager       A reference to the user permission manager.
     """
     
     # Set the class attributes
-    self.system_handler = system_command_handler
+    self.system_command_handlers = system_command_handlers
+    self.permission_manager = permission_manager
 
   def parse_command(self, raw_command, user_id):
     """ Processes all commands received by the ground station.
@@ -43,6 +46,7 @@ class CommandParser:
           the contents of the error (instead of the errback chain). 
     @note The callback chain from the deferred returned from this function will return a dictionary representing the 
           results of the command. The 'response' key will contain a string with the results of the command (in JSON).
+    @note The actual command execution occurs in a new thread. Make sure that command code is thread safe!
     
     @param raw_command  A raw command string containing metadata about the command in an arbitrary format.
     @param user_id      The user's ID for the purpose of loading command execution settings. This probably came from 
@@ -51,13 +55,12 @@ class CommandParser:
             message.
     """
     
-    
     # Local variables
     time_command_received = time.time()
     new_command = None
     
     # Create the new command
-    new_command = command.Command(time_command_received, raw_command)
+    new_command = command.Command(time_command_received, raw_command, user_id)
     
     # Asynchronously validate the command (format and schema)
     validation_deferred = new_command.validate_command()
@@ -75,36 +78,62 @@ class CommandParser:
     validations. 
     
     @note This callback returns a deferred which means that the parent deferred's callback chain will pause until the 
-          returned deferred has been fired. This returned deferred's callbacks will then execute before the remaining 
+          returned deferred has been fired. The returned deferred's callbacks will then execute before the remaining 
           callbacks on the parent deferred.
-    @note The actual command execution occurs in a new thread. Make sure that command code is thread safe!
     
     @throw This callback may throw several exceptions indicating errors about the command. These exceptions will 
            automatically be picked up by the errback chain on the parent deferred.
     
     @param validation_results  The validation results. Always true (because this is a callback and not an errback).
     @param valid_command       The Command object being executed.
-    @return Returns a deferred that will eventually be fired with the results of executing the command in the 
-            command handler.
+    @return Returns a deferred that will eventually be fired with the user's command execution permissions.
     """
     
-    # Pick a command handler
-    if valid_command.device_id:
-      print 'LOAD DEVICE COMMAND HANDLER'
+    # Fetch the user's permissions
+    permission_load_deferred = self.permission_manager.get_user_permissions(valid_command.user_id)
+    permission_load_deferred.addCallback(self._run_command_continue, valid_command)
+    
+    return permission_load_deferred
+  
+  def _run_command_continue(self, user_permissions, valid_command):
+    """ Continues command execution after the user's permissions have been retrieved.
+    
+    @param user_permissions  A dictionary containing the user's permissions.
+    @param valid_command     The Command object for the currently executing command.
+    @return Returns a deferred that will eventually be fired with the results of the command execution.
+    """
+    
+    # Determine where to send the command
+    device_command = False
+    command_handler = None
+    if valid_command.destination in self.system_command_handlers:
+      command_handler = self.system_command_handlers[valid_command.destination]
     else:
-      command_handler = self.system_handler
+      device_command = True
+      print 'LOAD DEVICE COMMAND HANDLER'
     
     # Verify that the command exists
     if not hasattr(command_handler, 'command_'+valid_command.command):
-      if valid_command.device_id:
-        handler_string = "'"+valid_command.device_id+"' device"
-      else:
-        handler_string = "system"
+      handler_string = "'"+valid_command.destination+"'"
+      if device_command:
+        handler_string += " device"
       
-      raise command.CommandError("The received command could not be located in the "+handler_string+" command handler.", {"invalid_command": valid_command.command})
+      raise command.CommandError("The received command could not be located in the "+handler_string+" command handler.",
+                                 {"invalid_command": valid_command.command})
     
-    # Check the user permissions
-    # todo
+    # Check the user command execution permissions
+    user_has_permission = False
+    for command_permission in user_permissions['permitted_commands']:
+      if (command_permission['command'] == valid_command.command and 
+          command_permission['destination'] == valid_command.destination):
+        user_has_permission = True
+    
+    if not user_has_permission:
+      raise command.CommandError("You do not have permission to execute that command.",
+                                 {"restricted_command": valid_command.command})
+    
+    # Check the command's session requirements
+    # TODO
     
     # Execute the command in a new thread
     command_deferred = threads.deferToThread(getattr(command_handler, 'command_'+valid_command.command), valid_command)

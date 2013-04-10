@@ -77,7 +77,8 @@ class Config:
     
     @note If a configuration option is missing, an exception will be thrown detailing the error. This exception will be
           caught by the global exception handler.
-    @note Only configuration options loaded from files before this method is called will be processed.
+    @note Only configuration options loaded before this method is called will be processed. It should be called after
+          all of the main configuration has been loaded (otherwise the required options check may fail).
     """
     
     # Set the default configuration options
@@ -160,20 +161,32 @@ class Config:
     
     @note If a configuration option with a default value has been set (most likely from a file by read_configuration), 
           that value will be used instead of the default.
+    @note The default values for network or local locations include the user interface base URL and the base application
+          data directory (meaning they don't beed to be added manually when used). This allows the station admin to set
+          these to whatever they'd like (e.g. somewhere not in self.data_directory).
     """
+    
+    # Set the UI location for the default location parameters. If this isn't set, then just use a blank string and 
+    # _check_required_configuration will take care of it.
+    if 'mercury2-ui-location' in self.options:
+      ui_location = self.options['mercury2-ui-location']
+    else:
+      ui_location = ''
     
     # Specify the option defaults
     default_options = {
       'offline-mode': False,
       'schedule-update-period': 60, # seconds
       'schedule-update-timeout': 15, # seconds
-      'schedule-location-local': '/schedules/offline_schedule.yml',
-      'schedule-location-network': '/test_schedule.json',
+      'schedule-location-local': self.data_directory + '/schedules/offline_schedule.yml',
+      'schedule-location-network': ui_location + '/test_schedule.json',
+      'permissions-update-period': 300, # seconds 
       'permissions-update-timeout': 15, # seconds
-      'permissions-location-local': '/permissions/offline_permissions.yml',
-      'permissions-location-network': '/test_permissions.json',
-      'ssl-private-key-location': self.data_directory+'/ssl/mercury2_hwm-key.pem',
-      'ssl-public-cert-location': self.data_directory+'/ssl/mercury2_hwm-cert.pem',
+      'permissions-location-local': self.data_directory + '/permissions/offline_permissions.yml',
+      'permissions-location-network': ui_location + '/test_permissions.json',
+      'ssl-private-key-location': self.data_directory + '/ssl/mercury2_hwm-key.pem',
+      'ssl-public-cert-location': self.data_directory + '/ssl/mercury2_hwm-cert.pem',
+      'ssl-ca-cert-location': self.data_directory + '/ssl/ca-cert.pem',
       'network-command-port': 8080
     }
     
@@ -194,6 +207,7 @@ class Config:
     
     @note If a configuration option is missing, an exception will be thrown detailing the error. This exception will be
           caught by the global exception handler.
+    @note Network locations must start with http (either http or https).
     """
     
     # Set some default error messages
@@ -201,10 +215,11 @@ class Config:
     
     # List the required configuration options
     required_options = [
-      'station-name', 'station-longitude', 'station-latitude', 'station-altitude',
-      'offline-mode', 'network-command-port', 'mercury2-ui-location', 'ssl-private-key-location', 'ssl-public-cert-location', 
-      'schedule-update-period', 'schedule-update-timeout', 'schedule-location-network', 'schedule-location-local',  
-      'permissions-update-timeout', 'permissions-location-local', 'permissions-location-network'
+      'station-name', 'station-longitude', 'station-latitude', 'station-altitude', # Station parameters
+      'offline-mode', 'network-command-port', 'mercury2-ui-location', # General networking
+      'ssl-private-key-location', 'ssl-public-cert-location', 'ssl-ca-cert-location', # Security
+      'schedule-update-period', 'schedule-update-timeout', 'schedule-location-local', 'schedule-location-network', # Schedule
+      'permissions-update-period', 'permissions-update-timeout', 'permissions-location-local', 'permissions-location-network' # Permissions
     ]
     
     # Validate the options

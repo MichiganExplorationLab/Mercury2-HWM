@@ -17,8 +17,8 @@ from hwm.core import errors
 from hwm.sessions import coordinator, schedule
 from hwm.hardware.pipelines import manager
 from hwm.network.command import parser as command_parser_system, connection as command_connection
-from hwm.network.command.handlers import system as command_handler_system
-from hwm.network.security import verification
+from hwm.network.command.handlers import system as system_command_handler
+from hwm.network.security import verification, permissions
 
 def initialize():
   """Initializes the hardware manager.
@@ -45,7 +45,7 @@ def initialize():
   
   # Initialize the main reservation schedule
   if Configuration.get('offline-mode'):
-    schedule_manager = schedule.ScheduleManager(Configuration.data_directory+Configuration.get('schedule-location-local'))
+    schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-local'))
   else:
     schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-network'))
   
@@ -110,8 +110,15 @@ def _setup_network_listeners():
   """
   
   # Initialize the command resources
-  system_command_handler = command_handler_system.SystemCommandHandler()
-  command_parser = command_parser_system.CommandParser(system_command_handler)
+  system_command_handlers = {}
+  system_command_handlers['system'] = system_command_handler.SystemCommandHandler()
+  if Configuration.get('offline-mode'):
+    permission_manager = permissions.PermissionManager(Configuration.get('permissions-location-local'),
+                                                       Configuration.get('permissions-update-period'))
+  else:
+    permission_manager = permissions.PermissionManager(Configuration.get('permissions-location-network'),
+                                                       Configuration.get('permissions-update-period'))
+  command_parser = command_parser_system.CommandParser(system_command_handlers, permission_manager)
   
   # Create an SSL context for the server
   server_context_factory = verification.create_ssl_context_factory()

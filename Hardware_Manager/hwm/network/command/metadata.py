@@ -7,7 +7,7 @@ it to the user interface. The user interface will use the metadata to build an a
 easily execute the command.
 """
 
-def build_metadata_dict(command_parameters, command_id, requires_active_session = True, command_handler_name = None, device_id = None):
+def build_metadata_dict(command_parameters, command_id, command_handler_name, requires_active_session = True):
   """ Builds the command meta-data structure for a specific command.
   
   Command handlers use this function to build the command meta-data structures for the commands they service. For the 
@@ -40,24 +40,24 @@ def build_metadata_dict(command_parameters, command_id, requires_active_session 
                                       + title        - A short title for the argument (required, string)
                                   
                                   If a restriction is left blank, the user interface will use a default value. 
-                                  Unrecognized attributes will be ignored (but allowed).
+                                  Unrecognized/unsupported attributes will be ignored (but allowed).
   @param command_id               The ID of the command. This must be unique per command handler.
+  @param command_handler_name     The name of the system command handler that the command is located in. This is used by
+                                  user interface to address user commands to the appropriate handler. If the command is
+                                  a device command, then this will be the device ID.
   @param requires_active_session  Whether or not the command requires an active session to be executed. If the command 
                                   is a system command, then the command handler must perform its own validations on the 
                                   session. If the command is a device command, the command parser will make sure that
                                   the user has an active session with a pipeline that uses the hardware device before
-                                  executing the command.
-  @param command_handler_name     The name of the system command handler that the command is located in. This is used by
-                                  user interface to address user commands to the appropriate handler (if they're not for
-                                  a specific device).
-  @param device_id                The unique ID for the device that the command is addressed to.
+                                  executing the command (and the command handler may perform any additional validations 
+                                  on its own if needed).
   """
   
   metadata = {}
   
   # Verify that an address has been set
-  if (command_handler_name is None and device_id is None):
-    raise InvalidCommandAddress("No command address has been specified (either a command handler name or a device ID)")
+  if command_handler_name is None:
+    raise InvalidCommandAddress("The command's handler was not specified.")
   
   # Validate the parameter metadata
   if not command_id:
@@ -71,7 +71,7 @@ def build_metadata_dict(command_parameters, command_id, requires_active_session 
     # If the parameter is a select, make sure it provides at least one option and that all provided options are valid
     if parameter['type'] == 'select':
       if 'options' not in parameter or len(parameter['options']) <= 0:
-        raise InvalidCommandMetadata("Options not specified for 'select' command parameter.")
+        raise InvalidCommandMetadata("No options specified for 'select' command parameter.")
       
       for option in parameter['options']:
         if not isinstance(option, list) or len(option) != 2:
@@ -79,15 +79,12 @@ def build_metadata_dict(command_parameters, command_id, requires_active_session 
   
   # Store the meta-data values
   metadata['command_id'] = command_id
+  metadata['destination'] = command_handler_name
+  metadata['parameters'] = command_parameters
   if requires_active_session:
     metadata['requires_active_session'] = True
   else:
     metadata['requires_active_session'] = False
-  if command_handler_name:
-    metadata['system_command_handler'] = command_handler_name
-  else:
-    metadata['device_id'] = device_id
-  metadata['parameters'] = command_parameters
   
   return metadata;
 

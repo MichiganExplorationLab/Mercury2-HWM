@@ -1,5 +1,5 @@
 # To Test:
-# - Resource: Send simply successful command (e.g. system time)
+# - Resource: Send simple successful command (e.g. system time)
 # - Resource: POST command and analyze response (submit error command, so doesn't depend on handler)
 # - Parser: Send command with invalid device ID (no device)
 
@@ -11,6 +11,7 @@ from twisted.test import proto_helpers
 from hwm.core.configuration import *
 from hwm.network.command import parser, command, connection, metadata
 from hwm.network.command.handlers import system as command_handler
+from hwm.network.security import permissions
 
 class TestCommandInfrastructure(unittest.TestCase):
   """ This test suite tests the functionality of the command parser (CommandParser), Command class, and command Resource
@@ -29,14 +30,9 @@ class TestCommandInfrastructure(unittest.TestCase):
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
   
-    # Initialize the command parser with the system command handler
-    self.command_parser = parser.CommandParser(command_handler.SystemCommandHandler())
-  
-    # Create a new Site factory
-    #self.command_factory_test = DummySite(command_connection.CommandResource(self.command_parser))
-    
-    #self.protocol.rawDataReceived('TEST DATA RECEIVED')
-    #self.assertEqual(self.transport.value(), 'test')
+    # Initialize the command parser
+    permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
+    self.command_parser = parser.CommandParser({'system': command_handler.SystemCommandHandler()}, permission_manager)
   
   def tearDown(self):
     # Reset the recorded configuration values
@@ -54,10 +50,10 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Try to create a metadata structure without a location
-    self.assertRaises(metadata.InvalidCommandAddress, metadata.build_metadata_dict, [{}], 'test_command', False, None, None)
+    self.assertRaises(metadata.InvalidCommandAddress, metadata.build_metadata_dict, [{}], 'test_command', None, False)
     
     # Don't specify a command ID
-    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, [{}], '', False, 'system', None)
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, [{}], '', 'system', False)
     
     # Include some parameters with invalid types
     test_parameters = [
@@ -68,7 +64,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       {'title': 'test_argument2',
        'type': 'invalid_type'}
     ]
-    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', 'system', False)
     
     # Specify a parameter without a title (required to represent the parameter in the UI)
     test_parameters = [
@@ -78,7 +74,7 @@ class TestCommandInfrastructure(unittest.TestCase):
        'maxlength': 10},
       {'type': 'boolean'}
     ]
-    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', 'system', False)
     
     # Specify a select with no options
     test_parameters = [
@@ -87,7 +83,7 @@ class TestCommandInfrastructure(unittest.TestCase):
        'required:': False,
        'options': []}
     ]
-    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', 'system', False)
     
     # Specify a select with a malformed option
     test_parameters = [
@@ -99,7 +95,7 @@ class TestCommandInfrastructure(unittest.TestCase):
          ['option_title2', 'value1', 'value2']
        ]}
     ]
-    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', False, 'system', None)
+    self.assertRaises(metadata.InvalidCommandMetadata, metadata.build_metadata_dict, test_parameters, 'test_command', 'system', False)
   
   def test_metadata_types(self):
     """ Tests that the command metadata generation function accepts the types that it should.
@@ -128,7 +124,7 @@ class TestCommandInfrastructure(unittest.TestCase):
        ]}
     ]
     
-    metadata.build_metadata_dict(test_parameters, 'test_command', False, 'system', None)
+    metadata.build_metadata_dict(test_parameters, 'test_command', 'system', False)
   
   def test_parser_unrecognized_command(self):
     """ This test ensures that the command parser correctly rejects unrecognized commands. In addition, it verifies the 
@@ -144,7 +140,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(json_response['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
     
     # Send an unrecognized command the to parser
-    test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"parameters\":{\"test_parameter\":5}}")
+    test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -162,7 +158,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertNotEqual(json_response['result']['error_message'].find('malformed'), -1, 'The parser did not return the correct error response (response did not contain \'malformed\').')
     
     # Send a malformed command the to parser
-    test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}")
+    test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}", 'test_user')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -178,8 +174,62 @@ class TestCommandInfrastructure(unittest.TestCase):
       
       self.assertEqual(json_response['status'], 'error')
     
-    # Parse an invalid command the to parser (doesn't contain an address i.e. a system command handler or device ID)
-    test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}")
+    # Parse an invalid command the to parser (doesn't contain a destination)
+    test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
+    test_deferred.addCallback(parsing_complete)
+    
+    return test_deferred
+  
+  def test_parser_no_permissions(self):
+    """ This test verifies that CommandParser correctly generates an error when a user tries to execute a command 
+    that they don't have permission to execute.
+    """
+    
+    # Define a callback to test the parser results
+    def parsing_complete(command_results):
+      json_response = json.loads(command_results['response'])
+      
+      self.assertEqual(json_response['status'], 'error', 'The parser did not return an error response.')
+      self.assertEqual(json_response['result']['restricted_command'], 'station_time', "The returned error response was incorrect (didn't include the 'restricted_command' field).")
+    
+    # Send a command that the user can't execute
+    test_deferred = self.command_parser.parse_command("{\"command\":\"station_time\",\"destination\":\"system\"}", 'test_user_no_permissions')
+    test_deferred.addCallback(parsing_complete)
+    
+    return test_deferred
+  
+  def test_parser_successful_command(self):
+    """ This test verifies that the command parser allows a user to execute a command (that they have permission to) and
+    returns the correct response.
+    """
+    
+    # Define a callback to test the parser results
+    def parsing_complete(command_results):
+      json_response = json.loads(command_results['response'])
+      self.assertEqual(json_response['status'], 'okay', 'The parser did not return a successful response.')
+      self.assertTrue('timestamp' in json_response['result'], 'The response did not contain a timestamp field.')
+    
+    # Send a time request command to the parser
+    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", "test_user")
+    test_deferred.addCallback(parsing_complete)
+    
+    return test_deferred
+  
+  def test_parser_failed_command(self):
+    """ This test verifies that the command parser correctly returns an error response when a command fails (i.e. raises
+    an exception).
+    """
+    
+    # Define a callback to test the parser results
+    def parsing_complete(command_results):
+      json_response = json.loads(command_results['response'])
+      
+      self.assertEqual(json_response['status'], 'error', 'The parser did not return an error response.')
+      self.assertTrue('submitted_command' in json_response['result'], 'The response did not contain the expected test error field.')
+      self.assertEqual(json_response['result']['submitted_command'], 'test_error', 'The response did not contain the expected test error field value.')
+    
+    # Send a time request command to the parser
+    test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", "test_user")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -190,7 +240,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new malformed command
-    test_command = command.Command(time.time(), "{\"invalid_json\":true,invalid_element}")
+    test_command = command.Command(time.time(), "{\"invalid_json\":true,invalid_element}", 'test_user')
     
     test_deferred = test_command.validate_command()
     
@@ -200,20 +250,19 @@ class TestCommandInfrastructure(unittest.TestCase):
     """ Verifies that the Command class validator correctly rejects a command that does not conform to the JSON schema.
     """
     
-    # Create a new malformed command
-    test_command = command.Command(time.time(), "{\"message\": \"This schema is invalid\"}")
+    # Create a new invalid command
+    test_command = command.Command(time.time(), "{\"message\": \"This schema is invalid\"}", 'test_user')
     
     test_deferred = test_command.validate_command()
     
     return self.assertFailure(test_deferred, command.CommandInvalidSchema)
   
-  def test_command_missing_address(self):
-    """ Verifies that the Command class validator correctly rejects a command that does not provide an address of one 
-    sort.
+  def test_command_missing_destination(self):
+    """ Verifies that the Command class validator correctly rejects a command that does not provide a destination.
     """
     
-    # Create a new malformed command
-    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}")
+    # Create a new command without a destination
+    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
     
     test_deferred = test_command.validate_command()
     
@@ -225,25 +274,24 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a valid command
-    test_command = command.Command(None, time.time(), "{\"command\":\"test_command\",\"system_command_handler\":\"system\",\"parameters\":{\"test_parameter\":5}}")
+    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
     
     # Define a callback to verify the Command after validation is complete
     def validation_complete(validation_results):
       # Verify that the command attributes have correctly been saved in the Command attributes
       attribute_error_message = "One of the Command convenience attributes was incorrect."
       self.assertEqual(test_command.command, "test_command", attribute_error_message)
-      self.assertEqual(test_command.device_id, None, attribute_error_message)
+      self.assertEqual(test_command.destination, "system", attribute_error_message)
       self.assertEqual(test_command.parameters['test_parameter'], 5, attribute_error_message)
       
       # Build and test the command response
       response_error_message = "The generated command response was invalid."
       test_command_response = test_command.build_command_response(True, {"test_result": 10})
-      self.assertEqual(test_command_response['request'], None, response_error_message)
       
       json_response = json.loads(test_command_response['response'])
       self.assertEqual(json_response['status'], 'okay', response_error_message)
+      self.assertEqual(json_response['destination'], 'system', response_error_message)
       self.assertEqual(json_response['result']['test_result'], 10, response_error_message)
-      self.assertNot('device_id' in json_response)
     
     test_deferred = test_command.validate_command()
     test_deferred.addCallback(validation_complete)

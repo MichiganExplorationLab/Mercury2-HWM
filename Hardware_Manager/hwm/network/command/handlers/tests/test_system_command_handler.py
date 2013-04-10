@@ -6,11 +6,14 @@ from twisted.test import proto_helpers
 from hwm.core.configuration import *
 from hwm.network.command import parser, command, connection
 from hwm.network.command.handlers import system as command_handler
+from hwm.network.security import permissions
 
 class TestSystemCommandHandler(unittest.TestCase):
   """ This test suite is responsible for testing the functionality of the system command handler (handles general system
-  wide commands). Typically commands will be simulated by either invoking the parser or the command Resource. However,
-  some commands may be tested by directly accessing the command functions in the handler.
+  wide commands).
+  
+  @note Typically, commands will be simulated by either invoking the command parser or Resource. However, they may also 
+        be tested by directly accessing the command function in the handler.
   """
   
   def setUp(self):
@@ -25,7 +28,8 @@ class TestSystemCommandHandler(unittest.TestCase):
     logging.disable(logging.CRITICAL)
   
     # Initialize the command parser with the system command handler
-    self.command_parser = parser.CommandParser(command_handler.SystemCommandHandler())
+    permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
+    self.command_parser = parser.CommandParser({'system': command_handler.SystemCommandHandler()}, permission_manager)
   
   def tearDown(self):
     # Reset the recorded configuration values
@@ -47,7 +51,7 @@ class TestSystemCommandHandler(unittest.TestCase):
       self.assertTrue('timestamp' in json_response['result'], 'The response did not contain a timestamp field.')
     
     # Send a time request to the parser
-    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\"}")
+    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", "test_user")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred

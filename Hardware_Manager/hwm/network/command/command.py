@@ -15,13 +15,14 @@ class Command:
   This default Command type represents JSON formatted commands.
   """
   
-  def __init__(self, time_received, raw_command, active_session = None):
+  def __init__(self, time_received, raw_command, user_id, active_session = None):
     """ Constructs a new Command object.
     
     This method sets up a new command based on the raw command received.
     
     @param time_received   The time (UNIX timestamp) when the command was received.
     @param raw_command     A JSON string representing the command.
+    @param user_id         The ID of the user executing the command.
     @param active_session  A reference to the active Session for the connected user, if any.
     """
     
@@ -29,12 +30,13 @@ class Command:
     self.time_received = time_received
     self.command_raw = raw_command
     self.command_json = None
+    self.user_id = user_id
     self.valid = False
     self.session = active_session
     
     # Convenience attributes set after validate_command
     self.command = None
-    self.device_id = None
+    self.destination = None
     self.parameters = {}
   
   def validate_command(self):
@@ -44,8 +46,8 @@ class Command:
     converts and saves it into something more useful than a string (a JSON object).
     
     @note This method should be called before any actions are performed on the command (i.e. right after initialization).
-    @note This method sets several convenience attributes of the Command class (such as the device and command id's) if 
-          the command conforms to the schema.
+    @note This method sets several convenience attributes of the Command class (such as the destination and command 
+          id's) if the command conforms to the schema.
     
     @return Returns a deferred that will be fired with the results of the command validation. If the command is invalid,
             a deferred is pre-fired (with a failure) and returned with information about the failure.
@@ -68,15 +70,10 @@ class Command:
           "id": "command",
           "required": True
         },
-        "system_command_handler": {
+        "destination": {
           "type": "string",
-          "id": "system_command_handler",
-          "required": False
-        },
-        "device_id": {
-          "type": "string",
-          "id": "device_id",
-          "required": False
+          "id": "destination",
+          "required": True
         },
         "parameters": {
           "type": "object",
@@ -90,16 +87,12 @@ class Command:
     command_validator = Draft3Validator(command_schema)
     try:
       command_validator.validate(self.command_json)
-      
-      # Make sure an address was set
-      if 'system_command_handler' not in self.command_json and 'device_id' not in self.command_json:
-        return defer.fail(CommandInvalidSchema("The submitted command did not specify an address (either a command handler or device ID): "+self.command_json['command']))
-      
       self.valid = True
     except:
       # Invalid command schema
       return defer.fail(CommandInvalidSchema("The submitted command did not conform to the command schema for command type: "+self.__class__.__name__))
     
+    # Populate some attributes to make the command easier to work with
     self._populate_command_attributes()
     
     return defer.succeed(True)
@@ -127,8 +120,8 @@ class Command:
     else:
       json_response['status'] = 'error'
     
-    if self.device_id:
-      json_response['device_id'] = self.device_id
+    if self.destination:
+      json_response['destination'] = self.destination
     
     json_response['result'] = command_results
     
@@ -150,7 +143,7 @@ class Command:
     
     if self.valid and (self.command_json is not None):
       self.command = self.command_json['command']
-      self.device_id = self.command_json['device_id'] if ('device_id' in self.command_json) else None
+      self.destination = self.command_json['destination']
       self.parameters = self.command_json['parameters'] if ('parameters' in self.command_json) else None
       
       return True

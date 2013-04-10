@@ -6,11 +6,11 @@
     "permitted_commands": [
       {
         "command": "station_time",
-        "system_command_handler": "system"
+        "destination": "system"
       },
       {
         "command": "test_command",
-        "device_id": "test_device"
+        "destination": "test_device"
       }
     ]
   },
@@ -21,7 +21,7 @@
     "permitted_commands": [
       {
         "command": "station_time",
-        "system_command_handler": "system"
+        "destination": "system"
       }
     ]
   },
@@ -32,8 +32,30 @@
     "permitted_commands": [
       {
         "command": "station_time",
-        "system_command_handler": "system"
+        "destination": "system"
       }
+    ]
+  },
+  {
+    "generated_at": 1365562608,
+    "user_id": "test_user",
+    "ignore_session_protections": false,
+    "permitted_commands": [
+      {
+        "command": "station_time",
+        "destination": "system"
+      },
+      {
+        "command": "test_error",
+        "destination": "system"
+      }
+    ]
+  },
+  {
+    "generated_at": 1365562608,
+    "user_id": "test_user_no_permissions",
+    "ignore_session_protections": false,
+    "permitted_commands": [
     ]
   }
 ]

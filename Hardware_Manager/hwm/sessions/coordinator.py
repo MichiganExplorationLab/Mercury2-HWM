@@ -103,7 +103,9 @@ class SessionCoordinator:
     return schedule_update_deferred
   
   def _error_updating_schedule(self, failure):
-    """Handles failed schedule updates.
+    """Handles failed schedule updates. 
+    
+    This is needed to keep the program from terminating if a schedule update fails.
     
     @param failure  The Failure object wrapping the generated exception.
     """

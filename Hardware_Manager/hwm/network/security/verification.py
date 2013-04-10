@@ -22,7 +22,8 @@ def authentication_callback(connection, x509, errnum, errdepth, ok):
   
   # Simply verify that the SSL validation worked
   if not ok:
-    logging.error("Authentication Error - A user's SSL certificates could not be authenticated: "+x509.get_subject().commonName.decode())
+    logging.error("Authentication Error - A user's SSL certificates could not be authenticated: "+
+                  x509.get_subject().commonName.decode())
     return False
   
   return True
@@ -30,12 +31,17 @@ def authentication_callback(connection, x509, errnum, errdepth, ok):
 def create_ssl_context_factory():
   """ Creates and returns a new ssl.DefaultOpenSSLContextFactory for securing various station connections.
   
+  @note This method uses the public certificate and private key specified in the configuration. These files identify the
+        hwm instance and are generated and signed by the user interface using the master certificate authority.
+  
   @return Returns an SSL context factory for use by SSL listeners.
   """
   
   # Create the SSL context
-  server_context_factory = ssl.DefaultOpenSSLContextFactory(Configuration.get('ssl-private-key-location'), Configuration.get('ssl-public-cert-location'))
+  server_context_factory = ssl.DefaultOpenSSLContextFactory(Configuration.get('ssl-private-key-location'), 
+                                                            Configuration.get('ssl-public-cert-location'))
   server_context = server_context_factory.getContext()
   server_context.set_verify(SSL.VERIFY_PEER | SSL.VERIFY_FAIL_IF_NO_PEER_CERT, authentication_callback)
+  server_context.load_verify_locations(Configuration.get('ssl-ca-cert-location'))
   
   return server_context_factory

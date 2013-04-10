@@ -6,11 +6,11 @@
     "permitted_commands": [
       {
         "command": "station_time",
-        "system_command_handler": "system"
+        "destination": "system"
       },
       {
         "command": "test_command",
-        "device_id": "test_device"
+        "destination": "test_device"
       }
     ]
   },
@@ -21,7 +21,7 @@
     "permitted_commands": [
       {
         "command": "station_time",
-        "system_command_handler": "system"
+        "destination": "system"
       }
     ]
   }

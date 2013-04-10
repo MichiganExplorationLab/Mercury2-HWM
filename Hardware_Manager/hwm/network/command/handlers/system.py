@@ -5,6 +5,7 @@ Contains a class that handles various system commands received by the ground sta
 # Import required modules
 import time
 import hwm.network.command.metadata
+from hwm.network.command import command
 
 class SystemCommandHandler:
   """ A command handler that responds to system commands.
@@ -19,9 +20,6 @@ class SystemCommandHandler:
   the session. For device commands that require an active session, the command parser will ensure the command only gets
   called if the user is using a pipeline that contains that hardware device.
   
-  Non-device command handler classes must start with the capitalized module name and end with "CommandHandler". For
-  example, "SystemCommandHandler" in the "system" module. This is required for the command addressing system to work.
-  
   @note The rationale behind defining the command meta-data at this level is so that command handlers (system or device)
         can be developed and installed without requiring any changes to the user interface (unless you want custom 
         forms). 
@@ -34,12 +32,12 @@ class SystemCommandHandler:
     # Define the command handler's attributes
     self.name = "system"
   
-  def command_station_time(self, command):
+  def command_station_time(self, active_command):
     """ Returns the current ground station time.
     
     @note The timestamp is returned in the 'timestamp' field of the response 'result' dictionary.
     
-    @param command         The Command object associated with the executing command. Contains the command parameters.
+    @param active_command  The Command object associated with the executing command. Contains the command parameters.
     @return Returns the current time on the computer that is running the hardware manager.
     """
     
@@ -54,4 +52,15 @@ class SystemCommandHandler:
     # The station_command does not take any parameters
     command_parameters = [{}]
     
-    return build_metadata_dict(command_parameters, 'station_time', False, self.name, None)
+    return build_metadata_dict(command_parameters, 'station_time', self.name, False)
+  
+  def command_test_error(self, active_command):
+    """ Generates a simple command error for testing purposes.
+    
+    @throw Throws CommandError for testing.
+    
+    @param active_command  The command object associated with the executing command.
+    """
+    
+    # raise the exception.
+    raise command.CommandError("Command Error Test.", {"submitted_command": active_command.command})
