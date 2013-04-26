@@ -7,7 +7,8 @@ it to the user interface. The user interface will use the metadata to build an a
 easily execute the command.
 """
 
-def build_metadata_dict(command_parameters, command_id, command_handler_name, requires_active_session = True):
+def build_metadata_dict(command_parameters, command_id, command_handler_name, requires_active_session = True,
+                        dangerous = True, schedulable = False, use_as_initial_value = False):
   """ Builds the command meta-data structure for a specific command.
   
   Command handlers use this function to build the command meta-data structures for the commands they service. For the 
@@ -51,6 +52,17 @@ def build_metadata_dict(command_parameters, command_id, command_handler_name, re
                                   the user has an active session with a pipeline that uses the hardware device before
                                   executing the command (and the command handler may perform any additional validations 
                                   on its own if needed).
+  @param dangerous                If the command is dangerous, it could possibly dangerously modify the ground station 
+                                  state (e.g. turn of devices, delete sessions, etc.). This flag will cause the user
+                                  interface to restrict access to the command by default (which can be overridden if
+                                  desired).
+  @param schedulable              Indicates that the command can be scheduled using the command scheduling service (if 
+                                  the active pipeline supports it). If it can, the user interface will use this to build
+                                  a form to schedule this command during the reservation process.
+  @param use_as_initial_value     If set, the user interface will use this command when building the device or system's
+                                  initial state configuration forms during the reservation process. This can be used, 
+                                  for example, to set the initial frequency that a radio should be tunned to.
+  @return Returns a dictionary containing the command meta-data.
   """
   
   metadata = {}
@@ -81,10 +93,10 @@ def build_metadata_dict(command_parameters, command_id, command_handler_name, re
   metadata['command_id'] = command_id
   metadata['destination'] = command_handler_name
   metadata['parameters'] = command_parameters
-  if requires_active_session:
-    metadata['requires_active_session'] = True
-  else:
-    metadata['requires_active_session'] = False
+  metadata['requires_active_session'] = True if requires_active_session else False
+  metadata['dangerous'] = True if dangerous else False
+  metadata['schedulable'] = True if schedulable else False
+  metadata['use_as_initial_value'] = True if use_as_initial_value else False
   
   return metadata;
 

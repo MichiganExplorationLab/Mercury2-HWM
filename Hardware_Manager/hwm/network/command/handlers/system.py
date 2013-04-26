@@ -52,7 +52,8 @@ class SystemCommandHandler:
     # The station_command does not take any parameters
     command_parameters = [{}]
     
-    return build_metadata_dict(command_parameters, 'station_time', self.name, False)
+    return build_metadata_dict(command_parameters, 'station_time', self.name, requires_active_session = False,
+                               dangerous = False)
   
   def command_test_error(self, active_command):
     """ Generates a simple command error for testing purposes.
