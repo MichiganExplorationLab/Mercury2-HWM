@@ -5,9 +5,4 @@
 ## the documentation for a detailed description of the hardware configuration format.
 
 # Define the available hardware devices
-hardware:
-  - device_id: "test_device"
-    driver: "test_driver"
-    settings:
-      - address: "test"
-
+devices: []

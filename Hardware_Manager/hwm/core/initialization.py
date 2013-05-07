@@ -136,6 +136,7 @@ def _setup_configuration():
   
   # Read the configuration files
   Configuration.read_configuration(Configuration.data_directory+'/config/configuration.yml')
+  Configuration.read_configuration(Configuration.data_directory+'/config/devices.yml')
   Configuration.read_configuration(Configuration.data_directory+'/config/pipelines.yml')
   
   # Verify that all required configuration options are set

@@ -219,7 +219,8 @@ class Config:
       'offline-mode', 'network-command-port', 'mercury2-ui-location', # General networking
       'ssl-private-key-location', 'ssl-public-cert-location', 'ssl-ca-cert-location', # Security
       'schedule-update-period', 'schedule-update-timeout', 'schedule-location-local', 'schedule-location-network', # Schedule
-      'permissions-update-period', 'permissions-update-timeout', 'permissions-location-local', 'permissions-location-network' # Permissions
+      'permissions-update-period', 'permissions-update-timeout', 'permissions-location-local', 'permissions-location-network', # Permissions
+      'devices', 'pipelines' # Devices & Pipelines
     ]
     
     # Validate the options

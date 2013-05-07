@@ -53,7 +53,7 @@ class TestPipelineManager(unittest.TestCase):
     temp_pipeline_manager = manager.PipelineManager()
     
     # Verify the re-initialization error
-    self.assertRaises(manager.PipelinesAllReadyInitialized, temp_pipeline_manager._initialize_pipelines)
+    self.assertRaises(manager.PipelinesAlreadyInitialized, temp_pipeline_manager._initialize_pipelines)
   
   def test_pipeline_invalid_config(self):
     """Tests that the pipeline manager correctly rejects an invalid pipeline configuration (as validated by 

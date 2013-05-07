@@ -70,8 +70,8 @@ class PipelineManager:
     
     # Verify that no pipelines have been initialized yet
     if len(self.pipelines) > 0:
-      logging.error("The PipelineManager has all ready initialized the pipelines.")
-      raise PipelinesAllReadyInitialized
+      logging.error("The PipelineManager has already initialized the pipelines.")
+      raise PipelinesAlreadyInitialized
     
     # Load the pipeline configuration
     try:
@@ -94,7 +94,7 @@ class PipelineManager:
 # Define PipelineManager exceptions
 class PipelinesNotDefined(Exception):
   pass
-class PipelinesAllReadyInitialized(Exception):
+class PipelinesAlreadyInitialized(Exception):
   pass
 class PipelineNotFound(Exception):
   pass
