@@ -44,7 +44,7 @@ class TestCoordinator(unittest.TestCase):
     test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
     
     # Initialize the session coordinator instance
-    session_coordinator = coordinator.SessionCoordinator(test_schedule, test_pipelines)
+    session_coordinator = coordinator.SessionCoordinator(test_schedule, None, test_pipelines)
     
     # Define an inline callback to resume execution after the schedule has been updates
     def continue_test(loaded_schedule):
@@ -74,7 +74,7 @@ class TestCoordinator(unittest.TestCase):
     test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
     
     # Initialize the session coordinator
-    session_coordinator = coordinator.SessionCoordinator(test_schedule, test_pipelines)
+    session_coordinator = coordinator.SessionCoordinator(test_schedule, None, test_pipelines)
     
     # Define an inline callback to resume execution after the schedule has been loaded
     def continue_test(loaded_schedule):

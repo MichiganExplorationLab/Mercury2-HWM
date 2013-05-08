@@ -5,18 +5,21 @@ This module contains the methods responsible for initializing the Hardware Manag
 application state and starting the reactor loop.
 """
 
-# Import the required modules
+# Import the required system modules
 import logging, sys, shutil, os
 from OpenSSL import SSL
 from twisted.internet import reactor, ssl
 from twisted.internet.task import LoopingCall
 from twisted.web.server import Site
 from pkg_resources import Requirement, resource_filename
-from configuration import Configuration
+
+# HWM modules
 from hwm.core import errors
-from hwm.sessions import coordinator, schedule
-from hwm.hardware.pipelines import manager
-from hwm.network.command import parser as command_parser_system, connection as command_connection
+from hwm.core.configuration import Configuration
+from hwm.sessions import coordinator, schedule as schedule
+from hwm.hardware.devices import manager as devices
+from hwm.hardware.pipelines import manager as pipelines
+from hwm.network.command import parser as command_parser_mod, connection as command_connection
 from hwm.network.command.handlers import system as system_command_handler
 from hwm.network.security import verification, permissions
 
@@ -49,14 +52,17 @@ def initialize():
   else:
     schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-network'))
   
+  # Initialize the device manager
+  device_manager = devices.DeviceManager()
+  
   # Initialize the pipeline manager
-  pipeline_manager = manager.PipelineManager()
+  pipeline_manager = pipelines.PipelineManager()
   
   # Initialize the session coordinator
-  session_coordinator = coordinator.SessionCoordinator(schedule_manager, pipeline_manager)
+  session_coordinator = coordinator.SessionCoordinator(schedule_manager, device_manager, pipeline_manager)
   
-  # Initialize the command and telemetry network listeners
-  _setup_network_listeners();
+  # Initialize the required network listeners
+  _setup_network_listeners(device_manager);
   
   # Set up the session coordinator looping call
   coordination_loop = LoopingCall(session_coordinator.coordinate)
@@ -102,7 +108,7 @@ def _verify_data_files():
     if Configuration.verbose_startup:
       print "- Data directory found at: "+Configuration.data_directory
 
-def _setup_network_listeners():
+def _setup_network_listeners(device_manager):
   """ Initializes the various network listeners used by the hardware manager.
   
   This method initializes the network listeners required to accept ground station commands and relay ground station 
@@ -118,7 +124,7 @@ def _setup_network_listeners():
   else:
     permission_manager = permissions.PermissionManager(Configuration.get('permissions-location-network'),
                                                        Configuration.get('permissions-update-period'))
-  command_parser = command_parser_system.CommandParser(system_command_handlers, permission_manager)
+  command_parser = command_parser_mod.CommandParser(system_command_handlers, permission_manager)
   
   # Create an SSL context for the server
   server_context_factory = verification.create_ssl_context_factory()

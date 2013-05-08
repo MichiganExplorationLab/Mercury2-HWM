@@ -7,7 +7,7 @@ This module contains a class that is used to coordinate the various sessions.
 # Import required modules
 import logging, time
 from hwm.core import configuration
-from hwm.hardware.pipelines import pipeline, manager
+from hwm.hardware.pipelines import pipeline, manager as pipelines
 from hwm.sessions import session, schedule
 
 class SessionCoordinator:
@@ -19,15 +19,17 @@ class SessionCoordinator:
   creating new sessions as needed.
   """
   
-  def __init__(self, reservation_schedule, pipeline_manager):
+  def __init__(self, reservation_schedule, device_manager, pipeline_manager):
     """Sets up the session coordinator instance.
     
-    @param reservation_schedule  A reference to the schedule to execute.
-    @param pipeline_manager      A reference to the pipeline manager object.
+    @param reservation_schedule  A reference to the schedule to coordinate.
+    @param device_manager        A reference to a device manager that has been initialized with the available hardware. 
+    @param pipeline_manager      A reference to a pipeline manager instance.
     """
     
     # Set the resource references
     self.schedule = reservation_schedule
+    self.devices = device_manager
     self.pipelines = pipeline_manager
     self.config = configuration.Configuration
     
@@ -48,7 +50,7 @@ class SessionCoordinator:
     # Create new session if needed
     self._check_for_new_reservations()
     
-    print 'test'
+    print 'COORDINATE'
   
   def _check_for_new_reservations(self):
     """This method checks for newly active reservations in the schedule.
@@ -68,7 +70,7 @@ class SessionCoordinator:
         # Load the reservation's pipeline
         try:
           requested_pipeline = self.pipelines.get_pipeline(active_reservation['pipeline_id'])
-        except manager.PipelineNotFound:
+        except pipelines.PipelineNotFound:
           logging.error("The pipeline requested for reservation '"+active_reservation['reservation_id']+"' could not "+
                         "be found. Requested pipeline: "+active_reservation['pipeline_id'])
           continue

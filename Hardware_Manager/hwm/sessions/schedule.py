@@ -99,6 +99,12 @@ class ScheduleManager:
     @retun Returns a python object representing the new schedule.
     """
     
+    # Define a schema that species the format of the YAML pipeline configuration. Note that because YAML is a superset
+    # of JSON, the JSON draft 3 schema validator 
+    pipeline_schema = {
+    
+    }
+    
     # Define the schema that determines what a valid schedule looks like
     schedule_schema = {
       "type": "object",
