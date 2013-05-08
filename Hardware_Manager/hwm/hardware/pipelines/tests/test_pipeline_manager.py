@@ -24,8 +24,7 @@ class TestPipelineManager(unittest.TestCase):
   
   def tearDown(self):
     # Reset the recorded configuration values
-    self.config.options = {}
-    self.config.user_options = {}
+    self._reset_config_entries()
     
     # Reset the configuration reference
     self.config = None
@@ -34,36 +33,31 @@ class TestPipelineManager(unittest.TestCase):
     """Verifies that the pipeline manager raises exceptions as appropriate during initialization.
     """
     
-    # Attempt to initialize the pipeline manager without specifying a config file
+    # Attempt to initialize the pipeline manager without specifying a config file (no "pipelines" property set)
     self.assertRaises(manager.PipelinesNotDefined, manager.PipelineManager)
     
     # Load an empty pipeline configuration and ensure the correct error is raised
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_empty.yml')
-    self.assertRaises(manager.PipelinesNotDefined, manager.PipelineManager)
-  
-  def test_reinitialization_errors(self):
-    """Tests that the pipeline manager raises the expected exceptions if the pipeline initialization function is called 
-    a second time.
-    """
+    self.assertRaises(manager.PipelineConfigInvalid, manager.PipelineManager)
     
-    # Load a valid pipeline configuration
+    # Make sure re-initialization fails
+    self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
-    
-    # Initialize the pipeline manager
-    temp_pipeline_manager = manager.PipelineManager()
-    
-    # Verify the re-initialization error
-    self.assertRaises(manager.PipelinesAlreadyInitialized, temp_pipeline_manager._initialize_pipelines)
+    new_pipeline_manager = manager.PipelineManager()
+    self.assertRaises(manager.PipelinesAlreadyInitialized, new_pipeline_manager._initialize_pipelines)
   
   def test_pipeline_invalid_config(self):
-    """Tests that the pipeline manager correctly rejects an invalid pipeline configuration (as validated by 
+    """Tests that the pipeline manager correctly rejects some invalid pipeline configurations (as validated by 
     Pipeline._validate_configuration())."""
     
-    # Load the invalid pipeline configuration
+    # Load a configuration that contains a pipeline that doesn't specify any hardware
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid.yml')
+    self.assertRaises(manager.PipelineConfigInvalid, manager.PipelineManager)
     
-    # Verify the correct exception is thrown when trying to initialize the pipelines
-    self.assertRaises(pipeline.PipelineInvalidConfiguration, manager.PipelineManager)
+    # Load a configuration that contains a pipeline that specifies multiple output devices
+    self._reset_config_entries()
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid_2.yml')
+    self.assertRaises(manager.PipelineConfigInvalid, manager.PipelineManager)
   
   def test_pipeline_get(self):
     """Tests that the pipeline manager can correctly return a specified pipeline.
@@ -79,4 +73,10 @@ class TestPipelineManager(unittest.TestCase):
     self.assertRaises(manager.PipelineNotFound, temp_pipeline_manager.get_pipeline, 'missing_pipeline')
     
     # Try to load a valid pipeline
-    temp_pipeline = temp_pipeline_manager.get_pipeline('test_pipeline')
+    temp_pipeline = temp_pipeline_manager.get_pipeline('test_pipeline2')
+    self.assertEquals(temp_pipeline.id, 'test_pipeline2')
+  
+  def _reset_config_entries(self):
+    # Reset the recorded configuration entries
+    self.config.options = {}
+    self.config.user_options = {}

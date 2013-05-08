@@ -6,7 +6,7 @@ each hardware device and provides an interface that the rest of the application 
 """
 
 # Import required modules
-import logging
+import logging, jsonschema
 from hwm.core import configuration
 
 class DeviceManager:
@@ -17,8 +17,7 @@ class DeviceManager:
   initialized, the device manager initializes the appropriate drivers for the hardware devices specified in the 
   configuration.
   
-  @note Like the pipeline manager, all device usage locking is done by the device driver. See the driver base class for
-        more.
+  @note All device usage locking is done by the device driver. See the driver base class for more.
   """
   
   def __init__(self):
@@ -27,6 +26,9 @@ class DeviceManager:
     This constructor initializes the device manager and creates the appropriate driver class instances for all
     configured hardware devices. 
     
+    @note This class relies on configuration loaded into the configuration manager during the startup process.
+          Therefore, if this class is initialized before the appropriate configuration files have been read, an 
+          exception will be generated.
     @throw This constructor may pass exceptions raised during the device driver initialization process
            (see _initialize_devices).
     """
@@ -68,8 +70,8 @@ class DeviceManager:
           "test_driver" package.
     
     @throw Throws DevicesAlreadyInitialized if drivers have already been loaded into the device manager.
-    @throw Throws InvalidDeviceConfig in the event that device configuration specified in self.config is invalid (wrong
-           format).
+    @throw Throws DeviceConfigInvalid in the event that device configuration specified in self.config is invalid (wrong
+           format). This may be passed on from _validate_devices().
     @throw Throws DriverNotFound in the event that a driver class can't be located.
     @throw Throws DriverInitError in the event that a driver class can't be initialized (i.e. its constructor throws an
            exception).
@@ -85,22 +87,17 @@ class DeviceManager:
       device_settings = self.config.get('devices')
     except configuration.OptionNotFound:
       logging.error("Device configuration missing, the device manager couldn't be initialized.")
-      raise InvalidDeviceConfig("Device configuration not found in any loaded configuration files.")
+      raise DeviceConfigInvalid("Device configuration not found in any loaded configuration files.")
     
-    # Make sure at least one device has been defined
-    if len(device_settings) == 0:
-      logging.error("Can't initialize the device manager because no devices have been configured.")
-      raise InvalidDeviceConfig("No devices configured (none found in any loaded configuration files).")
+    # Validate the device configuration
+    self._validate_devices(device_settings)
     
     # Loop through the device configuration and initialize the driver for each device
     for device_config in device_settings:
-      # Perform initial validations on the device configuration (driver class will perform more if needed)
-      if ('device_id' not in device_config) or ('driver' not in device_config):
-        logging.error("A device's configuration was invalid (missing required fields).")
-        raise InvalidDeviceConfig("A device's configuration was invalid (missing required fields).")
-      if (device_config['device_id'] in self.devices):
+      # Check for duplicates
+      if (device_config['id'] in self.devices):
         logging.error("Duplicate devices were found in the device configuration.")
-        raise InvalidDeviceConfig("Could not initialize the '"+device_config['device_id']+"' device because it is a "+
+        raise DeviceConfigInvalid("Could not initialize the '"+device_config['id']+"' device because it is a "+
               "duplicate of a previously initialized device.")
       
       # Try to import the device's driver package
@@ -110,8 +107,8 @@ class DeviceManager:
         driver_module = getattr(_drivers, package_name)
       except ImportError:
         logging.error("The package or module '"+package_name+"' could not be loaded for device '"+
-                      device_config['device_id']+"'.")
-        raise DriverNotFound("The package or module for the device '"+device_config['device_id']+"' could not be "+
+                      device_config['id']+"'.")
+        raise DriverNotFound("The package or module for the device '"+device_config['id']+"' could not be "+
                              "located.")
       
       # Attempt to initialize the driver
@@ -119,19 +116,70 @@ class DeviceManager:
         logging.error("The driver class '"+device_config['driver']+"' could not be located in the '"+
                       driver_module+"' module.")
         raise DriverNotFound("The driver class '"+device_config['driver']+"' could not be located for the '"+
-                             device_config['device_id']+"' device.")
+                             device_config['id']+"' device.")
       
       device_driver_class = getattr(driver_module, device_config['driver'])
       try:
-        self.devices[device_config['device_id']] = device_driver_class(device_config)
+        self.devices[device_config['id']] = device_driver_class(device_config)
       except Exception, driver_exception:
-        logging.error("An error occured initializing the driver for device '"+device_config['device_id']+"': "+
+        logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
                       str(driver_exception))
-        raise DriverInitError("Failed to initialize the driver for the '"+device_config['device_id']+"' device. "+
+        raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
                               "Received error message: "+str(driver_exception))
-
+  
+  def _validate_devices(self, device_configuration):
+    """ Validates the provided device configuration.
+    
+    This method verifies that the provided device configuration conforms to the defined schema.
+    
+    @note This method doesn't validate any of the device settings. It is up to the device drivers to do this during
+          initialization.
+    
+    @throw Throws DeviceConfigInvalid in the event that the device configuration is invalid.
+    
+    @param device_configuration  An array containing the available device configuration.
+    """
+    
+    # Define a schema that species the format of the YAML pipeline configuration. Note that, because YAML is a superset
+    # of JSON, the JSON draft 3 schema validator can validate most simple YAML files.
+    device_schema = {
+      "type": "array",
+      "$schema": "http://json-schema.org/draft-03/schema",
+      "required": True,
+      "minItems": 1,
+      "additionalItems": False,
+      "items": {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+          "id": {
+            "type": "string",
+            "required": True
+          },
+          "driver": {
+            "type": "string",
+            "required": True
+          },
+          "settings": {
+            "type": "object",
+            "required": False,
+            "additionalProperties": True
+          }
+        }
+      }
+    }
+    
+    # Validate the JSON schema
+    config_validator = jsonschema.Draft3Validator(device_schema)
+    try:
+      config_validator.validate(device_configuration)
+    except jsonschema.ValidationError:
+      # Invalid device configuration
+      logging.error("Failed to initialize the device manager because the device configuration was invalid.")
+      raise DeviceConfigInvalid("The loaded device configuration does not conform to the defined schema.")
+  
 # Define schedule related exceptions
-class InvalidDeviceConfig(Exception):
+class DeviceConfigInvalid(Exception):
   pass
 class DriverNotFound(Exception):
   pass

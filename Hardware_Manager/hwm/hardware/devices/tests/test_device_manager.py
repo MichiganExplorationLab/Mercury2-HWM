@@ -34,17 +34,17 @@ class TestDeviceManager(unittest.TestCase):
     """
     
     # Attempt to initialize the device manager without loading any device configuration
-    self.assertRaises(manager.InvalidDeviceConfig, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
     
     # Load an empty device configuration and ensure the correct error is raised
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_empty.yml')
-    self.assertRaises(manager.InvalidDeviceConfig, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
     
     # Try to load a device configuration that contains a formatting error
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_invalid_format.yml')
-    self.assertRaises(manager.InvalidDeviceConfig, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
     
     # Load a device configuration that contains a non-existent driver
     self._reset_config_entries()
@@ -54,7 +54,7 @@ class TestDeviceManager(unittest.TestCase):
     # Load a device configuration that contains duplicate entries
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_duplicate.yml')
-    self.assertRaises(manager.InvalidDeviceConfig, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
   
   def test_device_get(self):
     """ Tests that the device manager correctly returns a driver after being initialized with a valid device

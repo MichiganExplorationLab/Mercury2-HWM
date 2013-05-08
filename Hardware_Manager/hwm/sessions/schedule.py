@@ -5,10 +5,9 @@ This module contains a class that is used to fetch, maintain, and provide access
 """
 
 # Import required modules
+import logging, json, jsonschema, threading, urllib2, time
 from hwm.core.configuration import Configuration
 from twisted.internet import threads
-from jsonschema import Draft3Validator
-import logging, json, threading, urllib2, time
 
 class ScheduleManager:
   """Represents a reservation access schedule.
@@ -99,12 +98,6 @@ class ScheduleManager:
     @retun Returns a python object representing the new schedule.
     """
     
-    # Define a schema that species the format of the YAML pipeline configuration. Note that because YAML is a superset
-    # of JSON, the JSON draft 3 schema validator 
-    pipeline_schema = {
-    
-    }
-    
     # Define the schema that determines what a valid schedule looks like
     schedule_schema = {
       "type": "object",
@@ -172,10 +165,10 @@ class ScheduleManager:
     }
     
     # Validate the JSON schema
-    schema_validator = Draft3Validator(schedule_schema)
+    schema_validator = jsonschema.Draft3Validator(schedule_schema)
     try:
       schema_validator.validate(schedule_load_result)
-    except:
+    except jsonschema.ValidationError:
       # Invalid schedule JSON
       logging.error("Provided schedule did not meet JSON schema requirements: "+self.schedule_location)
       raise ScheduleError('Local schedule file did not contain a valid schedule (invalid schema).')

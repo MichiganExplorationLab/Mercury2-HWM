@@ -3,8 +3,7 @@ Contains a class used to store the state of submitted ground station commands.
 """
 
 # Import the required modules
-import time, json
-from jsonschema import Draft3Validator
+import time, json, jsonschema
 from twisted.internet import defer 
 
 class Command:
@@ -64,6 +63,7 @@ class Command:
       "type": "object",
       "$schema": "http://json-schema.org/draft-03/schema",
       "required": True,
+      "additionalProperties": False,
       "properties": {
         "command": {
           "type": "string",
@@ -84,11 +84,11 @@ class Command:
     }
     
     # Validate the JSON schema
-    command_validator = Draft3Validator(command_schema)
+    command_validator = jsonschema.Draft3Validator(command_schema)
     try:
       command_validator.validate(self.command_json)
       self.valid = True
-    except:
+    except jsonschema.ValidationError:
       # Invalid command schema
       return defer.fail(CommandInvalidSchema("The submitted command did not conform to the command schema for command type: "+self.__class__.__name__))
     
@@ -158,7 +158,7 @@ class CommandInvalidSchema(Exception):
 class CommandMalformed(Exception):
   pass
 class CommandError(Exception):
-  """A general purpose exception thrown in the event that a command fails. It allows the command handler to embed
+  """ A general purpose exception thrown in the event that a command fails. It allows the command handler to embed
   additional metadata with the failure in the form of a dictionary passed to the exception."""
   
   def __init__(self, schedule_error_message, error_data = None):

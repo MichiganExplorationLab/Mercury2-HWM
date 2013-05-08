@@ -1,11 +1,15 @@
-# This configuration file contains a valid pipeline configuration and is used to test the pipeline manager
+# This configuration file contains a invalid pipeline configuration and is used to test the pipeline manager
 
 pipelines:
   - id: "test_pipeline"
-    mode: "transmit"
+    mode: "transceive"
     hardware:
       - device_id: "test_device"
         pipeline_input: true
+        pipeline_output: true
+      - device_id: "test_device2"
+        # Multiple output devices
+        pipeline_ouput: true
     setup_commands:
       - command: "test_command"
         destination: "system"

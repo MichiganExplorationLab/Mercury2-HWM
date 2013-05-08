@@ -2,7 +2,7 @@
 # "Test_Driver" driver is assumed to exist in the HWM drivers package.
 
 devices:
-  - device_id: "test_device"
+  - id: "test_device"
     driver_class: "Test_Driver"
     settings:
-      - address: "test"
+      address: "test"

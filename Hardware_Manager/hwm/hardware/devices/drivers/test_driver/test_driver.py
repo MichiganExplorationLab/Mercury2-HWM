@@ -16,7 +16,7 @@ class Test_Driver(driver.Driver):
     """
     
     # Set the device name
-    self.device_name = device_configuration['device_id']
+    self.device_name = device_configuration['id']
     
     # Call the default constructor
     driver.Driver.__init__(self, device_configuration)

@@ -3,8 +3,7 @@ This module contains a class used to manage and cache user command permissions.
 """
 
 # Include required modules
-import time, json, urllib2, urllib
-from jsonschema import Draft3Validator
+import time, json, jsonschema, urllib2, urllib
 from twisted.internet import threads, defer
 from hwm.core import configuration
 
@@ -303,10 +302,10 @@ class PermissionManager:
     }
   
     # Validate the JSON schema
-    schema_validator = Draft3Validator(permission_list_schema)
+    schema_validator = jsonschema.Draft3Validator(permission_list_schema)
     try:
       schema_validator.validate(permission_settings)
-    except:
+    except jsonschema.ValidationError:
       # Invalid permission list JSON
       raise PermissionsInvalidSchema("The provided permission list did not conform to the defined schema.")
     
