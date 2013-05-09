@@ -1,4 +1,4 @@
-""" @package hwm.network.command.command
+""" @package hwm.command.command
 Contains a class used to store the state of submitted ground station commands.
 """
 

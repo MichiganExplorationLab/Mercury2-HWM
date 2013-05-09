@@ -10,7 +10,7 @@ from hwm.core.configuration import Configuration
 from twisted.internet import threads
 
 class ScheduleManager:
-  """Represents a reservation access schedule.
+  """ Represents a reservation access schedule.
   
   This class provides access to a copy of the reservation schedule. That hardware manager can use ScheduleManager to:
   * Download new copies of the reservation schedule from the user interface
@@ -19,7 +19,7 @@ class ScheduleManager:
   """
   
   def __init__(self, schedule_endpoint):
-    """Initializes the schedule instance.
+    """ Initializes the schedule instance.
     
     @param schedule_endpoint  Where to load the reservation schedule from. This can either be a local file or a network 
                               address (such as the mercury2 user interface API). If it begins with 'http', it will be 
@@ -38,7 +38,7 @@ class ScheduleManager:
     self.last_updated = 0
   
   def update_schedule(self):
-    """Downloads the most recent version of the schedule from the active source.
+    """ Downloads the most recent version of the schedule from the active source.
     
     @note This method loads the schedule from the active source (either a local file or network address) and updates 
           the local copy using callbacks. If use_local_schedule is true, the schedule will be loaded from a local file 
@@ -63,9 +63,9 @@ class ScheduleManager:
     return defer_download
   
   def get_active_reservations(self):
-    """Returns a list of the currently active reservations (by timestamp).
+    """ Returns a list of the currently active reservations (by timestamp).
     
-    @note This method will return all active reservations whether or not the session coordinator is all ready responding
+    @note This method will return all active reservations whether or not the session coordinator is already responding
           to them. It is the responsibility of the coordinator to handle duplicates.
     
     @return Returns a list of the reservations that are currently active. If no reservations are active, an empty list
@@ -88,7 +88,7 @@ class ScheduleManager:
     return temp_active_reservations
   
   def _validate_schedule(self, schedule_load_result):
-    """Validates the newly loaded schedule JSON.
+    """ Validates the newly loaded schedule JSON.
     
     This callback validates the format of the new schedule against the JSON schedule schema.
     
@@ -170,20 +170,20 @@ class ScheduleManager:
       schema_validator.validate(schedule_load_result)
     except jsonschema.ValidationError:
       # Invalid schedule JSON
-      logging.error("Provided schedule did not meet JSON schema requirements: "+self.schedule_location)
-      raise ScheduleError('Local schedule file did not contain a valid schedule (invalid schema).')
+      logging.error("The provided schedule did not meet JSON schema requirements: "+self.schedule_location)
+      raise ScheduleError('The loaded schedule was invalid (invalid schema).')
     
     return schedule_load_result
   
   def _save_schedule(self, schedule_load_result):
-    """Saves the provided schedule to the ScheduleManager class instance.
+    """ Saves the provided schedule to this schedule instance.
     
     @note This method is intended to be used as a callback for the deferred returned by the various schedule download 
           methods.
     
     @param schedule_load_result  The result of the attempted schedule download.
-    @return Returns a python object representing the new schedule. Note this is represents the raw JSON objects before
-            and filters or modifications have been applied.
+    @return Returns a python object representing the new schedule. Note this returned schedule represents the raw JSON 
+            object before any filters or modifications have been applied.
     """
     
     # Set the update time
@@ -193,11 +193,10 @@ class ScheduleManager:
     for schedule_reservation in schedule_load_result['reservations']:
       self.schedule[schedule_reservation['reservation_id']] = schedule_reservation
     
-    # Update the local schedule copy and pass it along
     return schedule_load_result
   
   def _download_remote_schedule(self):
-    """Loads the schedule from the schedule's URL.
+    """ Loads the schedule from the schedule's URL.
     
     This method loads the the schedule from a URL (e.g. the mercury2 user interface) and returns it.
     
@@ -221,7 +220,7 @@ class ScheduleManager:
     except:
       # Error downloading the file
       logging.error("There was an error downloading the schedule: "+self.schedule_location)
-      raise ScheduleError('Could not download schedule from URL.')
+      raise ScheduleError('Could not download schedule from remote URL.')
     
     # Parse the schedule JSON
     try:
@@ -234,7 +233,7 @@ class ScheduleManager:
     return temp_schedule
   
   def _download_local_schedule(self):
-    """Loads the schedule from the local disk.
+    """ Loads the schedule from the local disk.
     
     This method loads the local schedule from the disk and returns it.
     
@@ -257,7 +256,7 @@ class ScheduleManager:
     except IOError:
       # Error loading the schedule file
       logging.error("There was an error loading the local schedule: "+self.schedule_location)
-      raise ScheduleError('Could not load schedule from disk.')
+      raise ScheduleError('Could not load the schedule from the local disk.')
     
     # Parse the schedule JSON
     try:

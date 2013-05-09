@@ -11,7 +11,7 @@ from hwm.hardware.pipelines import pipeline, manager as pipelines
 from hwm.sessions import session, schedule
 
 class SessionCoordinator:
-  """Handles the creation and management of reservation sessions.
+  """ Handles the creation and management of reservation sessions.
   
   This class is used to manage the pool of active sessions and reservations for the hardware manager. It stores the 
   references to the active schedule instance and all active session instances. In addition, it contains the main 
@@ -20,7 +20,7 @@ class SessionCoordinator:
   """
   
   def __init__(self, reservation_schedule, device_manager, pipeline_manager):
-    """Sets up the session coordinator instance.
+    """ Sets up the session coordinator instance.
     
     @param reservation_schedule  A reference to the schedule to coordinate.
     @param device_manager        A reference to a device manager that has been initialized with the available hardware. 
@@ -37,11 +37,12 @@ class SessionCoordinator:
     self.active_sessions = {}
   
   def coordinate(self):
-    """Coordinates the operation of the hardware manager.
+    """ Coordinates the operation of the hardware manager.
     
     This method coordinates the hardware manager by performing periodic maintenance functions such as instructing the 
     schedule manager to update its schedule, checking for newly active reservations, and creating sessions as the 
-    schedule dictates. This method is called periodically using LoopingCall which is started by setup().
+    schedule dictates. This method is called periodically using a LoopingCall which is started during the main
+    initialization process.
     """
     
     # Update the schedule if required
@@ -53,12 +54,11 @@ class SessionCoordinator:
     print 'COORDINATE'
   
   def _check_for_new_reservations(self):
-    """This method checks for newly active reservations in the schedule.
+    """ This method checks for newly active reservations in the schedule.
     
     This method checks for newly active reservations in the reservation schedule and creates sessions for them.
     
-    @note If an error is encountered when loading or reserving a pipeline (to pass to the new session object) the 
-          exception will be logged gracefully.
+    @note If an error is encountered when loading or reserving a pipeline the exception will be logged gracefully.
     """
     
     # Get the list of active reservations
@@ -75,7 +75,7 @@ class SessionCoordinator:
                         "be found. Requested pipeline: "+active_reservation['pipeline_id'])
           continue
         
-        # Try to lock the pipeline
+        # Try to reserve the pipeline
         try:
           requested_pipeline.reserve_pipeline()
         except pipeline.PipelineInUse:
@@ -83,11 +83,11 @@ class SessionCoordinator:
                         "currently being used and can not be locked.")
           continue
         
-        # Create a session object for the new reservation
+        # Create a session object for the newly active reservation
         self.active_sessions[active_reservation['reservation_id']] = session.Session(requested_pipeline)
   
   def _update_schedule(self):
-    """Updates the schedule if appropriate.
+    """ Updates the schedule if appropriate.
     
     This method instructs the schedule manager to update its schedule if it hasn't been updated recently.
     
@@ -105,7 +105,7 @@ class SessionCoordinator:
     return schedule_update_deferred
   
   def _error_updating_schedule(self, failure):
-    """Handles failed schedule updates. 
+    """ Handles failed schedule updates. 
     
     This is needed to keep the program from terminating if a schedule update fails.
     
@@ -113,5 +113,6 @@ class SessionCoordinator:
     """
     
     # An error occured updating the schedule, just catch and log the error
-    logging.error("The session coordinator's schedule update request has failed: "+failure.getErrorMessage())
+    logging.error("The session coordinator could not update the active schedule. Received error: "+
+                  failure.getErrorMessage())
     failure.trap(schedule.ScheduleError)

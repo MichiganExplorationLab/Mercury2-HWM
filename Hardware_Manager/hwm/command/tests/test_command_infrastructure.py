@@ -9,8 +9,8 @@ from pkg_resources import Requirement, resource_filename
 from twisted.trial import unittest
 from twisted.test import proto_helpers
 from hwm.core.configuration import *
-from hwm.network.command import parser, command, connection, metadata
-from hwm.network.command.handlers import system as command_handler
+from hwm.command import parser, command, connection, metadata
+from hwm.command.handlers import system as command_handler
 from hwm.network.security import permissions
 
 class TestCommandInfrastructure(unittest.TestCase):

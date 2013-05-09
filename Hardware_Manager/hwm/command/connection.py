@@ -1,4 +1,4 @@
-""" @package hwm.network.command.connection
+""" @package hwm.command.connection
 Contains a resource for processing commands.
 
 This module contains a Twisted resource for responding to received ground station commands.

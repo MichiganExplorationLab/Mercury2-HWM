@@ -1,11 +1,11 @@
-""" @package hwm.network.command.handlers.system
+""" @package hwm.command.handlers.system
 Contains a class that handles various system commands received by the ground station.
 """
 
 # Import required modules
 import time
-import hwm.network.command.metadata
-from hwm.network.command import command
+import hwm.command.metadata
+from hwm.command import command
 
 class SystemCommandHandler:
   """ A command handler that responds to system commands.

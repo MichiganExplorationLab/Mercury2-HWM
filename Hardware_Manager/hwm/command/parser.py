@@ -1,4 +1,4 @@
-""" @package hwm.network.command.parser
+""" @package hwm.command.parser
 Parses system and hardware commands and passes them to the appropriate command handler.
 
 This module contains a class that validates, parses, and delegates ground station commands to the appropriate handler 
@@ -8,7 +8,7 @@ as they're received. Once a command has been executed, it returns the results of
 # Import required modules
 import time, logging
 from twisted.internet import defer, threads
-from hwm.network.command import command
+from hwm.command import command
 
 class CommandParser:
   """ Processes all commands received by the hardware manager.

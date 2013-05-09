@@ -1,4 +1,4 @@
-""" @package hwm.network.command.metadata
+""" @package hwm.command.metadata
 This module contains functions used to build a command's meta-data dictionary. This dictionary defines how to reach a 
 specific command, what parameters it accepts, and whether or not it requires an active session to run.
 

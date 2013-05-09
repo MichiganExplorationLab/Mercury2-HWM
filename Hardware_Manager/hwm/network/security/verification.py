@@ -32,7 +32,8 @@ def create_ssl_context_factory():
   """ Creates and returns a new ssl.DefaultOpenSSLContextFactory for securing various station connections.
   
   @note This method uses the public certificate and private key specified in the configuration. These files identify the
-        hwm instance and are generated and signed by the user interface using the master certificate authority.
+        hwm instance and are generated and signed by the user interface using the master certificate authority (whose
+        certificate is described by "ssl-ca-cert-location").
   
   @return Returns an SSL context factory for use by SSL listeners.
   """
