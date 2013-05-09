@@ -30,7 +30,7 @@ class CommandParser:
     self.system_command_handlers = system_command_handlers
     self.permission_manager = permission_manager
 
-  def parse_command(self, raw_command, user_id):
+  def parse_command(self, raw_command, user_id = None, kernal_mode = False):
     """ Processes all commands received by the ground station.
     
     When a raw command is passed to this function, it performs the following operations via a series of callbacks:
@@ -40,27 +40,34 @@ class CommandParser:
     * Executes the command in a new thread
     * Returns a deferred that will be fired with the results of the command
     
-    @note In the event of an error with the command (e.g. invalid json or permission error), the error will be logged
+    Some of these steps may be skipped depending on the type of command. For example, kernal commands skip the 
+    permission checking phase.
+    
+    @note In the event of an error with the command (e.g. invalid schema or permission error), the error will be logged
           and an error response will be returned ready for transmission.
     @note Even if the command generates an error response, the returned deferred's callback chain will be called with
           the contents of the error (instead of the errback chain). 
     @note The callback chain from the deferred returned from this function will return a dictionary representing the 
           results of the command. The 'response' key will contain a string with the results of the command (in JSON).
-    @note The actual command execution occurs in a new thread. Make sure that command code is thread safe!
+    @note The actual command execution occurs in a new thread. *Make sure that command code is thread safe!*
+    @note Seriously, make sure the command code is thread safe.
     
-    @param raw_command  A raw command string containing metadata about the command in an arbitrary format.
-    @param user_id      The user's ID for the purpose of loading command execution settings. This probably came from 
-                        the user's SSL certificate.
-    @return Returns the results of the command (in JSON) using a deferred. May be the output of the command or an error 
-            message.
+    @param raw_command  A raw command containing metadata about the command in an arbitrary format (specific Command
+                        classes are responsible for parsing different formats).
+    @param user_id      The user's ID for the purpose of loading command execution settings. If set, this probably came 
+                        from the user's SSL certificate or reservation schedule.
+    @param kernal_mode  Indicates if the command should be run in kernal mode. That is, whether permission and session
+                        restrictions should be ignored. This is done, for example, when pipeline setup commands get run
+                        as a new session is being setup.
+    @return Returns the results of the command (a dictionary) using a deferred. May be the output of the command or an 
+            error message.
     """
     
     # Local variables
     time_command_received = time.time()
-    new_command = None
     
-    # Create the new command
-    new_command = command.Command(time_command_received, raw_command, user_id)
+    # Create the new command (currently there is only one command type to worry about)
+    new_command = command.Command(time_command_received, raw_command, user_id=user_id, kernal_mode=kernal_mode)
     
     # Asynchronously validate the command (format and schema)
     validation_deferred = new_command.validate_command()

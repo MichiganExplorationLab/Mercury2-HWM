@@ -9,29 +9,29 @@ from twisted.internet import defer
 class Command:
   """ Used to represent user commands.
   
-  This class is used to represent commands sent to the ground station. Commands are typically passed between the command
-  parser and the appropriate command handler, which then updates the Command instance with the results of the command.
-  This default Command type represents JSON formatted commands.
+  This class is the default class used to represent commands sent to the ground station. Commands are typically passed 
+  between the command parser and the appropriate command handler, which then updates the Command instance with the 
+  results of the command. This default Command type represents simple dictionary based commands (which were probably 
+  YAML or JSON strings in their raw forms).
   """
   
-  def __init__(self, time_received, raw_command, user_id, active_session = None):
+  def __init__(self, time_received, raw_command, user_id = None, kernal_mode = False):
     """ Constructs a new Command object.
     
     This method sets up a new command based on the raw command received.
     
     @param time_received   The time (UNIX timestamp) when the command was received.
-    @param raw_command     A JSON string representing the command.
+    @param raw_command     A dictionary containing meta-data about the command.
     @param user_id         The ID of the user executing the command.
-    @param active_session  A reference to the active Session for the connected user, if any.
+    @param kernal_mode     Whether or not the command is to run in kernal mode (ignores permission and session checks).
     """
     
     # Set command attributes
     self.time_received = time_received
-    self.command_raw = raw_command
-    self.command_json = None
+    self.command_dict = raw_command
     self.user_id = user_id
+    self.kernal_mode = kernal_mode
     self.valid = False
-    self.session = active_session
     
     # Convenience attributes set after validate_command
     self.command = None
@@ -41,22 +41,19 @@ class Command:
   def validate_command(self):
     """ Validates the submitted command and saves it in a usable form.
     
-    This method verifies that the provided raw command string conforms this Command's schema. In addition, it also
-    converts and saves it into something more useful than a string (a JSON object).
+    This method verifies that the provided raw command dictionary conforms this Command's schema.
     
-    @note This method should be called before any actions are performed on the command (i.e. right after initialization).
+    @note Because simple YAML and JSON objects are both serialized representations of dictionaries, the JSON Draft 3
+          schema validator can be used to check commands that were originally in JSON or YAML (or any other such 
+          language).
+    @note This method should be called before any actions are performed on the command (i.e. right after 
+          initialization).
     @note This method sets several convenience attributes of the Command class (such as the destination and command 
           id's) if the command conforms to the schema.
     
     @return Returns a deferred that will be fired with the results of the command validation. If the command is invalid,
             a deferred is pre-fired (with a failure) and returned with information about the failure.
     """
-    
-    # Try to convert the command string to JSON
-    try:
-      self.command_json = json.loads(self.command_raw)
-    except ValueError:
-      return defer.fail(CommandMalformed("The submitted command contained a malformed JSON string."))
     
     # Define the command schema
     command_schema = {
@@ -83,14 +80,15 @@ class Command:
       }
     }
     
-    # Validate the JSON schema
+    # Validate the command schema
     command_validator = jsonschema.Draft3Validator(command_schema)
     try:
-      command_validator.validate(self.command_json)
+      command_validator.validate(self.command_dict)
       self.valid = True
     except jsonschema.ValidationError:
       # Invalid command schema
-      return defer.fail(CommandInvalidSchema("The submitted command did not conform to the command schema for command type: "+self.__class__.__name__))
+      return defer.fail(CommandInvalidSchema("The submitted command did not conform to the command schema for command "+
+                        "type: "+self.__class__.__name__))
     
     # Populate some attributes to make the command easier to work with
     self._populate_command_attributes()
@@ -100,14 +98,16 @@ class Command:
   def build_command_response(self, success, command_results = {}):
     """ Constructs a dictionary to encapsulate the command results.
     
-    This method builds a dictionary containing the command's JSON response. CommandResource will use the returned 
-    dictionary to send the response to the user.
+    This method builds a dictionary containing the command's response. Whatever module created the command in the first
+    place will be responsible for converting it into the format it needs. For example, the CommandResource class will 
+    likely convert the results into a JSON string.
     
     @param success          Whether or not the command was successful (True or False).
     @param command_results  A dictionary containing the results of the command.
     @return Returns a dictionary containing the command's results.
     """
     
+    // TODO: Make this non-format specific
     command_response = {}
     json_response = {}
     
@@ -131,20 +131,19 @@ class Command:
     return command_response
   
   def _populate_command_attributes(self):
-    """ This method populates the class's attributes using the command JSON.
+    """ This method populates the class's attributes using the command dictionary.
     
-    This method copies some information from the command JSON object into class attributes for programmer convenience. 
+    This method copies some information from the command dictionary into class attributes for programmer convenience. 
     It should be called after the command's schema has been validated.
     
-    @note If this method is called before the command has been validated, it will return False.
-    
-    @return Returns True on success or False otherwise.
+    @return Returns True on success or False if the command is invalid (i.e. it hasn't been validated yet or is actually
+            invalid).
     """
     
-    if self.valid and (self.command_json is not None):
-      self.command = self.command_json['command']
-      self.destination = self.command_json['destination']
-      self.parameters = self.command_json['parameters'] if ('parameters' in self.command_json) else None
+    if self.valid:
+      self.command = self.command_dict['command']
+      self.destination = self.command_dict['destination']
+      self.parameters = self.command_dict['parameters'] if ('parameters' in self.command_dict) else None
       
       return True
     else:
