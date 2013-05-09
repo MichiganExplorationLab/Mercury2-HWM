@@ -134,10 +134,10 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     # Define a callback to test the parser results
     def parsing_complete(command_results):
-      json_response = json.loads(command_results['response'])
+      response_dict = command_results['response']
       
-      self.assertEqual(json_response['status'], 'error', 'The parser did not return an error response.')
-      self.assertEqual(json_response['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
+      self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
+      self.assertEqual(response_dict['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
     
     # Send an unrecognized command the to parser
     test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
@@ -152,10 +152,10 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     # Define a callback to test the parser results
     def parsing_complete(command_results):
-      json_response = json.loads(command_results['response'])
+      response_dict = command_results['response']
       
-      self.assertEqual(json_response['status'], 'error', 'The parser did not return an error response.')
-      self.assertNotEqual(json_response['result']['error_message'].find('malformed'), -1, 'The parser did not return the correct error response (response did not contain \'malformed\').')
+      self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
+      self.assertNotEqual(response_dict['result']['error_message'].find('malformed'), -1, 'The parser did not return the correct error response (response did not contain \'malformed\').')
     
     # Send a malformed command the to parser
     test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}", 'test_user')
@@ -170,9 +170,9 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     # Define a callback to test the parser results
     def parsing_complete(command_results):
-      json_response = json.loads(command_results['response'])
+      response_dict = command_results['response']
       
-      self.assertEqual(json_response['status'], 'error')
+      self.assertEqual(response_dict['status'], 'error')
     
     # Parse an invalid command the to parser (doesn't contain a destination)
     test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
@@ -187,13 +187,34 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     # Define a callback to test the parser results
     def parsing_complete(command_results):
-      json_response = json.loads(command_results['response'])
+      response_dict = command_results['response']
       
-      self.assertEqual(json_response['status'], 'error', 'The parser did not return an error response.')
-      self.assertEqual(json_response['result']['restricted_command'], 'station_time', "The returned error response was incorrect (didn't include the 'restricted_command' field).")
+      self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
+      self.assertEqual(response_dict['result']['restricted_command'], 'station_time', "The returned error response was incorrect (didn't include the 'restricted_command' field).")
     
     # Send a command that the user can't execute
     test_deferred = self.command_parser.parse_command("{\"command\":\"station_time\",\"destination\":\"system\"}", 'test_user_no_permissions')
+    test_deferred.addCallback(parsing_complete)
+    
+    return test_deferred
+  
+  def test_parser_successful_command_dict(self):
+    """ This test verifies that the command parser allows a user to execute a command (that they have permission to)
+    initially supplied as a dictionary.
+    """
+    
+    # Define a callback to test the parser results
+    def parsing_complete(command_results):
+      response_dict = command_results['response']
+      self.assertEqual(response_dict['status'], 'okay', 'The parser did not return a successful response.')
+      self.assertTrue('timestamp' in response_dict['result'], 'The response did not contain a timestamp field.')
+    
+    # Send a time request command to the parser
+    test_command = {
+      'command': "station_time",
+      'destination': "system"
+    }
+    test_deferred = self.command_parser.parse_command(test_command, "test_user")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -205,9 +226,9 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     # Define a callback to test the parser results
     def parsing_complete(command_results):
-      json_response = json.loads(command_results['response'])
-      self.assertEqual(json_response['status'], 'okay', 'The parser did not return a successful response.')
-      self.assertTrue('timestamp' in json_response['result'], 'The response did not contain a timestamp field.')
+      response_dict = command_results['response']
+      self.assertEqual(response_dict['status'], 'okay', 'The parser did not return a successful response.')
+      self.assertTrue('timestamp' in response_dict['result'], 'The response did not contain a timestamp field.')
     
     # Send a time request command to the parser
     test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", "test_user")
@@ -222,11 +243,11 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     # Define a callback to test the parser results
     def parsing_complete(command_results):
-      json_response = json.loads(command_results['response'])
+      response_dict = command_results['response']
       
-      self.assertEqual(json_response['status'], 'error', 'The parser did not return an error response.')
-      self.assertTrue('submitted_command' in json_response['result'], 'The response did not contain the expected test error field.')
-      self.assertEqual(json_response['result']['submitted_command'], 'test_error', 'The response did not contain the expected test error field value.')
+      self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
+      self.assertTrue('submitted_command' in response_dict['result'], 'The response did not contain the expected test error field.')
+      self.assertEqual(response_dict['result']['submitted_command'], 'test_error', 'The response did not contain the expected test error field value.')
     
     # Send a time request command to the parser
     test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", "test_user")
@@ -288,10 +309,10 @@ class TestCommandInfrastructure(unittest.TestCase):
       response_error_message = "The generated command response was invalid."
       test_command_response = test_command.build_command_response(True, {"test_result": 10})
       
-      json_response = json.loads(test_command_response['response'])
-      self.assertEqual(json_response['status'], 'okay', response_error_message)
-      self.assertEqual(json_response['destination'], 'system', response_error_message)
-      self.assertEqual(json_response['result']['test_result'], 10, response_error_message)
+      response_dict = test_command_response['response']
+      self.assertEqual(response_dict['status'], 'okay', response_error_message)
+      self.assertEqual(response_dict['destination'], 'system', response_error_message)
+      self.assertEqual(response_dict['result']['test_result'], 10, response_error_message)
     
     test_deferred = test_command.validate_command()
     test_deferred.addCallback(validation_complete)

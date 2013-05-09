@@ -5,6 +5,7 @@ This module contains a Twisted resource for responding to station commands recei
 """
 
 # Import required modules
+import json
 from twisted.web.resource import Resource
 from twisted.web.http import HTTPClient, HTTPFactory
 from twisted.web.server import NOT_DONE_YET
@@ -46,7 +47,7 @@ class CommandResource(Resource):
       user_id = user_certificate.get_subject().commonName.decode()
     
     # Pass the request body to the parser
-    response_deferred = self.command_parser.parse_command(request.content.read(), user_id)
+    response_deferred = self.command_parser.parse_command(request.content.read(), user_id=user_id)
     response_deferred.addCallback(self._command_response_ready, request)
     
     return NOT_DONE_YET

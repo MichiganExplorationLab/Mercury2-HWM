@@ -11,7 +11,7 @@ class Command:
   
   This class is the default class used to represent commands sent to the ground station. Commands are typically passed 
   between the command parser and the appropriate command handler, which then updates the Command instance with the 
-  results of the command. This default Command type represents simple dictionary based commands (which were probably 
+  results of the command. This default Command type represents simple dictionary based commands (which are probably 
   YAML or JSON strings in their raw forms).
   """
   
@@ -21,14 +21,18 @@ class Command:
     This method sets up a new command based on the raw command received.
     
     @param time_received   The time (UNIX timestamp) when the command was received.
-    @param raw_command     A dictionary containing meta-data about the command.
+    @param raw_command     The raw command that this class will represent. Can either be a dictionary or a string. If it
+                           is a string, it will be passed through a series of parsers for the supported languages until
+                           one of them can decode the string. The resulting (or original) dictionary will then be 
+                           checked against the command schemma. Currently, only JSON strings are supported.
     @param user_id         The ID of the user executing the command.
     @param kernal_mode     Whether or not the command is to run in kernal mode (ignores permission and session checks).
     """
     
     # Set command attributes
     self.time_received = time_received
-    self.command_dict = raw_command
+    self.command_raw = raw_command
+    self.command_dict = None
     self.user_id = user_id
     self.kernal_mode = kernal_mode
     self.valid = False
@@ -45,7 +49,8 @@ class Command:
     
     @note Because simple YAML and JSON objects are both serialized representations of dictionaries, the JSON Draft 3
           schema validator can be used to check commands that were originally in JSON or YAML (or any other such 
-          language).
+          language). This default command class currently supports JSON strings and pre-converted dictionaries
+          (typically the case when using the YAML configuration).
     @note This method should be called before any actions are performed on the command (i.e. right after 
           initialization).
     @note This method sets several convenience attributes of the Command class (such as the destination and command 
@@ -54,6 +59,20 @@ class Command:
     @return Returns a deferred that will be fired with the results of the command validation. If the command is invalid,
             a deferred is pre-fired (with a failure) and returned with information about the failure.
     """
+    
+    # Check if the raw command was an unparsed string
+    if isinstance(self.command_raw, basestring):
+      try:
+        self.command_dict = json.loads(self.command_raw)
+      except ValueError:
+        # Error parsing the command JSON
+        return defer.fail(CommandMalformed("The submitted command was malformed and couldn't be parsed as a JSON "+
+                                           "string."))
+    elif not isinstance(self.command_raw, dict):
+      # Not a dictionary or a string
+      return defer.fail(CommandMalformed("An invalid command type was detected by the command validator."))
+    else:
+      self.command_dict = self.command_raw
     
     # Define the command schema
     command_schema = {
@@ -107,28 +126,27 @@ class Command:
     @return Returns a dictionary containing the command's results.
     """
     
-    // TODO: Make this non-format specific
+    response_info = {}
     command_response = {}
-    json_response = {}
     
     # Construct the command response
-    json_response['received_at'] = self.time_received
-    json_response['completed_at'] = time.time()
+    command_response['received_at'] = self.time_received
+    command_response['completed_at'] = time.time()
     
     if success:
-      json_response['status'] = 'okay'
+      command_response['status'] = 'okay'
     else:
-      json_response['status'] = 'error'
+      command_response['status'] = 'error'
     
     if self.destination:
-      json_response['destination'] = self.destination
+      command_response['destination'] = self.destination
     
-    json_response['result'] = command_results
+    command_response['result'] = command_results
     
-    # Convert the response JSON 
-    command_response['response'] = json.dumps(json_response)
+    # Store the actualy command response from the command handler
+    response_info['response'] = command_response
     
-    return command_response
+    return response_info
   
   def _populate_command_attributes(self):
     """ This method populates the class's attributes using the command dictionary.
@@ -140,7 +158,7 @@ class Command:
             invalid).
     """
     
-    if self.valid:
+    if self.valid or self.command_dict == None:
       self.command = self.command_dict['command']
       self.destination = self.command_dict['destination']
       self.parameters = self.command_dict['parameters'] if ('parameters' in self.command_dict) else None

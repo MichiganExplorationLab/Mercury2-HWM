@@ -46,9 +46,9 @@ class TestSystemCommandHandler(unittest.TestCase):
     
     # Define a callback to test the parser results
     def parsing_complete(command_results):
-      json_response = json.loads(command_results['response'])
-      self.assertEqual(json_response['status'], 'okay', 'The parser did not return a successful response.')
-      self.assertTrue('timestamp' in json_response['result'], 'The response did not contain a timestamp field.')
+      response_dict = command_results['response']
+      self.assertEqual(response_dict['status'], 'okay', 'The parser did not return a successful response.')
+      self.assertTrue('timestamp' in response_dict['result'], 'The response did not contain a timestamp field.')
     
     # Send a time request to the parser
     test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", "test_user")

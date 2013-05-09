@@ -48,7 +48,8 @@ class CommandParser:
     @note Even if the command generates an error response, the returned deferred's callback chain will be called with
           the contents of the error (instead of the errback chain). 
     @note The callback chain from the deferred returned from this function will return a dictionary representing the 
-          results of the command. The 'response' key will contain a string with the results of the command (in JSON).
+          results of the command. The 'response' key will contain a dictionary with the response to send to the client.
+          The calling module is responsible for converting this dictionary into an appropriate format.
     @note The actual command execution occurs in a new thread. *Make sure that command code is thread safe!*
     @note Seriously, make sure the command code is thread safe.
     
@@ -70,13 +71,13 @@ class CommandParser:
     new_command = command.Command(time_command_received, raw_command, user_id=user_id, kernal_mode=kernal_mode)
     
     # Asynchronously validate the command (format and schema)
-    validation_deferred = new_command.validate_command()
+    command_deferred = new_command.validate_command()
     
     # Add callbacks to handle validation results (_command_error added second so it can handle errors from _run_command)
-    validation_deferred.addCallback(self._run_command, new_command)
-    validation_deferred.addErrback(self._command_error, new_command)
+    command_deferred.addCallback(self._run_command, new_command)
+    command_deferred.addErrback(self._command_error, new_command)
     
-    return validation_deferred
+    return command_deferred
   
   def _run_command(self, validation_results, valid_command):
     """ Continues executing a command after it has been validated.
