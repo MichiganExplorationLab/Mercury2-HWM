@@ -30,7 +30,7 @@ class CommandParser:
     self.system_command_handlers = system_command_handlers
     self.permission_manager = permission_manager
 
-  def parse_command(self, raw_command, user_id = None, kernal_mode = False):
+  def parse_command(self, raw_command, user_id = None, kernel_mode = False):
     """ Processes all commands received by the ground station.
     
     When a raw command is passed to this function, it performs the following operations via a series of callbacks:
@@ -40,7 +40,7 @@ class CommandParser:
     * Executes the command in a new thread
     * Returns a deferred that will be fired with the results of the command
     
-    Some of these steps may be skipped depending on the type of command. For example, kernal commands skip the 
+    Some of these steps may be skipped depending on the type of command. For example, kernel commands skip the 
     permission checking phase.
     
     @note In the event of an error with the command (e.g. invalid schema or permission error), the error will be logged
@@ -57,7 +57,7 @@ class CommandParser:
                         classes are responsible for parsing different formats).
     @param user_id      The user's ID for the purpose of loading command execution settings. If set, this probably came 
                         from the user's SSL certificate or reservation schedule.
-    @param kernal_mode  Indicates if the command should be run in kernal mode. That is, whether permission and session
+    @param kernel_mode  Indicates if the command should be run in kernel mode. That is, whether permission and session
                         restrictions should be ignored. This is done, for example, when pipeline setup commands get run
                         as a new session is being setup.
     @return Returns the results of the command (a dictionary) using a deferred. May be the output of the command or an 
@@ -65,48 +65,61 @@ class CommandParser:
     """
     
     # Local variables
-    time_command_received = time.time()
+    time_command_received = int(time.time())
     
     # Create the new command (currently there is only one command type to worry about)
-    new_command = command.Command(time_command_received, raw_command, user_id=user_id, kernal_mode=kernal_mode)
+    new_command = command.Command(time_command_received, raw_command, user_id=user_id, kernel_mode=kernel_mode)
     
     # Asynchronously validate the command (format and schema)
     command_deferred = new_command.validate_command()
     
-    # Add callbacks to handle validation results (_command_error added second so it can handle errors from _run_command)
-    command_deferred.addCallback(self._run_command, new_command)
+    # Add callbacks to handle validation results (_command_error added second so it can handle errors from 
+    # _load_permissions() and its deferred chain)
+    command_deferred.addCallback(self._load_permissions, new_command)
     command_deferred.addErrback(self._command_error, new_command)
     
     return command_deferred
   
-  def _run_command(self, validation_results, valid_command):
-    """ Continues executing a command after it has been validated.
+  def _load_permissions(self, validation_results, valid_command):
+    """ Loads the user's permissions, if required.
     
-    This callback continues to validate and execute a command after it has passed preliminary format and schema 
-    validations. 
+    This callback runs after the command has been validated and is responsible for loading a user's permissions to make
+    sure that the user has permission to execute the command. If the command is being executed in kernel mode, then this
+    step will be skipped and a pre-fired deferred will be returned to continue the execution process.
     
-    @note This callback returns a deferred which means that the parent deferred's callback chain will pause until the 
-          returned deferred has been fired. The returned deferred's callbacks will then execute before the remaining 
-          callbacks on the parent deferred.
+    @note This callback returns a deferred which means that the parent deferred's (from validate_command) callback chain
+          will pause until the returned deferred has been fired. The returned deferred's callbacks will then execute 
+          before the remaining callbacks on the parent deferred.
     
     @throw This callback may throw several exceptions indicating errors about the command. These exceptions will 
            automatically be picked up by the errback chain on the parent deferred.
     
     @param validation_results  The validation results. Always true (because this is a callback and not an errback).
     @param valid_command       The Command object being executed.
-    @return Returns a deferred that will eventually be fired with the user's command execution permissions.
+    @return Returns a deferred that will eventually be fired with the user's command execution permissions (or None if
+            the command is being run in kernel mode).
     """
     
-    # Fetch the user's permissions
-    permission_load_deferred = self.permission_manager.get_user_permissions(valid_command.user_id)
-    permission_load_deferred.addCallback(self._run_command_continue, valid_command)
-    
-    return permission_load_deferred
+    # Check if the command is being run in kernel mode
+    if valid_command.kernel_mode:
+      # Return a pre-fired deferred
+      continue_exec_deferred = defer.Deferred()
+      continue_exec_deferred.addCallback(self._run_command, valid_command)
+      continue_exec_deferred.callback(None)
+      
+      return continue_exec_deferred
+    else:
+      # Fetch the user's permissions
+      permission_load_deferred = self.permission_manager.get_user_permissions(valid_command.user_id)
+      permission_load_deferred.addCallback(self._run_command, valid_command)
+      
+      return permission_load_deferred
   
-  def _run_command_continue(self, user_permissions, valid_command):
+  def _run_command(self, user_permissions, valid_command):
     """ Continues command execution after the user's permissions have been retrieved.
     
-    @param user_permissions  A dictionary containing the user's permissions.
+    @param user_permissions  A dictionary containing the user's permissions. If the command is being running in kernel
+                             mode, this will just be None.
     @param valid_command     The Command object for the currently executing command.
     @return Returns a deferred that will eventually be fired with the results of the command execution.
     """
@@ -118,7 +131,8 @@ class CommandParser:
       command_handler = self.system_command_handlers[valid_command.destination]
     else:
       device_command = True
-      print 'LOAD DEVICE COMMAND HANDLER'
+      
+      # TODO: Validate and load device command handler
     
     # Verify that the command exists
     if not hasattr(command_handler, 'command_'+valid_command.command):
@@ -129,24 +143,24 @@ class CommandParser:
       raise command.CommandError("The received command could not be located in the "+handler_string+" command handler.",
                                  {"invalid_command": valid_command.command})
     
-    # Check the user command execution permissions
-    user_has_permission = False
-    for command_permission in user_permissions['permitted_commands']:
-      if (command_permission['command'] == valid_command.command and 
-          command_permission['destination'] == valid_command.destination):
-        user_has_permission = True
+    # Check user permissions and session requirements if required
+    if not valid_command.kernel_mode:
+      # Check the user's permissions
+      user_has_permission = False
+      for command_permission in user_permissions['permitted_commands']:
+        if (command_permission['command'] == valid_command.command and 
+            command_permission['destination'] == valid_command.destination):
+          user_has_permission = True
+      
+      if not user_has_permission:
+        raise command.CommandError("You do not have permission to execute that command.",
+                                   {"restricted_command": valid_command.command})
     
-    if not user_has_permission:
-      raise command.CommandError("You do not have permission to execute that command.",
-                                 {"restricted_command": valid_command.command})
-    
-    # Check the command's session requirements
-    # TODO
+      # TODO: Check the command's session requirements
     
     # Execute the command in a new thread
     command_deferred = threads.deferToThread(getattr(command_handler, 'command_'+valid_command.command), valid_command)
     command_deferred.addCallback(self._command_complete, valid_command)
-    command_deferred.addErrback(self._command_error, valid_command) # Is this necessary or will it get picked up by parent?
     
     return command_deferred
   
@@ -156,9 +170,9 @@ class CommandParser:
     This callback generates a successful command response. It is called after the command has been executed in a new
     thread. 
     
-    @param command_results    A dictionary containing additional data to embed with the command response (in the
-                              "result" field of the JSON response). This is returned by the individual command functions
-                              in the command handlers.
+    @param command_results     A dictionary containing additional data to embed with the command response (in the
+                               "result" field of the JSON response). This is returned by the individual command 
+                               functions in the command handlers.
     @param successful_command  The command that just completed.
     @return Returns the constructed command response dictionary. This dictionary is fed into following callbacks.
     """
@@ -168,7 +182,7 @@ class CommandParser:
     return command_response
   
   def _command_error(self, failure, failed_command):
-    """ Generates an appropriate error response for the failure.
+    """ Generates an appropriate error response for the command failure.
     
     This errback generates an error response for the indicated failure, which it then returns (thus passing the error
     response to the callback chain of the deferred returned from parse_command). If the failure is wrapping an exception

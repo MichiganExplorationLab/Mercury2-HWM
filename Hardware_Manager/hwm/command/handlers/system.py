@@ -41,7 +41,7 @@ class SystemCommandHandler:
     @return Returns the current time on the computer that is running the hardware manager.
     """
     
-    return {'timestamp': time.time()}
+    return {'timestamp': int(time.time())}
   
   def settings_station_time(self):
     """ Returns a dictionary containing meta-data about the station_time command.

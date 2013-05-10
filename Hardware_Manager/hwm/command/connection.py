@@ -40,7 +40,7 @@ class CommandResource(Resource):
             _command_response_ready).
     """
     
-    # Store the user's ID
+    # Store the user's ID from the SSL certificate
     user_id = None
     user_certificate = self.transport.getPeerCertificate()
     if user_certificate:

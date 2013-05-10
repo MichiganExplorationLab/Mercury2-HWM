@@ -1,8 +1,3 @@
-# To Test:
-# - Resource: Send simple successful command (e.g. system time)
-# - Resource: POST command and analyze response (submit error command, so doesn't depend on handler)
-# - Parser: Send command with invalid device ID (no device)
-
 # Import required modules
 import logging, time, json
 from pkg_resources import Requirement, resource_filename
@@ -14,9 +9,9 @@ from hwm.command.handlers import system as command_handler
 from hwm.network.security import permissions
 
 class TestCommandInfrastructure(unittest.TestCase):
-  """ This test suite tests the functionality of the command parser (CommandParser), Command class, and command Resource
-  individually and holistically. The functionality of individual commands (including system commands) is tested in the
-  test suite for the appropriate command handler.
+  """ This test suite tests the functionality of the command parser (CommandParser), default Command class, and command 
+  Resource individually and holistically. The functionality of individual commands (including system commands) is tested
+  in the test suite for the containing command handler.
   """
   
   def setUp(self):
@@ -140,7 +135,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
     
     # Send an unrecognized command the to parser
-    test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
+    test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -158,7 +153,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertNotEqual(response_dict['result']['error_message'].find('malformed'), -1, 'The parser did not return the correct error response (response did not contain \'malformed\').')
     
     # Send a malformed command the to parser
-    test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}", 'test_user')
+    test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}", user_id='test_user')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -175,7 +170,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['status'], 'error')
     
     # Parse an invalid command the to parser (doesn't contain a destination)
-    test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
+    test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -193,7 +188,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['result']['restricted_command'], 'station_time', "The returned error response was incorrect (didn't include the 'restricted_command' field).")
     
     # Send a command that the user can't execute
-    test_deferred = self.command_parser.parse_command("{\"command\":\"station_time\",\"destination\":\"system\"}", 'test_user_no_permissions')
+    test_deferred = self.command_parser.parse_command("{\"command\":\"station_time\",\"destination\":\"system\"}", user_id='test_user_no_permissions')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -214,7 +209,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       'command': "station_time",
       'destination': "system"
     }
-    test_deferred = self.command_parser.parse_command(test_command, "test_user")
+    test_deferred = self.command_parser.parse_command(test_command, user_id="test_user")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -231,7 +226,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertTrue('timestamp' in response_dict['result'], 'The response did not contain a timestamp field.')
     
     # Send a time request command to the parser
-    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", "test_user")
+    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", user_id="test_user")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -250,7 +245,44 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['result']['submitted_command'], 'test_error', 'The response did not contain the expected test error field value.')
     
     # Send a time request command to the parser
-    test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", "test_user")
+    test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", user_id="test_user")
+    test_deferred.addCallback(parsing_complete)
+    
+    return test_deferred
+  
+  def test_parser_successful_kernel_command(self):
+    """ This test verifies that the command parser can correctly execute a command in kernal mode. That is, a command
+    that is not associated with any particular user and immune from session and permission requirements.
+    """
+    
+    # Define a callback to test the parser results
+    def parsing_complete(command_results):
+      response_dict = command_results['response']
+      
+      self.assertEqual(response_dict['status'], 'okay', 'The parser did not return a successful response.')
+      self.assertTrue('timestamp' in response_dict['result'], 'The response did not contain a timestamp field.')
+    
+    # Send a time request command to the parser
+    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", kernel_mode=True)
+    test_deferred.addCallback(parsing_complete)
+    
+    return test_deferred
+  
+  def test_parser_unrecognized_kernel_command(self):
+    """ Test that kernel mode commands correctly generate error responses for invalid commands. In this case, an
+    unrecognized command will be used to trigger the error because it happens after the _load_permissions() callback 
+    (where kernel and user mode commands first diverge).
+    """
+    
+    # Define a callback to test the parser results
+    def parsing_complete(command_results):
+      response_dict = command_results['response']
+      
+      self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
+      self.assertEqual(response_dict['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
+    
+    # Send an unrecognized command the to parser
+    test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", kernel_mode=True)
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -261,7 +293,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new malformed command
-    test_command = command.Command(time.time(), "{\"invalid_json\":true,invalid_element}", 'test_user')
+    test_command = command.Command(time.time(), "{\"invalid_json\":true,invalid_element}", user_id='test_user')
     
     test_deferred = test_command.validate_command()
     
@@ -272,7 +304,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new invalid command
-    test_command = command.Command(time.time(), "{\"message\": \"This schema is invalid\"}", 'test_user')
+    test_command = command.Command(time.time(), "{\"message\": \"This schema is invalid\"}", user_id='test_user')
     
     test_deferred = test_command.validate_command()
     
@@ -283,7 +315,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new command without a destination
-    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
+    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
     
     test_deferred = test_command.validate_command()
     
@@ -295,7 +327,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a valid command
-    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", 'test_user')
+    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
     
     # Define a callback to verify the Command after validation is complete
     def validation_complete(validation_results):

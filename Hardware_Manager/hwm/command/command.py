@@ -15,7 +15,7 @@ class Command:
   YAML or JSON strings in their raw forms).
   """
   
-  def __init__(self, time_received, raw_command, user_id = None, kernal_mode = False):
+  def __init__(self, time_received, raw_command, user_id = None, kernel_mode = False):
     """ Constructs a new Command object.
     
     This method sets up a new command based on the raw command received.
@@ -26,7 +26,7 @@ class Command:
                            one of them can decode the string. The resulting (or original) dictionary will then be 
                            checked against the command schemma. Currently, only JSON strings are supported.
     @param user_id         The ID of the user executing the command.
-    @param kernal_mode     Whether or not the command is to run in kernal mode (ignores permission and session checks).
+    @param kernel_mode     Whether or not the command is to run in kernel mode (ignores permission and session checks).
     """
     
     # Set command attributes
@@ -34,7 +34,7 @@ class Command:
     self.command_raw = raw_command
     self.command_dict = None
     self.user_id = user_id
-    self.kernal_mode = kernal_mode
+    self.kernel_mode = kernel_mode
     self.valid = False
     
     # Convenience attributes set after validate_command
@@ -131,19 +131,13 @@ class Command:
     
     # Construct the command response
     command_response['received_at'] = self.time_received
-    command_response['completed_at'] = time.time()
-    
-    if success:
-      command_response['status'] = 'okay'
-    else:
-      command_response['status'] = 'error'
-    
+    command_response['completed_at'] = int(time.time())
+    command_response['status'] = 'okay' if success else 'error'
     if self.destination:
       command_response['destination'] = self.destination
-    
     command_response['result'] = command_results
     
-    # Store the actualy command response from the command handler
+    # Store the command response (what will actually be sent back to the user)
     response_info['response'] = command_response
     
     return response_info
