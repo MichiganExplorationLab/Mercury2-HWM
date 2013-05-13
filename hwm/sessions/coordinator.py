@@ -7,7 +7,7 @@ This module contains a class that is used to coordinate the various sessions.
 # Import required modules
 import logging, time
 from hwm.core import configuration
-from hwm.hardware.pipelines import pipeline, manager as pipelines
+from hwm.hardware.pipelines import pipeline, manager as pipeline_manager
 from hwm.sessions import session, schedule
 
 class SessionCoordinator:
@@ -70,7 +70,7 @@ class SessionCoordinator:
         # Load the reservation's pipeline
         try:
           requested_pipeline = self.pipelines.get_pipeline(active_reservation['pipeline_id'])
-        except pipelines.PipelineNotFound:
+        except pipeline_manager.PipelineNotFound:
           logging.error("The pipeline requested for reservation '"+active_reservation['reservation_id']+"' could not "+
                         "be found. Requested pipeline: "+active_reservation['pipeline_id'])
           continue
