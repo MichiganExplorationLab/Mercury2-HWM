@@ -24,15 +24,19 @@ class PipelineManager:
     
     @note This constructor may pass on exceptions from the pipeline initialization (see _initialize_pipelines).
     @note This class does not load the pipeline configuration file itself. Instead, Configuration is instructed to load
-          it at runtime and this class accesses it via configuration. Therefore, if this class is initialized before the 
-          pipeline configuration has been loaded an exception will be generated.
+          it at runtime and this class accesses it via the 'configuration' module. If this class is initialized before 
+          the pipeline configuration has been loaded an exception will be raised
+    
+    @param device_manager  A reference to the DeviceManager instance that should be used.
+    @param command_parser  A reference to the CommandParser instance that should be used to parse pipeline setup 
+                           commands.
     """
     
     # Setup class attributes
     self.config = configuration.Configuration
     self.pipelines = {}
-    self.devices = device_manager
-    self.commands = command_parser
+    self.device_manager = device_manager
+    self.command_parser = command_parser
     
     # Initialize the configured pipelines
     self._initialize_pipelines()
@@ -63,7 +67,8 @@ class PipelineManager:
     
     @throw Throws PipelinesAllReadyInitialized if this method is called after pipelines have been initialized.
     @throw Throws PipelinesNotDefined if no pipelines are defined in the runtime configuration.
-    @throw May pass on PipelineConfigInvalid from _validate_pipelines() if the loaded pipeline configuration is invalid.
+    @throw May pass on PipelineSchemaInvalid exceptions if the pipeline configuration doesn't match the schema.
+    @throw May pass on PipelineConfigInvalid exceptions if the pipeline configuration contains other errors.
     """
     
     # Verify that no pipelines have been initialized yet
@@ -78,15 +83,15 @@ class PipelineManager:
       logging.error("No pipeline configurations defined, pipeline manager not initialized.")
       raise PipelinesNotDefined("No pipeline definitions were found in the configuration files.")
     
-    # Validate the pipeline configuration
-    self._validate_pipelines(pipeline_settings)
+    # Validate the pipeline configuration schema
+    self._validate_pipeline_schema(pipeline_settings)
     
     # Loop through and create a Pipeline object for each configured pipeline
     for pipeline_config in pipeline_settings:
-      temp_pipeline = pipeline.Pipeline(pipeline_config, )
+      temp_pipeline = pipeline.Pipeline(pipeline_config, self.device_manager, self.command_parser)
       self.pipelines[temp_pipeline.id] = temp_pipeline
   
-  def _validate_pipelines(self, pipeline_configuration):
+  def _validate_pipeline_schema(self, pipeline_configuration):
     """ Validates the provided pipeline configuration.
     
     This method validates the provided pipeline configuration (loaded from the configuration files) by comparing it
@@ -95,7 +100,7 @@ class PipelineManager:
     @note Each pipeline class may perform additional validations when initialized. This method simply checks the 
           pipeline configuration schema as a whole.
     
-    @throw Throws PipelineConfigInvalid if the provided pipeline configuration is invalid.
+    @throw Throws PipelineSchemaInvalid if the provided pipeline configuration schema is invalid.
     
     @param pipeline_configuration  An object containing the pipeline configuration from the YAML configuration files.
     """
@@ -182,7 +187,7 @@ class PipelineManager:
     except jsonschema.ValidationError:
       # Invalid pipeline configuration
       logging.error("Failed to initialize the pipeline manager because the pipeline configuration was invalid.")
-      raise PipelineConfigInvalid("The loaded pipeline configuration does not conform to the defined schema.")
+      raise PipelineSchemaInvalid("The loaded pipeline configuration does not conform to the defined schema.")
 
 # Define PipelineManager exceptions
 class PipelinesNotDefined(Exception):
@@ -191,5 +196,5 @@ class PipelinesAlreadyInitialized(Exception):
   pass
 class PipelineNotFound(Exception):
   pass
-class PipelineConfigInvalid(Exception):
+class PipelineSchemaInvalid(Exception):
   pass

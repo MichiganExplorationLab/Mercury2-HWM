@@ -2,7 +2,11 @@
 from twisted.trial import unittest
 from hwm.core.configuration import *
 from hwm.sessions import schedule, coordinator
-from hwm.hardware.pipelines import manager, pipeline
+from hwm.hardware.pipelines import manager as pipeline_manager, pipeline
+from hwm.hardware.devices import manager as device_manager
+from hwm.command import parser
+from hwm.command.handlers import system as command_handler
+from hwm.network.security import permissions
 from pkg_resources import Requirement, resource_filename
 
 class TestCoordinator(unittest.TestCase):
@@ -18,6 +22,12 @@ class TestCoordinator(unittest.TestCase):
     # Set the source data directory
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     
+    # Create a valid command parser and device manager for testing
+    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
+    self.device_manager = device_manager.DeviceManager()
+    permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
+    self.command_parser = parser.CommandParser({'system': command_handler.SystemCommandHandler()}, permission_manager)
+    
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
   
@@ -28,6 +38,10 @@ class TestCoordinator(unittest.TestCase):
     
     # Reset the configuration reference
     self.config = None
+    
+    # Reset the other resource references
+    self.device_manager = None
+    self.command_parser = None
   
   def test_schedule_update(self):
     """This test checks that the session coordinator can correctly instruct the schedule manager to update its schedule.
@@ -38,7 +52,7 @@ class TestCoordinator(unittest.TestCase):
     self.config._set_default_configuration()
     
     # Setup the pipeline manager
-    test_pipelines = manager.PipelineManager()
+    test_pipelines = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
     
     # Setup the schedule manager
     test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
@@ -68,7 +82,7 @@ class TestCoordinator(unittest.TestCase):
     self.config._set_default_configuration()
     
     # Setup the pipeline manager
-    test_pipelines = manager.PipelineManager()
+    test_pipelines = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
     
     # Setup the schedule manager
     test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')

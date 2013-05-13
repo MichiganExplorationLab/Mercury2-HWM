@@ -26,9 +26,11 @@ from hwm.network.security import verification, permissions
 def initialize():
   """Initializes the hardware manager.
   
-  This method initializes the hardware manager by initializing the required resources (e.g. pipeline manager, schedule 
+  This method sets up the hardware manager by initializing the required resources (e.g. pipeline manager, schedule 
   manager, configuration, etc.) and starting the event reactor. This is the main entry location for the hardware 
   manager.
+  
+  @note Any unhandled errors that occur before the event reactor is started will cause the program to exit.
   """
   
   # Set the default uncaught exception handler

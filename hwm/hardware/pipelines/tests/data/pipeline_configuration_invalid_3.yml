@@ -7,9 +7,7 @@ pipelines:
       - device_id: "test_device"
         pipeline_input: true
         pipeline_output: true
-      - device_id: "test_device2"
-        # Multiple output devices
-        pipeline_output: true
+      - device_id: "test_device_no_exist"
     setup_commands:
       - command: "test_command"
         destination: "system"

@@ -8,13 +8,14 @@ pipelines:
         pipeline_input: true
         pipeline_output: true
       - device_id: "test_device2"
-        # Multiple output devices
-        pipeline_output: true
     setup_commands:
       - command: "test_command"
         destination: "system"
         parameters:
           command_argument: False
+      # Specify a command for a device not contained in the pipeline
+      - command: "some_command"
+        destination: "test_device3"
   - id: "test_pipeline2"
     mode: "receive"
     hardware:
