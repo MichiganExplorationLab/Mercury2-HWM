@@ -2,7 +2,8 @@
 Contains a class to store the hardware manager configuration.
 
 This module contains a class that provides methods for storing, modifying, and retrieving application configuration and
-shared state for the hardware manager. Access it by importing the Configuration variable.
+some other shared state for the hardware manager. Access it by importing the Configuration variable (defined at the end
+of the module).
 """
 
 # Load the required libraries
@@ -10,19 +11,22 @@ import logging
 import yaml
 
 class Config:
-  """Provides access to the hardware manager application configuration.
+  """ Provides access to the hardware manager application configuration.
   
-  This class stores and provides access to the configuration and shared state used by the hardware manager such as the 
-  configuration, reservation schedules, and pipeline configuration. In addition, it allows users to store their own 
-  configuration options as needed. To use this class import this module (configuration) and assign a local variable to 
-  'Configuration' (makes code easier to test).
+  This class stores and provides access to the configuration and various shared state used by the hardware manager. In 
+  addition, it allows users to store their own configuration options as needed. To use this class, import this module 
+  (configuration) and assign a local variable to 'Configuration' (makes code easier to test).
+  
+  @note Although this class does store raw pipeline and hardware configuration settings (defined in the configuration 
+        files), all interactions with the pipelines and hardware occur in the PipelineManager and DeviceManager classes,
+        respectively.
   """
   
   def __init__(self):
-    """Initializes the dictionaries and other member variables used to hold the configuration.
+    """ Initializes the Config class.
     
-    @note Only user_options can be modified during program execution (using the setter/getter). This keeps prevents
-          configuration options from getting altered/deleted.
+    @note Only user_options can be modified during program execution (using the setter/getter). This prevents
+          configuration options specified in a file from getting altered/deleted.
     """
     
     # Program metadata
@@ -37,16 +41,18 @@ class Config:
     self.user_options = {}
   
   def read_configuration(self, configuration_file):
-    """Loads and parses the specified configuration file.
+    """ Loads and parses the specified configuration file.
     
     Reads in all configuration settings from the specified YAML file and stores them in the 'options' dictionary.
     
-    @throws IOError    Thrown if the specified file can't be loaded.
-    @throws Exception  Thrown if the specified file can't be parsed by the YAML parser.
+    @throws IOError            Thrown if the specified file can't be loaded.
+    @throws ConfigFileInvalid  Thrown if the specified file can't be parsed by the YAML parser.
     
     @note All configuration files are in YAML format.
-    @note All configurations are assumed to be required (i.e. this throws an exception if the file can't be loaded)
-    @note If a file is loaded that contains a previously defined protected option, the previous value will be overridden by the new value.
+    @note All configuration files are assumed to be required (i.e. this throws an exception if the file can't be 
+          loaded).
+    @note If a file is loaded that contains a previously defined protected option, the previous value will be overridden
+          by the new value.
     @see http://en.wikipedia.org/wiki/YAML
     
     @param configuration_file  The YAML configuration file to load. This is an absolute path.
@@ -59,7 +65,7 @@ class Config:
     try:
       config = yaml.load(config_stream)
     except:
-      raise Exception("Error parsing the configuration file: '"+configuration_file+"'")
+      raise ConfigFileInvalid("Error parsing the configuration file: '"+configuration_file+"'")
     
     # Merge the dictionaries
     self.options = dict(self.options.items() + config.items())
@@ -67,16 +73,20 @@ class Config:
     # Log & announce the configuration file load 
     if self.verbose_startup:
       print "- Read in configuration file: '"+configuration_file+"'."
+    
     logging.info("Configuration: Read configuration file: '"+configuration_file+"'.")
   
   def process_configuration(self):
-    """Verifies that the required configuration elements have been set.
+    """ Loads default values for unspecified configuration options and verifies that the required configuration elements
+    have been set.
     
-    This method verifies that the required configuration elements have properly been set. These elements were probably
-    loaded from a YAML configuration file via read_configuration(). In addition, 
+    This method first sets a default value for any unspecified option with an registered default value. It then verifies
+    that the required configuration elements have all been set. These elements were probably loaded from a YAML 
+    configuration file via read_configuration().
     
-    @note If a configuration option is missing, an exception will be thrown detailing the error. This exception will be
-          caught by the global exception handler.
+    @throw May pass on RequiredOptionNotFound exceptions if a required option can't be located in the loaded 
+           configuration.
+    
     @note Only configuration options loaded before this method is called will be processed. It should be called after
           all of the main configuration has been loaded (otherwise the required options check may fail).
     """
@@ -88,9 +98,9 @@ class Config:
     self._check_required_configuration()
   
   def set(self, option_key, option_value):
-    """Sets the indicated configuration option to the provided value.
+    """ Sets the indicated configuration option to the provided value.
     
-    @throws OptionProtected Thrown if the user tries to modify or set a protected run-time key.
+    @throws OptionProtected thrown if the user tries to modify or set a protected run-time option.
     
     @param option_key    The key (name) of the option to set.
     @param option_value  The value to assign to the indicated option.
@@ -110,15 +120,15 @@ class Config:
     return True
   
   def get(self, option_key):
-    """Retrieves the specified configuration option.
+    """ Retrieves the specified configuration option.
     
-    This method returns the value of the specified option from either the user defined options or pre-set runtime 
-    options.
+    This method returns the value of the specified option whether it is a user defined option or an option loaded from 
+    a YAML configuration file.
     
-    @throws OptionNotFound Thrown if the specified option can't be located in either configuration value dictionary.
+    @throws OptionNotFound Thrown if the specified option can't be located.
     
     @param option_key  The key of the option to query for.
-    @return Returns the value of the specified option if found.
+    @return Returns the value of the specified option if it exists.
     """
     
     # Check if the option was pre-set
@@ -133,10 +143,13 @@ class Config:
     raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
   
   def delete(self, option_key):
-    """Removes the specified configuration option from the user options dictionary.
+    """ Removes the specified configuration option from the user options dictionary.
     
-    @throws OptionProtected Thrown if the user tries to delete a protected run-time option.
-    @throws OptionNotFound Thrown if the option can't be located.
+    @note Only user defined configuration options can be removed.
+    
+    @throws OptionProtected thrown if the user tries to delete a protected option (originally defined in a YAML 
+            configuration file).
+    @throws OptionNotFound thrown if the requested option can't be located.
     
     @param option_key  The key of the option to remove.
     @return Returns True if the option was successfully deleted.
@@ -157,13 +170,13 @@ class Config:
     raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
   
   def _set_default_configuration(self):
-    """Sets the default values for configuration elements that have not been set.
+    """ Sets the default values for configuration elements that have not been set.
     
     @note If a configuration option with a default value has been set (most likely from a file by read_configuration), 
           that value will be used instead of the default.
-    @note The default values for network or local locations include the user interface base URL and the base application
-          data directory (meaning they don't beed to be added manually when used). This allows the station admin to set
-          these to whatever they'd like (e.g. somewhere not in self.data_directory).
+    @note The default values for network or local locations are prefixed with the user interface base URL and the base 
+          application data directory, respectively. This allows the station admin to set these to whatever they'd like 
+          (e.g. somewhere not in self.data_directory).
     """
     
     # Set the UI location for the default location parameters. If this isn't set, then just use a blank string and 
@@ -201,17 +214,17 @@ class Config:
     logging.info("Configuration: Successfully set default configuration options.")
   
   def _check_required_configuration(self):
-    """Verifies that the required configuration elements have been set.
+    """ Verifies that the required configuration elements have been set.
     
     This method verifies that the required configuration elements have properly been set.
     
-    @note If a configuration option is missing, an exception will be thrown detailing the error. This exception will be
-          caught by the global exception handler.
+    @throw Throws RequiredOptionNotFound if a required option can't be located in the loaded configuration. 
+    
     @note Network locations must start with http (either http or https).
     """
     
     # Set some default error messages
-    error_missing_option = "Required configuration option not set: '{}'. Please add it to a loaded configuration file."
+    missing_option_error = "Required configuration option not set: '{}'. Please specify it in a configuration file."
     
     # List the required configuration options
     required_options = [
@@ -226,7 +239,7 @@ class Config:
     # Validate the options
     for required_option in required_options:
       if required_option not in self.options:
-        raise Exception(error_missing_option.format(required_option))
+        raise RequiredOptionNotFound(missing_option_error.format(required_option))
     
     # Log and announce
     if self.verbose_startup:
@@ -234,7 +247,11 @@ class Config:
     logging.info("Configuration: Successfully validated required configuration options.")
 
 # Define configuration exceptions
+class ConfigFileInvalid(Exception):
+  pass
 class OptionProtected(Exception):
+  pass
+class RequiredOptionNotFound(Exception):
   pass
 class OptionNotFound(Exception):
   pass
