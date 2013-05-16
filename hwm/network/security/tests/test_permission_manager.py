@@ -38,7 +38,7 @@ class TestPermissionManager(unittest.TestCase):
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_doesnt_exist.json', 3600)
     
     # Force a file load
-    update_deferred = permission_manager.get_user_permissions('test_user_old')
+    update_deferred = permission_manager.get_user_permissions('2')
     
     return self.assertFailure(update_deferred, permissions.PermissionsError)
   
@@ -51,7 +51,7 @@ class TestPermissionManager(unittest.TestCase):
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_invalid.json', 3600)
     
     # Force a file load
-    update_deferred = permission_manager.get_user_permissions('test_admin')
+    update_deferred = permission_manager.get_user_permissions('1')
     
     return self.assertFailure(update_deferred, permissions.PermissionsInvalidSchema)
   
@@ -65,15 +65,15 @@ class TestPermissionManager(unittest.TestCase):
     
     def user_permissions_callback(permission_settings):
       # Verify that the returned permissions are correct
-      self.assertEqual(permission_settings['user_id'], 'test_admin')
+      self.assertEqual(permission_settings['user_id'], '1')
       self.assertEqual(len(permission_settings['permitted_commands']), 2) 
       
       # Manually make sure the permissions were saved
-      self.assertEqual(permission_manager.permissions['test_admin']['user_id'], 'test_admin')
-      self.assertEqual(len(permission_manager.permissions['test_admin']['permitted_commands']), 2) 
+      self.assertEqual(permission_manager.permissions['1']['username'], 'test_admin')
+      self.assertEqual(len(permission_manager.permissions['1']['permitted_commands']), 2) 
     
     # Force a file load
-    update_deferred = permission_manager.get_user_permissions('test_admin')
+    update_deferred = permission_manager.get_user_permissions('1')
     update_deferred.addCallback(user_permissions_callback)
     
     return update_deferred
@@ -88,18 +88,18 @@ class TestPermissionManager(unittest.TestCase):
     
     def check_permission_update(permission_settings):
       # Check that the old version of the user's permissions were returned while they're being updated
-      self.assertTrue(permission_manager.permissions['test_user_old']['loaded_at'] == 42, "A user's cached permissions weren't returned as expected.")
+      self.assertTrue(permission_manager.permissions['2']['loaded_at'] == 42, "A user's cached permissions weren't returned as expected.")
     
     def user_permissions_callback(permission_settings):
-      # Reset the loaded_at time for some user to be older than the update interval for the permission manager
-      permission_manager.permissions['test_user_old']['loaded_at'] = 42
+      # Reset the loaded_at time for the user to be older than the update interval for the permission manager
+      permission_manager.permissions['2']['loaded_at'] = 42
       
       # Get the user's permissions
-      reload_deferred = permission_manager.get_user_permissions('test_user_old')
+      reload_deferred = permission_manager.get_user_permissions('2')
       reload_deferred.addCallback(check_permission_update)
     
     # Force a file load
-    update_deferred = permission_manager.get_user_permissions('test_admin')
+    update_deferred = permission_manager.get_user_permissions('1')
     update_deferred.addCallback(user_permissions_callback)
     
     return update_deferred
@@ -112,22 +112,22 @@ class TestPermissionManager(unittest.TestCase):
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     
     def check_permission_update(permission_settings):
-      # Check that the old version of the user's permissions were returned while they're being updates
-      self.assertTrue(permission_manager.permissions['test_user_old']['loaded_at'] == 42, "A user's cached permissions weren't returned as expected.")
+      # Check that the old version of the user's permissions was returned because the update should have failed
+      self.assertTrue(permission_manager.permissions['2']['loaded_at'] == 42, "A user's cached permissions weren't returned as expected.")
     
     def user_permissions_callback(permission_settings):
-      # Reset the loaded_at time for some user to be older than the update interval for the permission manager
-      permission_manager.permissions['test_user_old']['loaded_at'] = 42
+      # Reset the loaded_at time for the user to be older than the update interval for the permission manager
+      permission_manager.permissions['2']['loaded_at'] = 42
       
       # Update the endpoint to be invalid (trial will fail if the update deferred doesn't get cleaned up)
-      permission_manager.permissions_location = self.source_data_directory+'/network/security/tests/data/test_permissions_doesnt_exist.json';
+      permission_manager.permissions_location = self.source_data_directory+'/network/security/tests/data/test_permissions_doesnt_exist.json'
       
       # Get the user's permissions
-      reload_deferred = permission_manager.get_user_permissions('test_user_old')
+      reload_deferred = permission_manager.get_user_permissions('2')
       reload_deferred.addCallback(check_permission_update)
       
     # Force a file load
-    update_deferred = permission_manager.get_user_permissions('test_admin')
+    update_deferred = permission_manager.get_user_permissions('1')
     update_deferred.addCallback(user_permissions_callback)
     
     return update_deferred
@@ -140,7 +140,7 @@ class TestPermissionManager(unittest.TestCase):
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     
     # Force a file load
-    update_deferred = permission_manager.get_user_permissions('test_doesnt_exist')
+    update_deferred = permission_manager.get_user_permissions('99')
     
     return self.assertFailure(update_deferred, permissions.PermissionsUserNotFound)
   
@@ -153,19 +153,19 @@ class TestPermissionManager(unittest.TestCase):
     
     def user_permissions_callback(permission_settings):
       # Verify that the permissions are in the dictionary before the purge
-      self.assertTrue('test_user_old' in permission_manager.permissions, "The user's permissions weren't correctly saved after a load.")
+      self.assertTrue('2' in permission_manager.permissions, "The user's permissions weren't correctly saved after a load.")
       
       # Modify the loaded_at age for the purge to work
-      permission_manager.permissions['test_user_old']['loaded_at'] = int(time.time())-5000
+      permission_manager.permissions['2']['loaded_at'] = int(time.time())-5000
       
       # Purge the old permissions (older than 1 hour)
       permission_manager.purge_user_permissions(3600)
       
       # Make sure the permissions were purged
-      self.assertTrue('test_user_old' not in permission_manager.permissions, "A user's permissions weren't correctly purged.")
+      self.assertTrue('2' not in permission_manager.permissions, "A user's permissions weren't correctly purged.")
     
     # Force a file load
-    update_deferred = permission_manager.get_user_permissions('test_user_old')
+    update_deferred = permission_manager.get_user_permissions('2')
     update_deferred.addCallback(user_permissions_callback)
     
     return update_deferred

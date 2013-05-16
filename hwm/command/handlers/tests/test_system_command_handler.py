@@ -51,7 +51,7 @@ class TestSystemCommandHandler(unittest.TestCase):
       self.assertTrue('timestamp' in response_dict['result'], 'The response did not contain a timestamp field.')
     
     # Send a time request to the parser
-    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", "test_user")
+    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", user_id="4")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred

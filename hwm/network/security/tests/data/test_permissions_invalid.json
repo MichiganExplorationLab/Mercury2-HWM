@@ -1,7 +1,8 @@
 [
   {
     "generated_at": 1565193306,
-    "user_id": "test_admin",
+    "user_id": "1",
+    "username": "test_admin",
     "ignore_session_protections": true,
     "permitted_commands": [
       {
@@ -16,7 +17,8 @@
   },
   {
     "generated_at": 1265262590,
-    "user_id_invalid": "test_user",
+    "user_id_invalid": "4",
+    "username": "test_user",
     "ignore_session_protections": false,
     "permitted_commands": [
       {

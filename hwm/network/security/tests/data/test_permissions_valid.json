@@ -1,7 +1,8 @@
 [
   {
     "generated_at": 1565193306,
-    "user_id": "test_admin",
+    "user_id": "1",
+    "username": "test_admin",
     "ignore_session_protections": true,
     "permitted_commands": [
       {
@@ -16,7 +17,8 @@
   },
   {
     "generated_at": 1265262590,
-    "user_id": "test_user_old",
+    "user_id": "2",
+    "username": "test_user_old",
     "ignore_session_protections": false,
     "permitted_commands": [
       {
@@ -27,7 +29,8 @@
   },
   {
     "generated_at": 1265447177,
-    "user_id": "test_user_old_2",
+    "user_id": "3",
+    "username": "test_user_old_2",
     "ignore_session_protections": false,
     "permitted_commands": [
       {
@@ -38,7 +41,8 @@
   },
   {
     "generated_at": 1365562608,
-    "user_id": "test_user",
+    "user_id": "4",
+    "username": "test_user",
     "ignore_session_protections": false,
     "permitted_commands": [
       {
@@ -53,7 +57,8 @@
   },
   {
     "generated_at": 1365562608,
-    "user_id": "test_user_no_permissions",
+    "user_id": "5",
+    "username": "test_user_no_permissions",
     "ignore_session_protections": false,
     "permitted_commands": [
     ]

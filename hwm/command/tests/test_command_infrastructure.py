@@ -135,7 +135,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
     
     # Send an unrecognized command the to parser
-    test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
+    test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", user_id='4')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -153,7 +153,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertNotEqual(response_dict['result']['error_message'].find('malformed'), -1, 'The parser did not return the correct error response (response did not contain \'malformed\').')
     
     # Send a malformed command the to parser
-    test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}", user_id='test_user')
+    test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}", user_id='4')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -170,7 +170,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['status'], 'error')
     
     # Parse an invalid command the to parser (doesn't contain a destination)
-    test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
+    test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", user_id='4')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -188,7 +188,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['result']['restricted_command'], 'station_time', "The returned error response was incorrect (didn't include the 'restricted_command' field).")
     
     # Send a command that the user can't execute
-    test_deferred = self.command_parser.parse_command("{\"command\":\"station_time\",\"destination\":\"system\"}", user_id='test_user_no_permissions')
+    test_deferred = self.command_parser.parse_command("{\"command\":\"station_time\",\"destination\":\"system\"}", user_id='5')
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -209,7 +209,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       'command': "station_time",
       'destination': "system"
     }
-    test_deferred = self.command_parser.parse_command(test_command, user_id="test_user")
+    test_deferred = self.command_parser.parse_command(test_command, user_id="4")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -226,7 +226,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertTrue('timestamp' in response_dict['result'], 'The response did not contain a timestamp field.')
     
     # Send a time request command to the parser
-    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", user_id="test_user")
+    test_deferred = self.command_parser.parse_command("{\"command\": \"station_time\",\"destination\":\"system\"}", user_id="4")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -245,7 +245,7 @@ class TestCommandInfrastructure(unittest.TestCase):
       self.assertEqual(response_dict['result']['submitted_command'], 'test_error', 'The response did not contain the expected test error field value.')
     
     # Send a time request command to the parser
-    test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", user_id="test_user")
+    test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", user_id="4")
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
@@ -293,7 +293,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new malformed command
-    test_command = command.Command(time.time(), "{\"invalid_json\":true,invalid_element}", user_id='test_user')
+    test_command = command.Command(time.time(), "{\"invalid_json\":true,invalid_element}", user_id='4')
     
     test_deferred = test_command.validate_command()
     
@@ -304,7 +304,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new invalid command
-    test_command = command.Command(time.time(), "{\"message\": \"This schema is invalid\"}", user_id='test_user')
+    test_command = command.Command(time.time(), "{\"message\": \"This schema is invalid\"}", user_id='4')
     
     test_deferred = test_command.validate_command()
     
@@ -315,7 +315,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a new command without a destination
-    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
+    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", user_id='4')
     
     test_deferred = test_command.validate_command()
     
@@ -327,7 +327,7 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Create a valid command
-    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", user_id='test_user')
+    test_command = command.Command(time.time(), "{\"command\":\"test_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", user_id='4')
     
     # Define a callback to verify the Command after validation is complete
     def validation_complete(validation_results):

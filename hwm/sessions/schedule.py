@@ -157,6 +157,11 @@ class ScheduleManager:
                 "type": "string",
                 "id": "user_id",
                 "required": True
+              },
+              "username": {
+                "type": "string",
+                "id": "username",
+                "required": True
               }
             }
           }
