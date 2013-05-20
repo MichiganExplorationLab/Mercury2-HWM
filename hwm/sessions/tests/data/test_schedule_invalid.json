@@ -2,13 +2,13 @@
   "generated_at": 1360096490,
   "reservations": [
     {
-        "reservation_id": "RES.1",
-        "user_id": "1",
-        "username": "test_admin",
-        "time_start": 1360096495,
-        "time_end": 1360097495,
-        "description": "Invalid because it doesn't contain any hardware_settings",
-        "pipeline_id": "test_pipeline"
+      "reservation_id": "RES.1",
+      "user_id": "1",
+      "username": "test_admin",
+      "time_start": 1360096495,
+      "time_end": 1360097495,
+      "description": "This reservation is invalid because it doesn't contain any setup commands.",
+      "pipeline_id": "test_pipeline",
     }
   ]
 }
