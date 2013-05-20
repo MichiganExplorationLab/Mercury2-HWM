@@ -35,7 +35,7 @@ class TestSchedule(unittest.TestCase):
     
     return update_deferred
   
-  def test_local_file_load_invalid(self):
+  def test_local_file_load_invalid_schema(self):
     """Verifies that ScheduleManager rejects schedules that don't fit the schedule schema requirements (see included 
     documentation for requirements).
     """

@@ -106,9 +106,9 @@ class DeviceManager:
         _drivers = __import__('hwm.hardware.devices.drivers.'+package_name, globals(), locals(), [package_name], -1)
         driver_module = getattr(_drivers, package_name)
       except ImportError:
-        logging.error("The package or module '"+package_name+"' could not be loaded for device '"+
+        logging.error("The driver package or module '"+package_name+"' could not be loaded for device '"+
                       device_config['id']+"'.")
-        raise DriverNotFound("The package or module for the device '"+device_config['id']+"' could not be "+
+        raise DriverNotFound("The driver package or module for the device '"+device_config['id']+"' could not be "+
                              "located.")
       
       # Attempt to initialize the driver

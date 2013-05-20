@@ -14,17 +14,20 @@ class Session:
   instances are managed by the session coordinator, which is responsible for creating and destroying sessions as needed.
   """
   
-  def __init__(self, session_pipeline):
+  def __init__(self, reservation_configuration, session_pipeline):
     """Initializes the new session.
     
     This constructor sets up a new session and associates it with the specified hardware pipeline.
     
     @note The provided pipeline is locked by the pipeline manager before the session is initialized.
     
-    @param session_pipeline  The pipeline that this session will use.
+    @param reservation_configuration  A dictionary containing the configuration settings for the reservation associated
+                                      with this session.
+    @param session_pipeline           The pipeline that this session will use.
     """
     
-    # Initialize the session attributes
+    # Set the session attributes
     self.active_pipeline = session_pipeline
     
+    # Setup the pipeline (locks hardware and runs pipeline initialization commands)
     

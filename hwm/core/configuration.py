@@ -257,5 +257,6 @@ class OptionNotFound(Exception):
   pass
 
 ## Stores a 'singleton' instance of the Config object. Assign local references to this instance to access the 
-# configuration.
+# configuration. Because this is a top level module variable, it will only be initialized the first time this module
+# is included.
 Configuration = Config()

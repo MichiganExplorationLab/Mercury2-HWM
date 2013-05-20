@@ -56,9 +56,9 @@ def build_metadata_dict(command_parameters, command_id, command_handler_name, re
                                   state (e.g. turn of devices, delete sessions, etc.). This flag will cause the user
                                   interface to restrict access to the command by default (which can be overridden if
                                   desired).
-  @param schedulable              Indicates that the command can be scheduled using the command scheduling service (if 
-                                  the active pipeline supports it). If it can, the user interface will use this to build
-                                  a form to schedule this command during the reservation process.
+  @param schedulable              Indicates that the command can be scheduled using the reservation scheduling service 
+                                  (if the active pipeline supports it). If it can, the user interface will use this to 
+                                  build a form to schedule this command during the reservation process.
   @param use_as_initial_value     If set, the user interface will use this command when building the device or system's
                                   initial state configuration forms during the reservation process. This can be used, 
                                   for example, to set the initial frequency that a radio should be tunned to.

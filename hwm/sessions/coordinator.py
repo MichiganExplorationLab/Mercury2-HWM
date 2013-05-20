@@ -84,7 +84,8 @@ class SessionCoordinator:
           continue
         
         # Create a session object for the newly active reservation
-        self.active_sessions[active_reservation['reservation_id']] = session.Session(requested_pipeline)
+        self.active_sessions[active_reservation['reservation_id']] = session.Session(active_reservation, 
+                                                                                     requested_pipeline)
   
   def _update_schedule(self):
     """ Updates the schedule if appropriate.

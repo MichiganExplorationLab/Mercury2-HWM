@@ -21,6 +21,9 @@ class Pipeline:
     
     @param pipeline_configuration  A dictionary containing the settings to initialize the pipeline with. This is 
                                    supplied by the pipeline manager and is loaded from the pipeline configuration file.
+    @param device_manager          A reference to the DeviceManager that should be used to load pipeline hardware.
+    @param command_parser          A reference to the CommandParser that should be used to execute pipeline setup
+                                   commands.
     """
     
     # Initialize pipeline attributes
@@ -50,7 +53,8 @@ class Pipeline:
     - Multiple pipeline output devices
     - Non-existent devices
     - Duplicate devices
-    - Pipeline setup commands that don't use a system device handler or a device handler belonging to the pipeline
+    - Pipeline setup commands that don't use a system command handler or a device handler for a device used by the 
+      pipeline
     
     @throw May throw PipelineConfigInvalid if any errors are detected.
     """
@@ -96,7 +100,7 @@ class Pipeline:
           output_device_found = True
   
     # Loop through the pipeline setup commands and make sure they reference a system command handler or a command handler
-    # for a device used by the pipeline
+    # for a device used/owned by the pipeline
     if self.setup_commands is not None:
       for temp_command in self.setup_commands:
         if (temp_command['destination'] not in self.command_parser.system_command_handlers and
