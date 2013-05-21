@@ -174,7 +174,8 @@ class CommandParser:
                                "result" field of the JSON response). This is returned by the individual command 
                                functions in the command handlers.
     @param successful_command  The command that just completed.
-    @return Returns the constructed command response dictionary. This dictionary is fed into following callbacks.
+    @return Returns the constructed command response dictionary. This dictionary is fed into callbacks waiting for the
+            command results.
     """
     
     command_response = successful_command.build_command_response(True, command_results)

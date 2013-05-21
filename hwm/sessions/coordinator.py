@@ -75,17 +75,10 @@ class SessionCoordinator:
                         "be found. Requested pipeline: "+active_reservation['pipeline_id'])
           continue
         
-        # Try to reserve the pipeline
-        try:
-          requested_pipeline.reserve_pipeline()
-        except pipeline.PipelineInUse:
-          logging.error("The pipeline requested for reservation '"+active_reservation['reservation_id']+"' is "+
-                        "currently being used and can not be locked.")
-          continue
-        
         # Create a session object for the newly active reservation
         self.active_sessions[active_reservation['reservation_id']] = session.Session(active_reservation, 
                                                                                      requested_pipeline)
+        self.active_sessions[active_reservation['reservation_id']].start_session()
   
   def _update_schedule(self):
     """ Updates the schedule if appropriate.
