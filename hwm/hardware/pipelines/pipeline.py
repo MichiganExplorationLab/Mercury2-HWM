@@ -111,18 +111,23 @@ class Pipeline:
                                       "command handlers that the pipeline does not have access to.")
   
   def reserve_pipeline(self):
-    """ Locks the pipeline.
+    """ Locks the pipeline and its hardware.
     
-    This method is used primarily by the session coordinator to ensure that a pipeline is never used concurrently by two
-    different sessions. However, to enable some more design flexibility, this is enforced purely by convention (unlike a
-    mutex).
+    This method is used primarily by the sessions to ensure that a pipeline and its hardware is never used concurrently
+    by two different sessions. 
     
-    @throw Raises PipelineInUse if the pipeline is currently being used and can't be locked.
+    @note If a pipeline can not be reserved because one or more of its hardware devices is currently locked, it will 
+          
+    
+    @throw Raises PipelineInUse if the pipeline or any of its hardware is currently being used and can't be locked.
     """
     
     # Check if the pipeline is being used
     if self.in_use:
       raise PipelineInUse("The pipeline requested is all ready in use and can not be reserved.")
+    
+    # Lock all of the pipeline's hardware
+    
     
     # Lock the pipeline
     self.in_use = True
@@ -130,10 +135,13 @@ class Pipeline:
   def free_pipeline(self):
     """ Frees the pipeline.
     
-    This method is used to free a pipeline. This typically occurs at the conclusion of a usage session.
+    This method is used to free the hardware pipeline. This typically occurs at the conclusion of a usage session, but 
+    it can also occur in the event that a session that is currently using the pipeline experiences a fatal error.
     """
     
-    # Free the pipeline
+    # Free the device hardware
+    
+    # The pipeline is free
     self.in_use = False
 
 # Define the Pipeline exceptions

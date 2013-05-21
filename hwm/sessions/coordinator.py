@@ -33,8 +33,9 @@ class SessionCoordinator:
     self.pipelines = pipeline_manager
     self.config = configuration.Configuration
     
-    # Initialize required attributes
-    self.active_sessions = {}
+    # Initialize coordinator attributes
+    self.active_sessions = {} # Sessions that are currently running or being prepared to run
+    self.closed_sessions = {} # Sessions that have been completed or experienced a fatal error during initialization
   
   def coordinate(self):
     """ Coordinates the operation of the hardware manager.
@@ -48,7 +49,9 @@ class SessionCoordinator:
     # Update the schedule if required
     self._update_schedule()
     
-    # Create new session if needed
+    # Check for completed sessions
+    
+    # Check the schedule for newly active reservations
     self._check_for_new_reservations()
     
     print 'COORDINATE'
@@ -58,7 +61,7 @@ class SessionCoordinator:
     
     This method checks for newly active reservations in the reservation schedule and creates sessions for them.
     
-    @note If an error is encountered when loading or reserving a pipeline the exception will be logged gracefully.
+    @note If a session-fatal error occurs during the session initialization process, it will be logged and 
     """
     
     # Get the list of active reservations
@@ -78,7 +81,40 @@ class SessionCoordinator:
         # Create a session object for the newly active reservation
         self.active_sessions[active_reservation['reservation_id']] = session.Session(active_reservation, 
                                                                                      requested_pipeline)
-        self.active_sessions[active_reservation['reservation_id']].start_session()
+        session_init_deferred = self.active_sessions[active_reservation['reservation_id']].start_session()
+        session_init_deferred.addCallbacks(self._session_init_complete,
+                                           self._session_init_failed,
+                                           callbackArgs = (active_reservation['reservation_id']),
+                                           errbackArgs = (active_reservation['reservation_id']))
+  
+  def _session_init_complete(self, session_command_results, reservation_id):
+    """ Called once a new session is up and running.
+    
+    This callback is called after the associated session is up and running. It registers that the session is running
+    and notes any failed session setup commands (which will be indicated in session_command_results).
+    
+    @param session_command_results  An array containing the results of each session setup command.
+    @param reservation_id           The ID of the reservation that was just started.
+    @return Passes on the results of the session setup commands.
+    """
+    
+    
+  
+  def _session_init_failed(self, failure, reservation_id):
+    """ Handles fatal session initialization errors.
+    
+    This callback is responsible for handling fatal session errors such as failed pipeline setup commands and hardware
+    locking errors by registering the failure and saving the reservation ID so it won't be re-run by coordinate().
+    
+    @note This callback does not need to worry about cleaning up after the session or resetting the pipeline state. The
+          session will do that automatically when it fails to setup the pipeline.
+    
+    @param failure         A Failure object encapsulating the session fatal error.
+    @param reservation_id  The ID of the reservation that could not be started.
+    @return Returns True after the error has been dealt with.
+    """
+    
+    
   
   def _update_schedule(self):
     """ Updates the schedule if appropriate.
@@ -87,9 +123,6 @@ class SessionCoordinator:
     
     @return Returns the schedule update deferred from the schedule manager.
     """
-    
-    # Forward declarations
-    schedule_update_deferred = None
     
     # Check if the schedule needs to be updated
     if (time.time()-self.schedule.last_updated) > self.config.get('schedule-update-period'):

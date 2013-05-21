@@ -44,20 +44,67 @@ class Session:
     @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline or
             executing the pipeline setup commands. This will cause the session coordinator to log the error and end the 
             session. Session setup commands don't generate a session-fatal error and are simply noted by the session 
-            coordinator. This is done because this will often be recoverable with furthor input from the session user.
+            coordinator. This is done because this will often be recoverable with additional input from the session 
+            user.
     
     @note All of the pipeline setup commands will always be executed before any of the session setup commands are.
-    @note If a session fatal error occurs, a callback in this class with automatically clean up the session. It does not
-          need to be done by the session coordinator.
+    @note If a session fatal error occurs, the self._session_setup_error callback will automatically clean up the 
+          session. Whatever calls this function (i.e. SessionCoordinator) doesn't need to worry about it.
     
-    @return Returns a deferred that will be fired with the results of session setup commands if the session is up and
+    @return Returns a deferred that will be fired with the results of session setup commands (an array containing the 
+            results for each setup command). 
     """
     
     # Lock the pipeline and pipeline hardware
     try:
-      requested_pipeline.reserve_pipeline()
+      self.active_pipeline.reserve_pipeline()
     except pipeline.PipelineInUse:
-      logging.error("The pipeline requested for reservation '"+self.configuration['reservation_id']+"' is "+
-                    "currently being used and can not be locked.")
-      return defer.fail()
+      return defer.fail(pipeline.PipelineInUse("The pipeline requested for reservation '"+
+                                               self.configuration['reservation_id']+"' could not be locked."))
+    
+    # Execute the pipeline setup commands
+    pipeline_setup_deferred = self._run_pipeline_setup_commands()
+    pipeline_setup_deferred.addCallback(self._run_session_setup_commands)
+    pipeline_setup_deferred.addErrback(self._session_setup_error)
+    
+    return pipeline_setup_deferred
+  
+  def _run_pipeline_setup_commands(self):
+    """ Runs the pipeline setup commands for the pipeline used by this session.
+    
+    This method runs the pipeline setup commands, which are responsible for putting the pipeline in its intended state
+    before running the session setup commands.
+    
+    @return Returns a DeferredList that will be fired with the results of the pipeline setup commands. If any of the 
+            pipeline setup commands fail, this method will return a deferred pre-fired with a Failure.
+    """
+    
+    
+  
+  def _run_session_setup_commands(self, pipeline_setup_commands_results):
+    """ Runs the session setup commands.
+    
+    This callback runs the session setup commands after the pipeline setup commands have all been executed successfully.
+    The session setup commands are responsible for putting the pipeline in the desired initial configuration based on 
+    this session's associated reservation. For example, they can be used by the pipeline user to set the initial radio
+    frequency.
+    
+    @param pipeline_setup_commands_results  An array containing the results of the pipeline setup commands.
+    """
+    
+    
+  
+  def _session_setup_error(self, failure):
+    """ Cleans up after session-fatal errors.
+    
+    This callback handles session fatal errors that may have occured during the session initialization process. For
+    example, a failure to lock pipeline hardware and failed pipeline setup commands both generate a fatal error (leaving
+    the session in a non-running state). It cleans up after the session by rolling back any state changes made by the 
+    process so far (such as hardware locks).
+    
+    @throw This method doesn't trap any exceptions. Rather, it just lets them keep propagating 
+    
+    @param failure  A Failure object encapsulating the error.
+    """
+    
     
