@@ -23,7 +23,8 @@ class CommandParser:
     @param system_command_handlers  A dictionary containing references to all of the system command handlers. If a
                                     command's destination field references an element in this dictionary, that command
                                     handler will be used. Otherwise, it will be delegated to a device command handler.
-    @param permission_manager       A reference to the user permission manager.
+    @param permission_manager       A reference to the permissions manager instance that will be used to determine if a
+                                    user has the permissions to execute a given command.
     """
     
     # Set the class attributes
@@ -79,7 +80,7 @@ class CommandParser:
     command_deferred.addErrback(self._command_error, new_command)
     
     return command_deferred
-  
+
   def _load_permissions(self, validation_results, valid_command):
     """ Loads the user's permissions, if required.
     

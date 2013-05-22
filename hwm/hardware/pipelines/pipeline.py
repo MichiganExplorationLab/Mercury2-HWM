@@ -7,6 +7,7 @@ This modules contains the class that is used to represent individual hardware pi
 # Import required packages
 import logging
 from hwm.hardware.devices import manager as device_manager
+from hwm.hardware.devices.drivers import driver
 
 class Pipeline:
   """ Represents and provides access to a hardware pipeline.
@@ -62,7 +63,6 @@ class Pipeline:
     # Validation flags
     input_device_found = False
     output_device_found = False
-    curr_device_driver = None
     
     # Loop through the pipeline's hardware
     for temp_device in self.pipeline_configuration['hardware']:
@@ -99,8 +99,8 @@ class Pipeline:
           self.output_device = curr_device_driver
           output_device_found = True
   
-    # Loop through the pipeline setup commands and make sure they reference a system command handler or a command handler
-    # for a device used/owned by the pipeline
+    # Loop through the pipeline setup commands and make sure they reference a system command handler or a command 
+    # handler for a device used/owned by the pipeline
     if self.setup_commands is not None:
       for temp_command in self.setup_commands:
         if (temp_command['destination'] not in self.command_parser.system_command_handlers and
@@ -113,21 +113,34 @@ class Pipeline:
   def reserve_pipeline(self):
     """ Locks the pipeline and its hardware.
     
-    This method is used primarily by the sessions to ensure that a pipeline and its hardware is never used concurrently
-    by two different sessions. 
+    This method is used primarily by sessions to ensure that a pipeline and its hardware are never used concurrently
+    by two different sessions.
     
     @note If a pipeline can not be reserved because one or more of its hardware devices is currently locked, it will 
-          
+          rollback any locks that it may have acquired already.
     
     @throw Raises PipelineInUse if the pipeline or any of its hardware is currently being used and can't be locked.
     """
     
+    successfully_locked_devices = []
+
     # Check if the pipeline is being used
     if self.in_use:
-      raise PipelineInUse("The pipeline requested is all ready in use and can not be reserved.")
+      raise PipelineInUse("The requested pipeline is all ready in use and can not be reserved.")
     
     # Lock all of the pipeline's hardware
-    
+    for device_id in self.devices:
+      # Attempt to lock the device
+      try:
+        self.devices[device_id].reserve_device()
+        successfully_locked_devices.append(device_id)
+      except driver.DeviceInUse:
+        # A device in the pipeline is currently being used, rollback locking changes
+        for locked_device in successfully_locked_devices:
+          self.devices[locked_device].free_device()
+
+        raise PipelineInUse("One or more of the devices in the '"+self.id+"' pipeline is currently being used so the "+
+                            +"pipeline can't be reserved.")
     
     # Lock the pipeline
     self.in_use = True
@@ -137,9 +150,15 @@ class Pipeline:
     
     This method is used to free the hardware pipeline. This typically occurs at the conclusion of a usage session, but 
     it can also occur in the event that a session that is currently using the pipeline experiences a fatal error.
+
+    @note This method will only unlock hardware devices if the pipeline is in use. This will prevent the pipeline from 
+          unlocking devices that are being used by other pipelines that share some of the same hardware devices.
     """
     
-    # Free the device hardware
+    # Free the pipeline's hardware devices
+    if self.in_use:
+      for device_id in self.devices:
+        self.devices[device_id].free_device()
     
     # The pipeline is free
     self.in_use = False

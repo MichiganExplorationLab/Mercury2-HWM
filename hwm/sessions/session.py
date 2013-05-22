@@ -86,8 +86,8 @@ class Session:
     
     This callback runs the session setup commands after the pipeline setup commands have all been executed successfully.
     The session setup commands are responsible for putting the pipeline in the desired initial configuration based on 
-    this session's associated reservation. For example, they can be used by the pipeline user to set the initial radio
-    frequency.
+    this session's associated reservation. For example, setup commands can be used by the pipeline user to set the 
+    initial radio frequency.
     
     @param pipeline_setup_commands_results  An array containing the results of the pipeline setup commands.
     """
@@ -98,13 +98,16 @@ class Session:
     """ Cleans up after session-fatal errors.
     
     This callback handles session fatal errors that may have occured during the session initialization process. For
-    example, a failure to lock pipeline hardware and failed pipeline setup commands both generate a fatal error (leaving
-    the session in a non-running state). It cleans up after the session by rolling back any state changes made by the 
-    process so far (such as hardware locks).
+    example, a failure to lock pipeline hardware or to execute pipeline setup commands both generate a fatal error 
+    (leaving the session in a non-running state). It cleans up after the session by rolling back any state changes made 
+    by the process so far (such as hardware locks).
     
-    @throw This method doesn't trap any exceptions. Rather, it just lets them keep propagating 
+    @throw Will re-raise the triggering exception so that the session coordinator can perform additional clean up if 
+           necessary. Because DeferredList wraps its failures in another class, this method will flatten the exception
+           so that it is consistent for the session coordinator.
+
     
-    @param failure  A Failure object encapsulating the error.
+    @param failure  A Failure object encapsulating the error (or FirstError if it was a DeferredList that failed).
     """
     
     
