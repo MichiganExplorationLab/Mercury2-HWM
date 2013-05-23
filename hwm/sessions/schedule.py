@@ -117,7 +117,7 @@ class ScheduleManager:
             "properties": {
               "setup_commands": {
                 "type": "array",
-                "required": True,
+                "required": False,
                 "items": {
                   "type": "object",
                   "additionalProperties": False,

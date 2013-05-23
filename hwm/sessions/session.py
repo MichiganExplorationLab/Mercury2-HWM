@@ -17,7 +17,7 @@ class Session:
   as needed.
   """
   
-  def __init__(self, reservation_configuration, session_pipeline):
+  def __init__(self, reservation_configuration, session_pipeline, command_parser):
     """ Initializes the new session.
     
     @note The provided pipeline is not locked when it is passed in. self.start_session needs to be called to lock up the
@@ -26,11 +26,18 @@ class Session:
     @param reservation_configuration  A dictionary containing the configuration settings for the reservation associated
                                       with this session.
     @param session_pipeline           The pipeline that this session will use.
+    @param command_parser             The CommandParser that will be used to execute the session setup commands.
     """
     
     # Set the session attributes
     self.active_pipeline = session_pipeline
+    self.command_parser = command_parser
     self.configuration = reservation_configuration
+    self.user_id = reservation_configuration['user_id']
+    if 'setup_commands' in reservation_configuration:
+      self.setup_commands = reservation_configuration['setup_commands']
+    else:
+      self.setup_commands = None
     self.active = False
   
   def start_session(self):
@@ -63,38 +70,13 @@ class Session:
                                                self.configuration['reservation_id']+"' could not be locked."))
     
     # Execute the pipeline setup commands
-    pipeline_setup_deferred = self._run_pipeline_setup_commands()
-    pipeline_setup_deferred.addCallback(self._run_session_setup_commands)
+    pipeline_setup_deferred = self.active_pipeline.run_setup_commands()
+    pipeline_setup_deferred.addCallback(self._run_setup_commands)
     pipeline_setup_deferred.addErrback(self._session_setup_error)
     
     return pipeline_setup_deferred
   
-  def _run_pipeline_setup_commands(self):
-    """ Runs the pipeline setup commands for the pipeline used by this session.
-    
-    This method runs the pipeline setup commands, which are responsible for putting the pipeline in its intended state
-    before running the session setup commands.
-    
-    @return Returns a DeferredList that will be fired with the results of the pipeline setup commands. If any of the 
-            pipeline setup commands fail, this method will return a deferred pre-fired with a Failure.
-    """
-
-    running_pipeline_setup_commands = []
-
-    # Run the pipeline setup commands 
-    if self.active_pipeline.setup_commands is not None:
-      for temp_command in self.active_pipeline.setup_commands:
-        # Make sure the command belongs to a system command handler or to a device used by the pipeline
-        if (temp_command['destination'] not in self.command_parser.system_command_handlers and
-            temp_command['destination'] not in self.active_pipeline.devices):
-          raise PipelineConfigInvalid("The '"+self.id+"' pipeline configuration contained setup commands that used "+
-                                      "command handlers that the pipeline does not have access to.")
-
-    if 'setup_commands' in self.configuration:
-      temp_command_deferred = self.active_pipeline.command_parser
-      running_pipeline_setup_commands.append()
-  
-  def _run_session_setup_commands(self, pipeline_setup_commands_results):
+  def _run_setup_commands(self, pipeline_setup_commands_results):
     """ Runs the session setup commands.
     
     This callback runs the session setup commands after the pipeline setup commands have all been executed successfully.
@@ -102,25 +84,49 @@ class Session:
     this session's associated reservation. For example, setup commands can be used by the pipeline user to set the 
     initial radio frequency.
     
-    @param pipeline_setup_commands_results  An array containing the results of the pipeline setup commands.
+    @param pipeline_setup_commands_results  An array containing the results of the pipeline setup commands. May be None
+                                            if there were no pipeline setup commands.
+    @return Returns a DeferredList that will be fired with the results of the session setup commands. If this session
+            doesn't specify any session setup commands, a pre-fired successful deferred will be fired 
     """
     
-    
+    running_setup_commands = []
+
+    # Run the session setup commands
+    if self.setup_commands is not None:
+      for temp_command in self.setup_commands:
+        temp_command_deferred = self.command_parser.parse_command(temp_command, user_id = self.user_id)
+        running_setup_commands.append(temp_command_deferred)
+
+      # Aggregate the setup command deferreds into a DeferredList
+      return defer.DeferredList(running_setup_commands, consumeErrors = True)
+    else:
+      # No session setup commands to run
+      return defer.succeed(None)
   
   def _session_setup_error(self, failure):
-    """ Cleans up after session-fatal errors.
-    
-    This callback handles session fatal errors that may have occured during the session initialization process. For
-    example, a failure to lock pipeline hardware or to execute pipeline setup commands both generate a fatal error 
-    (leaving the session in a non-running state). It cleans up after the session by rolling back any state changes made 
-    by the process so far (such as hardware locks).
-    
-    @throw Will re-raise the triggering exception so that the session coordinator can perform additional clean up if 
-           necessary. Because DeferredList wraps its failures in another class, this method will flatten the exception
-           so that it is consistent for the session coordinator.
+    """ Cleans up after session-fatal errors and passes the failure along.
 
-    
+    This callback handles some session-fatal errors that may have occured when setting up the session. For example, it 
+    will be called if a pipeline setup command fails to execute. It cleans up after errors by rolling back any state 
+    changes that may have been made (such as pipeline/hardware locks).
+
+    @note Because session setup command errors aren't fatal, they won't trigger this callback.
+    @note This callback returns the original Failure after it has cleaned up the session. This will allow the session
+          coordinator to detect that the session has failed and take the appropriate actions.
+    @note Because DeferredList wraps Failures in a FirstError instance, the failure will be flattened before being
+          returned so it will always be consistent for the session coordinator.
+
     @param failure  A Failure object encapsulating the error (or FirstError if it was a DeferredList that failed).
+    @return Returns the Failure object encapsulating the fatal exception.
     """
-    
-    
+
+    # Free up the pipeline, releasing any pipeline/hardware locks that may have been made
+    self.active_pipeline.free_pipeline()
+
+    # Check if the fatal error is a FirstError type, indicating it came from a DeferredList and needs to be flattened
+    if isinstance(failure, defer.FirstError):
+      return failure.value.subFailure
+    else:
+      # Just a normal exception, re-raise it
+      return failure

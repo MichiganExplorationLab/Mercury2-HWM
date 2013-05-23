@@ -136,8 +136,8 @@ class CommandParser:
     # Determine where to send the command
     device_command = False
     command_handler = None
-    if valid_command.destination in self.system_command_handlers:
-      command_handler = self.system_command_handlers[valid_command.destination]
+    if valid_command.destination in self.system_handlers:
+      command_handler = self.system_handlers[valid_command.destination]
     else:
       device_command = True
       

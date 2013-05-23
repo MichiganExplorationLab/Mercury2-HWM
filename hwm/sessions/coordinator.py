@@ -25,19 +25,19 @@ class SessionCoordinator:
     @param reservation_schedule  A reference to the schedule to coordinate.
     @param device_manager        A reference to a device manager that has been initialized with the available hardware. 
     @param pipeline_manager      A reference to a pipeline manager instance.
-    @param command_parser        A CommandParser object that will be used to execute pipeline and session setup 
-                                 commands.
+    @param command_parser        The CommandParser object that will be used to execute the session setup commands.
     """
     
     # Set the resource references
     self.schedule = reservation_schedule
     self.devices = device_manager
     self.pipelines = pipeline_manager
+    self.command_parser = command_parser
     self.config = configuration.Configuration
     
     # Initialize coordinator attributes
     self.active_sessions = {} # Sessions that are currently running or being prepared to run
-    self.closed_sessions = {} # Sessions that have been completed or experienced a fatal error during initialization
+    self.closed_sessions = [] # Sessions that have been completed or experienced a fatal error during initialization
   
   def coordinate(self):
     """ Coordinates the operation of the hardware manager.
@@ -46,12 +46,16 @@ class SessionCoordinator:
     schedule manager to update its schedule, checking for newly active reservations, and creating sessions as the 
     schedule dictates. This method is called periodically using a LoopingCall which is started during the main
     initialization process.
+
+    @note This method checks for completed sessions before it checks for new ones. Because this method is only run in
+          a single thread, this allows back to back session scheduling.
     """
     
     # Update the schedule if required
     self._update_schedule()
     
-    # Check for completed sessions
+    # Check for completed sessions:
+    # TODO: Check for completed sessions
     
     # Check the schedule for newly active reservations
     self._check_for_new_reservations()
@@ -71,7 +75,8 @@ class SessionCoordinator:
     
     # Check for new active reservations
     for active_reservation in active_reservations:
-      if active_reservation['reservation_id'] not in self.active_sessions:
+      if (active_reservation['reservation_id'] not in self.active_sessions and
+          active_reservation['reservation_id'] not in self.closed_sessions):
         # Load the reservation's pipeline
         try:
           requested_pipeline = self.pipelines.get_pipeline(active_reservation['pipeline_id'])
@@ -95,12 +100,19 @@ class SessionCoordinator:
     This callback is called after the associated session is up and running. It registers that the session is running
     and notes any failed session setup commands (which will be indicated in session_command_results).
     
-    @param session_command_results  An array containing the results of each session setup command.
+    @param session_command_results  An array containing the results of each session setup command. If the reservation
+                                    didn't specify any setup commands, this will just be None.
     @param reservation_id           The ID of the reservation that was just started.
     @return Passes on the results of the session setup commands.
     """
-    
-    
+
+    # Check for any failed session setup commands
+    if session_command_results is not None:
+      for (command_status, command_results) in session_command_results:
+        if not command_status:
+          logging.error("An non-fatal error occured executing a session setup command. ")
+
+          # TODO: Log the error event in the state manager
   
   def _session_init_failed(self, failure, reservation_id):
     """ Handles fatal session initialization errors.
@@ -108,15 +120,23 @@ class SessionCoordinator:
     This callback is responsible for handling fatal session errors such as failed pipeline setup commands and hardware
     locking errors by registering the failure and saving the reservation ID so it won't be re-run by coordinate().
     
-    @note This callback does not need to worry about cleaning up after the session or resetting the pipeline state. The
-          session will do that automatically when it fails to setup the pipeline.
+    @note This callback (and those that follow it) does not need to worry about cleaning up after the session or 
+          resetting the pipeline state. The session will do that automatically when it fails to setup the pipeline.
     
     @param failure         A Failure object encapsulating the session fatal error.
     @param reservation_id  The ID of the reservation that could not be started.
     @return Returns True after the error has been dealt with.
     """
     
-    
+    # Mark the session as closed and remove it from active_sessions so it won't be immediately re-run
+    self.closed_sessions.append(reservation_id)
+    self.active_sessions.pop(reservation_id, None)
+
+    # Log the session failure
+    logging.error("A fatal error occured while starting the session '"+reservation_id+"'.")
+    # TODO: Log the error event in the state manager
+
+    return True
   
   def _update_schedule(self):
     """ Updates the schedule if appropriate.
