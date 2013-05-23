@@ -28,8 +28,16 @@ class CommandParser:
     """
     
     # Set the class attributes
-    self.system_command_handlers = system_command_handlers
+    self.system_handlers = system_command_handlers
     self.permission_manager = permission_manager
+
+  def system_command_handlers(self):
+    """ Provides access to the loaded system command handlers.
+
+    @return Returns the dictionary containing references to the available system command handlers.
+    """
+
+    return self.system_handlers
 
   def parse_command(self, raw_command, user_id = None, kernel_mode = False):
     """ Processes all commands received by the ground station.

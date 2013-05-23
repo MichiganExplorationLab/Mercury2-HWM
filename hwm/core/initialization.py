@@ -55,13 +55,16 @@ def initialize():
   device_manager = devices.DeviceManager()
   
   # Setup the command parser
-  command_parser = _setup_command_system(device_manager);
+  command_parser = _setup_command_system(device_manager)
   
   # Initialize the pipeline manager
-  pipeline_manager = pipelines.PipelineManager(device_manager, command_parser)
+  pipeline_manager = pipelines.PipelineManager(device_manager)
   
   # Initialize the session coordinator
-  session_coordinator = coordinator.SessionCoordinator(schedule_manager, device_manager, pipeline_manager)
+  session_coordinator = coordinator.SessionCoordinator(schedule_manager,
+                                                       device_manager,
+                                                       pipeline_manager,
+                                                       command_parser)
   
   # Initialize the required network listeners
   _setup_network_listeners(command_parser);

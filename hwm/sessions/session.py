@@ -78,8 +78,21 @@ class Session:
     @return Returns a DeferredList that will be fired with the results of the pipeline setup commands. If any of the 
             pipeline setup commands fail, this method will return a deferred pre-fired with a Failure.
     """
-    
-    
+
+    running_pipeline_setup_commands = []
+
+    # Run the pipeline setup commands 
+    if self.active_pipeline.setup_commands is not None:
+      for temp_command in self.active_pipeline.setup_commands:
+        # Make sure the command belongs to a system command handler or to a device used by the pipeline
+        if (temp_command['destination'] not in self.command_parser.system_command_handlers and
+            temp_command['destination'] not in self.active_pipeline.devices):
+          raise PipelineConfigInvalid("The '"+self.id+"' pipeline configuration contained setup commands that used "+
+                                      "command handlers that the pipeline does not have access to.")
+
+    if 'setup_commands' in self.configuration:
+      temp_command_deferred = self.active_pipeline.command_parser
+      running_pipeline_setup_commands.append()
   
   def _run_session_setup_commands(self, pipeline_setup_commands_results):
     """ Runs the session setup commands.

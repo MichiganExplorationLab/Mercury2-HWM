@@ -17,26 +17,24 @@ class PipelineManager:
   This class initializes and manages the collection of loaded hardware pipelines.
   """
   
-  def __init__(self, device_manager, command_parser):
+  def __init__(self, device_manager):
     """ Sets up the pipeline manager.
     
     This constructor sets up the pipeline manager and calls a method that initializes the available pipelines.
     
-    @note This constructor may pass on exceptions from the pipeline initialization (see _initialize_pipelines).
     @note This class does not load the pipeline configuration file itself. Instead, Configuration is instructed to load
           it at runtime and this class accesses it via the 'configuration' module. If this class is initialized before 
           the pipeline configuration has been loaded an exception will be raised
     
+    @throws May pass on exceptions from the pipeline initialization process (see _initialize_pipelines).
+
     @param device_manager  A reference to the DeviceManager instance that should be used.
-    @param command_parser  A reference to the CommandParser instance that should be used to parse pipeline setup 
-                           commands.
     """
     
     # Setup class attributes
     self.config = configuration.Configuration
-    self.pipelines = {}
     self.device_manager = device_manager
-    self.command_parser = command_parser
+    self.pipelines = {}
     
     # Initialize the configured pipelines
     self._initialize_pipelines()
@@ -88,7 +86,7 @@ class PipelineManager:
     
     # Loop through and create a Pipeline object for each configured pipeline
     for pipeline_config in pipeline_settings:
-      temp_pipeline = pipeline.Pipeline(pipeline_config, self.device_manager, self.command_parser)
+      temp_pipeline = pipeline.Pipeline(pipeline_config)
       self.pipelines[temp_pipeline.id] = temp_pipeline
   
   def _validate_pipeline_schema(self, pipeline_configuration):

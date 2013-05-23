@@ -31,11 +31,11 @@ class Pipeline:
     self.device_manager = device_manager
     self.command_parser = command_parser
     self.pipeline_configuration = pipeline_configuration
-    self.in_use = False
     self.id = pipeline_configuration['id']
     self.mode = pipeline_configuration['mode']
     self.setup_commands = pipeline_configuration['setup_commands'] if 'setup_commands' in pipeline_configuration else None
     self.devices = {}
+    self.in_use = False
     self.input_device = None
     self.output_device = None
     
@@ -54,10 +54,8 @@ class Pipeline:
     - Multiple pipeline output devices
     - Non-existent devices
     - Duplicate devices
-    - Pipeline setup commands that don't use a system command handler or a device handler for a device used by the 
-      pipeline
     
-    @throw May throw PipelineConfigInvalid if any errors are detected.
+    @throw Throws PipelineConfigInvalid if any errors are detected.
     """
     
     # Validation flags
@@ -98,17 +96,6 @@ class Pipeline:
         else:
           self.output_device = curr_device_driver
           output_device_found = True
-  
-    # Loop through the pipeline setup commands and make sure they reference a system command handler or a command 
-    # handler for a device used/owned by the pipeline
-    if self.setup_commands is not None:
-      for temp_command in self.setup_commands:
-        if (temp_command['destination'] not in self.command_parser.system_command_handlers and
-            temp_command['destination'] not in self.devices):
-          logging.error("The '"+self.id+"' pipeline configuration contained setup commands that used command handlers "+
-                        "that the pipeline does not have access to.")
-          raise PipelineConfigInvalid("The '"+self.id+"' pipeline configuration contained setup commands that used "+
-                                      "command handlers that the pipeline does not have access to.")
   
   def reserve_pipeline(self):
     """ Locks the pipeline and its hardware.
