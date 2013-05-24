@@ -48,20 +48,32 @@ class CommandResource(Resource):
     
     # Pass the request body to the parser
     response_deferred = self.command_parser.parse_command(request.content.read(), user_id=user_id)
-    response_deferred.addCallback(self._command_response_ready, request)
+    response_deferred.addBoth(self._command_response_ready, request)
     
     return NOT_DONE_YET
   
   def _command_response_ready(self, command_response, request):
-    """ A callback that writes the response of a command back back to the protocol's transport.
+    """ Writes the command response back to the originating request.
+
+    This callback writes the response of a command back to the network via the request that generated it. It handles 
+    both successful and failed command responses.
     
-    @param command_response  The results of the command. A dictionary containing the command response and the associated
-                             request.
+    @param command_response  The results of the command. If the command was successful, this will be a dictionary
+                             containing the command response. If the command failed, this will be a Failure object
+                             containing the command response encapsulated in a CommandError exception.
     @param request           The original HTTP request for the connection.
     """
+
+    # Extract the command response
+    try:
+      # If the command failed, the response will be wrapped in a Failure (and in turn a CommandError) object
+      response_dict = command_response.value.response
+    except AttributeError:
+      # If the command was successful, command_response will just consist of a dictonary containing the response
+      response_dict = command_response
     
     # Write the response to the client
-    request.write(command_request['response'])
+    request.write(json.dumps(response_dict['response']))
     
     # Close the request
     request.finish()

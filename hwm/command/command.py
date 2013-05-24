@@ -169,17 +169,17 @@ class CommandInvalidSchema(Exception):
 class CommandMalformed(Exception):
   pass
 class CommandError(Exception):
-  """ A general purpose exception thrown in the event that a command fails. It allows the command handler to embed
+  """ A general purpose exception thrown in the event that a command fails. It allows command handlers to embed
   additional metadata with the failure in the form of a dictionary passed to the exception."""
   
-  def __init__(self, schedule_error_message, error_data = None):
+  def __init__(self, command_error_message, error_data = None):
     """ Sets up the command error.
     
     @param command_error_message  A string summarizing the failure.
     @param error_data             A simple dictionary containing additional fields to be passed with the error response.
     """
     
-    self.message = schedule_error_message
+    self.message = command_error_message
     self.error_parameters = error_data
   
   def __str__(self):

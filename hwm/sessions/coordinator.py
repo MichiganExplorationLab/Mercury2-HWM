@@ -110,7 +110,7 @@ class SessionCoordinator:
     if session_command_results is not None:
       for (command_status, command_results) in session_command_results:
         if not command_status:
-          logging.error("An non-fatal error occured executing a session setup command. ")
+          logging.error("An non-fatal error occured executing a session setup command.")
 
           # TODO: Log the error event in the state manager
   

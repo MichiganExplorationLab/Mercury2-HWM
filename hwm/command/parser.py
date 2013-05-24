@@ -13,8 +13,7 @@ from hwm.command import command
 class CommandParser:
   """ Processes all commands received by the hardware manager.
   
-  This class parses and performs validations on received commands, delegating them to the appropriate handler when
-  appropriate.
+  This class parses and performs validations on received commands, delegating them to the appropriate command handler.
   """
   
   def __init__(self, system_command_handlers, permission_manager):
@@ -53,12 +52,11 @@ class CommandParser:
     permission checking phase.
     
     @note In the event of an error with the command (e.g. invalid schema or permission error), the error will be logged
-          and an error response will be returned ready for transmission.
-    @note Even if the command generates an error response, the returned deferred's callback chain will be called with
-          the contents of the error (instead of the errback chain). 
-    @note The callback chain from the deferred returned from this function will return a dictionary representing the 
-          results of the command. The 'response' key will contain a dictionary with the response to send to the client.
-          The calling module is responsible for converting this dictionary into an appropriate format.
+          and an error response will be returned via the returned deerred's errback chain.
+    @note The callback chain for the deferred returned from this function will be fired with a dictionary representing 
+          the results of the command. The 'response' key will contain a dictionary with the response to send to the 
+          client. The calling module is responsible for converting this dictionary into an appropriate format. This 
+          happens for both successful and failed commands (via the callback and errback chains, respectively).
     @note The actual command execution occurs in a new thread. *Make sure that command code is thread safe!*
     @note Seriously, make sure the command code is thread safe.
     
@@ -70,7 +68,7 @@ class CommandParser:
                         restrictions should be ignored. This is done, for example, when pipeline setup commands get run
                         as a new session is being setup.
     @return Returns the results of the command (a dictionary) using a deferred. May be the output of the command or an 
-            error message.
+            error message in the event of an error.
     """
     
     # Local variables
@@ -194,9 +192,9 @@ class CommandParser:
   def _command_error(self, failure, failed_command):
     """ Generates an appropriate error response for the command failure.
     
-    This errback generates an error response for the indicated failure, which it then returns (thus passing the error
-    response to the callback chain of the deferred returned from parse_command). If the failure is wrapping an exception
-    of type CommandError then it may contain a dictionary with additional information about the error.
+    This errback generates an error response for the indicated failure, which is then loaded into a CommandFailed
+    exception and re-raised. If the failure is wrapping an exception of type CommandError then it may contain a 
+    dictionary with additional information about the error.
     
     @param failure         The Failure object representing the error.
     @param failed_command  The Command object of the failed command.
@@ -223,6 +221,31 @@ class CommandParser:
       logging.error("A command ("+failed_command.command+") failed for the following reason: "+str(failure.value))
     else:
       logging.error("A command has failed for the following reason: "+str(failure.value))
-    
-    # Return the error response dictionary back into the callback chain
-    return error_response
+
+    # Raise a CommandError describing the error
+    raise CommandError(error_message['error_message'], error_response)
+
+# High level command system exceptions
+class CommandError(Exception):
+  """ Used to wrap command execution errors.
+
+  This exception is raised whenever a command fails to execute. It contains the error response, which specifies details
+  about the error.
+
+  @note To access the error response (what should be sent back to the user), use CommandError.response.
+  """
+
+  def __init__(self, error_message, error_response):
+    """ Sets up the command error.
+
+    @param error_message   A string describing the error. Normally, the error_response will just be used instead because 
+                           it contains this string as well as additional details about the error, if there are any.
+    @param error_response  A dictionary containing meta-data about the error such as the error message and any 
+                           additional attributes that may have been passed with it.
+    """
+
+    self.message = error_message
+    self.response = error_response
+
+  def __str__(self):
+    return self.message
