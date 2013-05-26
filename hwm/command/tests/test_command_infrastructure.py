@@ -128,15 +128,15 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Define a callback to test the parser results
-    def parsing_complete(command_results):
-      response_dict = command_results['response']
+    def parsing_complete(command_failure):
+      response_dict = command_failure.value.results['response']
       
       self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
       self.assertEqual(response_dict['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
     
     # Send an unrecognized command the to parser
     test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", user_id='4')
-    test_deferred.addCallback(parsing_complete)
+    test_deferred.addErrback(parsing_complete)
     
     return test_deferred
   
@@ -146,15 +146,15 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Define a callback to test the parser results
-    def parsing_complete(command_results):
-      response_dict = command_results['response']
+    def parsing_complete(command_failure):
+      response_dict = command_failure.value.results['response']
       
       self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
       self.assertNotEqual(response_dict['result']['error_message'].find('malformed'), -1, 'The parser did not return the correct error response (response did not contain \'malformed\').')
     
     # Send a malformed command the to parser
     test_deferred = self.command_parser.parse_command("{\"invalid_json\":true,invalid_element}", user_id='4')
-    test_deferred.addCallback(parsing_complete)
+    test_deferred.addErrback(parsing_complete)
     
     return test_deferred
   
@@ -164,14 +164,14 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Define a callback to test the parser results
-    def parsing_complete(command_results):
-      response_dict = command_results['response']
+    def parsing_complete(command_failure):
+      response_dict = command_failure.value.results['response']
       
       self.assertEqual(response_dict['status'], 'error')
     
     # Parse an invalid command the to parser (doesn't contain a destination)
     test_deferred = self.command_parser.parse_command("{\"command\":\"test_command\",\"parameters\":{\"test_parameter\":5}}", user_id='4')
-    test_deferred.addCallback(parsing_complete)
+    test_deferred.addErrback(parsing_complete)
     
     return test_deferred
   
@@ -181,15 +181,15 @@ class TestCommandInfrastructure(unittest.TestCase):
     """
     
     # Define a callback to test the parser results
-    def parsing_complete(command_results):
-      response_dict = command_results['response']
+    def parsing_complete(command_failure):
+      response_dict = command_failure.value.results['response']
       
       self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
       self.assertEqual(response_dict['result']['restricted_command'], 'station_time', "The returned error response was incorrect (didn't include the 'restricted_command' field).")
     
     # Send a command that the user can't execute
     test_deferred = self.command_parser.parse_command("{\"command\":\"station_time\",\"destination\":\"system\"}", user_id='5')
-    test_deferred.addCallback(parsing_complete)
+    test_deferred.addErrback(parsing_complete)
     
     return test_deferred
   
@@ -231,25 +231,6 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     return test_deferred
   
-  def test_parser_failed_command(self):
-    """ This test verifies that the command parser correctly returns an error response when a command fails (i.e. raises
-    an exception).
-    """
-    
-    # Define a callback to test the parser results
-    def parsing_complete(command_results):
-      response_dict = command_results['response']
-      
-      self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
-      self.assertTrue('submitted_command' in response_dict['result'], 'The response did not contain the expected test error field.')
-      self.assertEqual(response_dict['result']['submitted_command'], 'test_error', 'The response did not contain the expected test error field value.')
-    
-    # Send a time request command to the parser
-    test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", user_id="4")
-    test_deferred.addCallback(parsing_complete)
-    
-    return test_deferred
-  
   def test_parser_successful_kernel_command(self):
     """ This test verifies that the command parser can correctly execute a command in kernal mode. That is, a command
     that is not associated with any particular user and immune from session and permission requirements.
@@ -267,23 +248,41 @@ class TestCommandInfrastructure(unittest.TestCase):
     test_deferred.addCallback(parsing_complete)
     
     return test_deferred
-  
+
   def test_parser_unrecognized_kernel_command(self):
     """ Test that kernel mode commands correctly generate error responses for invalid commands. In this case, an
-    unrecognized command will be used to trigger the error because it happens after the _load_permissions() callback 
-    (where kernel and user mode commands first diverge).
+    unrecognized command will be used to trigger the error.
     """
     
     # Define a callback to test the parser results
-    def parsing_complete(command_results):
-      response_dict = command_results['response']
+    def parsing_complete(command_failure):
+      response_dict = command_failure.value.results['response']
       
       self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
       self.assertEqual(response_dict['result']['invalid_command'], 'nonexistent_command', 'The error response returned by the parser was incorrect (did not contain \'invalid_command\' field).')
     
     # Send an unrecognized command the to parser
     test_deferred = self.command_parser.parse_command("{\"command\":\"nonexistent_command\",\"destination\":\"system\",\"parameters\":{\"test_parameter\":5}}", kernel_mode=True)
-    test_deferred.addCallback(parsing_complete)
+    test_deferred.addErrback(parsing_complete)
+    
+    return test_deferred
+
+  def test_parser_failed_command(self):
+    """ This test verifies that the command parser correctly returns an error response when a command fails (i.e. raises
+    an exception).
+    """
+    
+    # Define a callback to test the parser results
+    def parsing_complete(command_failure):
+      response_dict = command_failure.value.results['response']
+      
+      self.assertEqual(response_dict['status'], 'error', 'The parser did not return an error response.')
+      self.assertTrue('submitted_command' in response_dict['result'], 'The response did not contain the expected test error field.')
+      self.assertEqual(response_dict['result']['submitted_command'], 'test_error', 'The response did not contain the expected test error field value.')
+    
+    # Send a time request command to the parser
+    test_deferred = self.command_parser.parse_command("{\"command\": \"test_error\",\"destination\":\"system\"}", user_id="4")
+    test_deferred.addErrback(parsing_complete)
     
     return test_deferred
   

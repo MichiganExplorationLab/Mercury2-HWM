@@ -53,10 +53,11 @@ class CommandParser:
     
     @note In the event of an error with the command (e.g. invalid schema or permission error), the error will be logged
           and an error response will be returned via the returned deerred's errback chain.
-    @note The callback chain for the deferred returned from this function will be fired with a dictionary representing 
-          the results of the command. The 'response' key will contain a dictionary with the response to send to the 
-          client. The calling module is responsible for converting this dictionary into an appropriate format. This 
-          happens for both successful and failed commands (via the callback and errback chains, respectively).
+    @note The callback/errback chain for the deferred returned from this function will be fired with a dictionary 
+          containing the results of the command. In the event of an error, these results can be accessed using the 
+          returned Failure like so: Failure.value.results['response']. In the event of a success, these results can be 
+          accessed via the 'response' key of the callback parameter. The calling module is responsible for converting 
+          this dictionary into an appropriate format.
     @note The actual command execution occurs in a new thread. *Make sure that command code is thread safe!*
     @note Seriously, make sure the command code is thread safe.
     
@@ -67,8 +68,8 @@ class CommandParser:
     @param kernel_mode  Indicates if the command should be run in kernel mode. That is, whether permission and session
                         restrictions should be ignored. This is done, for example, when pipeline setup commands get run
                         as a new session is being setup.
-    @return Returns the results of the command (a dictionary) using a deferred. May be the output of the command or an 
-            error message in the event of an error.
+    @return Returns the results of the command in a dictionary using a deferred. May be the output of the command or a
+            Failure (containing details about the failure) in the event of an error.
     """
     
     # Local variables
@@ -245,7 +246,7 @@ class CommandError(Exception):
     """
 
     self.message = error_message
-    self.response = error_response
+    self.results = error_response
 
   def __str__(self):
     return self.message

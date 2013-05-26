@@ -77,11 +77,6 @@ class TestPipelineManager(unittest.TestCase):
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid_3.yml')
     self.assertRaises(pipeline.PipelineConfigInvalid, pipeline_manager.PipelineManager, self.device_manager, self.command_parser)
-    
-    # Load a configuration that contains a pipeline that specifies a setup command for a device it doesn't own
-    self._reset_config_entries()
-    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid_4.yml')
-    self.assertRaises(pipeline.PipelineConfigInvalid, pipeline_manager.PipelineManager, self.device_manager, self.command_parser)
   
   def test_pipeline_get(self):
     """Tests that the pipeline manager can correctly return a specified pipeline.

@@ -44,7 +44,8 @@ class ScheduleManager:
           the local copy using callbacks. If use_local_schedule is true, the schedule will be loaded from a local file 
           (specified in the configuration files). If it is false, it will be loaded from the user interface API.
     
-    @return Returns a deferred that will be called with the result of the file access (the schedule object or a Failure).
+    @return Returns a deferred that will be called with the result of the file access (the schedule object or a 
+            Failure).
     """
     
     # Setup local variables

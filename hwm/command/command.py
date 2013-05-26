@@ -57,7 +57,7 @@ class Command:
           id's) if the command conforms to the schema.
     
     @return Returns a deferred that will be fired with the results of the command validation. If the command is invalid,
-            a deferred is pre-fired (with a failure) and returned with information about the failure.
+            a pre-fired failed deferred is returned.
     """
     
     # Check if the raw command was an unparsed string
