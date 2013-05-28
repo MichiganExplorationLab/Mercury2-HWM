@@ -63,11 +63,12 @@ class SessionCoordinator:
     print 'COORDINATE'
   
   def _check_for_new_reservations(self):
-    """ This method checks for newly active reservations in the schedule.
+    """ Creates sessions for new active reservations.
     
-    This method checks for newly active reservations in the reservation schedule and creates sessions for them.
+    This method checks for newly active reservations in the reservation schedule and sets up Sessions for them.
     
-    @note If a session-fatal error occurs during the session initialization process, it will be logged and 
+    @note If a session-fatal error occurs during the session initialization process, it will be logged by callbacks in 
+          this class and gracefully fail.
     """
     
     # Get the list of active reservations
@@ -87,7 +88,8 @@ class SessionCoordinator:
         
         # Create a session object for the newly active reservation
         self.active_sessions[active_reservation['reservation_id']] = session.Session(active_reservation, 
-                                                                                     requested_pipeline)
+                                                                                     requested_pipeline,
+                                                                                     self.command_parser)
         session_init_deferred = self.active_sessions[active_reservation['reservation_id']].start_session()
         session_init_deferred.addCallbacks(self._session_init_complete,
                                            self._session_init_failed,

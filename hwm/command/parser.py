@@ -194,12 +194,13 @@ class CommandParser:
     """ Generates an appropriate error response for the command failure.
     
     This errback generates an error response for the indicated failure, which is then loaded into a CommandFailed
-    exception and re-raised. If the failure is wrapping an exception of type CommandError then it may contain a 
+    exception and re-raised. If the incoming failure is wrapping an exception of type CommandError then it may contain a 
     dictionary with additional information about the error.
+
+    @throw Raises a CommandFailed exception which contains additional information about the failure.
     
     @param failure         The Failure object representing the error.
     @param failed_command  The Command object of the failed command.
-    @return Returns a dictionary containing information about the request.
     """
     
     # Set the error message
@@ -224,10 +225,10 @@ class CommandParser:
       logging.error("A command has failed for the following reason: "+str(failure.value))
 
     # Raise a CommandError describing the error
-    raise CommandError(error_message['error_message'], error_response)
+    raise CommandFailed(error_message['error_message'], error_response)
 
 # High level command system exceptions
-class CommandError(Exception):
+class CommandFailed(Exception):
   """ Used to wrap command execution errors.
 
   This exception is raised whenever a command fails to execute. It contains the error response, which specifies details

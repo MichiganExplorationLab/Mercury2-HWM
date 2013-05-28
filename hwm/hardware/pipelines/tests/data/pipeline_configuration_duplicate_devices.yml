@@ -1,4 +1,5 @@
-# This configuration file contains a invalid pipeline configuration and is used to test the pipeline manager
+# This configuration file contains a invalid pipeline configuration and is used to test the PipelineManager and
+# Pipeline classes.
 
 pipelines:
   - id: "test_pipeline"
@@ -7,11 +8,9 @@ pipelines:
       - device_id: "test_device"
         pipeline_input: true
         pipeline_output: true
-      - device_id: "test_device2"
-        # Multiple output devices
-        pipeline_output: true
+      - device_id: "test_device"
     setup_commands:
-      - command: "test_command"
+      - command: "station_time"
         destination: "system"
         parameters:
           command_argument: False

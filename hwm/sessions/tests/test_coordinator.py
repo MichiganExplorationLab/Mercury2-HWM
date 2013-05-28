@@ -58,7 +58,10 @@ class TestCoordinator(unittest.TestCase):
     test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
     
     # Initialize the session coordinator instance
-    session_coordinator = coordinator.SessionCoordinator(test_schedule, None, test_pipelines)
+    session_coordinator = coordinator.SessionCoordinator(test_schedule,
+                                                         self.device_manager,
+                                                         test_pipelines,
+                                                         self.command_parser)
     
     # Define an inline callback to resume execution after the schedule has been updates
     def continue_test(loaded_schedule):
@@ -88,30 +91,37 @@ class TestCoordinator(unittest.TestCase):
     test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
     
     # Initialize the session coordinator
-    session_coordinator = coordinator.SessionCoordinator(test_schedule, None, test_pipelines)
+    session_coordinator = coordinator.SessionCoordinator(test_schedule,
+                                                         self.device_manager,
+                                                         test_pipelines,
+                                                         self.command_parser)
     
     # Define an inline callback to resume execution after the schedule has been loaded
     def continue_test(loaded_schedule):
       # Look for active reservations and create associated sessions
       session_coordinator._check_for_new_reservations()
       
-      # Verify that either of the active reservations are in the session list
-      self.assertTrue(('RES.2' in session_coordinator.active_sessions) or ('RES.3' in session_coordinator.active_sessions), "An active test reservation was not found in the session manager.")
+      # Verify that one of the conflicting active reservations is active and one is closed (due to an error)
+      self.assertTrue((('RES.2' in session_coordinator.active_sessions) and ('RES.3' in session_coordinator.closed_sessions)) or
+                      (('RES.2' in session_coordinator.closed_sessions) and ('RES.3' in session_coordinator.active_sessions)),
+                      "The conflicting active reservations (RES.2 or RES.3) defined in the test schedule aren't where "+
+                      "they should be (one should be active and one should be closed due to the conflict error.")
       
-      # Verify that RES.2 and RES.3 are not both in the session list (they use the same pipeline at the same time so one
-      # must not be included.
-      self.assertTrue(('RES.2' in session_coordinator.active_sessions) != ('RES.3' in session_coordinator.active_sessions), "Two sessions were allowed to share the same pipeline at the same time.")
+      # Verify that RES.4 didn't get started (uses an invalid pipeline)
+      self.assertTrue(('RES.4' not in session_coordinator.active_sessions) and
+                      ('RES.4' in session_coordinator.closed_sessions),
+                      "RES.4, which uses a non-existent pipeline, was either not marked as closed or was mistakenly "+
+                      "marked as active.")
       
-      # Verify that RES.4 doesn't get added (uses an invalid pipeline)
-      self.assertTrue('RES.4' not in session_coordinator.active_sessions, "A reservation that uses an invalid pipeline is in the session list.")
+      # Verify that the expired reservation (RES.1) was not started
+      self.assertTrue(('RES.1' not in session_coordinator.active_sessions) and
+                      ('RES.1' in session_coordinator.closed_sessions),
+                      "RES.1, which is expired, was started when it should have just been marked as closed.")
       
-      # Verify that the expired reservation was not added
-      self.assertTrue(('RES.1' not in session_coordinator.active_sessions), "An expired reservation was found in the session manager.")
-      
-      # Attempt to reserve a pipeline that RES.2 or RES.3 is using
+      # Attempt to reserve a pipeline that RES.2 or RES.3 is using (tests that it was correctly locked)
       self.assertRaises(pipeline.PipelineInUse, test_pipelines.pipelines['test_pipeline'].reserve_pipeline)
     
-    # Update the schedule
+    # Update the schedule to load in the reservations
     schedule_update_deferred = test_schedule.update_schedule()
     schedule_update_deferred.addCallback(continue_test)
     

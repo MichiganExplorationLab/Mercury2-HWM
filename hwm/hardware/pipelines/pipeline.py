@@ -156,7 +156,7 @@ class Pipeline:
         logging.error("The '"+temp_device['device_id']+"' device in the '"+self.id+"' pipeline was declared twice in "+
                       "the configuration.")
         raise PipelineConfigInvalid("The '"+self.id+"' pipeline configuration specified a device "+
-                                                     "twice: '"+temp_device['device_id']+"'")
+                                    "twice: '"+temp_device['device_id']+"'")
       
       # Verify that the device exists and store it
       try:
@@ -164,7 +164,7 @@ class Pipeline:
       except device_manager.DeviceNotFound:
         logging.error("The '"+temp_device['device_id']+"' device in the '"+self.id+"' pipeline could not be located.")
         raise PipelineConfigInvalid("The '"+self.id+"' pipeline configuration specified a "+
-                                                     "non-existent device: '"+temp_device['device_id']+"'")
+                                    "non-existent device: '"+temp_device['device_id']+"'")
       self.devices[temp_device['device_id']] = curr_device_driver
       
       # Make sure there is only a single input and output device

@@ -9,4 +9,6 @@ devices:
   - id: "test_device2"
     driver: "Test_Driver"
     settings:
-      address: "test"
+      address: "test2"
+  - id: "test_device3"
+    driver: "Test_Driver"

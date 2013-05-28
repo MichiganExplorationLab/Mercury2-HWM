@@ -67,7 +67,7 @@ class PipelineManager:
     
     @throw Throws PipelinesAllReadyInitialized if this method is called after pipelines have been initialized.
     @throw Throws PipelinesNotDefined if no pipelines are defined in the runtime configuration.
-    @throw May pass on PipelineSchemaInvalid exceptions if the pipeline configuration doesn't match the schema.
+    @throw May pass on PipelineSchemaInvalid exceptions if the pipeline configuration doesn't match the defined schema.
     @throw May pass on PipelineConfigInvalid exceptions if the pipeline configuration contains other errors.
     """
     

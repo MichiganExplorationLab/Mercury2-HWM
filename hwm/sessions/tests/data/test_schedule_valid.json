@@ -47,7 +47,7 @@
       "username": "test_admin",
       "time_start": 1360096495,
       "time_end": 1660097495,
-      "description": "Reservation should be active and have the same parameters as RES.2.",
+      "description": "Reservation should be active and uses the same pipeline as RES.2 (meaning only one can be active at a time).",
       "pipeline_id": "test_pipeline",
       "setup_commands": [
         {

@@ -7,12 +7,24 @@ pipelines:
       - device_id: "test_device"
         pipeline_input: true
     setup_commands:
-      - command: "test_command"
+      - command: "station_time"
         destination: "system"
         parameters:
           command_argument: False
+      - command: "station_time"
+        destination: "system"
   - id: "test_pipeline2"
     mode: "receive"
     hardware:
       - device_id: "test_device"
         pipeline_output: true
+  - id: "test_pipeline3"
+    mode: "transceive"
+    hardware:
+      - device_id: "test_device"
+        pipeline_output: true
+    setup_commands:
+      - command: "station_time"
+        destination: "system"
+      - command: "nonexistent_command"
+        destination: "system"
