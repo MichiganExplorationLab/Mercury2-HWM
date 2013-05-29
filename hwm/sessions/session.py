@@ -50,13 +50,14 @@ class Session:
     
     @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline or
             executing the pipeline setup commands. This will cause the session coordinator to log the error and end the 
-            session. Session setup commands don't generate a session-fatal error and are simply noted by the session 
-            coordinator. This is done because this will often be recoverable with additional input from the session 
-            user.
+            session. Session setup command errors don't generate session-fatal errors and are simply noted by the 
+            session coordinator. This is done because these errors will often be recoverable with additional input from the 
+            session user.
     
     @note All of the pipeline setup commands will always be executed before any of the session setup commands are.
     @note If a session-fatal error occurs, the self._session_setup_error callback will automatically clean up the 
-          session. Whatever calls this function (i.e. SessionCoordinator) doesn't need to worry about it.
+          session (e.g. freeing locks). Whatever calls this function (i.e. SessionCoordinator) doesn't need to worry 
+          about it.
     
     @return Returns a deferred that will be fired with the results of session setup commands (an array containing the 
             results for each setup command). 
@@ -67,7 +68,8 @@ class Session:
       self.active_pipeline.reserve_pipeline()
     except pipeline.PipelineInUse:
       return defer.fail(pipeline.PipelineInUse("The pipeline requested for reservation '"+
-                                               self.configuration['reservation_id']+"' could not be locked."))
+                                               self.configuration['reservation_id']+"' could not be locked: "+
+                                               self.active_pipeline.id))
     
     # Execute the pipeline setup commands
     pipeline_setup_deferred = self.active_pipeline.run_setup_commands()
@@ -87,7 +89,7 @@ class Session:
     @param pipeline_setup_commands_results  An array containing the results of the pipeline setup commands. May be None
                                             if there were no pipeline setup commands.
     @return Returns a DeferredList that will be fired with the results of the session setup commands. If this session
-            doesn't specify any session setup commands, a pre-fired successful deferred will be fired 
+            doesn't specify any session setup commands, a pre-fired (with None) deferred will be returned.
     """
     
     running_setup_commands = []
@@ -121,7 +123,9 @@ class Session:
     @return Returns the Failure object encapsulating the fatal exception.
     """
 
-    # Free up the pipeline, releasing any pipeline/hardware locks that may have been made
+    # Free up the pipeline by releasing any pipeline/hardware locks that may have been made. This callback only ever 
+    # runs after the pipeline has been successfully reserved by this session, thus there is no possibility of unlocking
+    # a pipeline that another session is using.
     self.active_pipeline.free_pipeline()
 
     # Check if the fatal error is a FirstError type, indicating it came from a DeferredList and needs to be flattened

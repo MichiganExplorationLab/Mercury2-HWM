@@ -10,8 +10,8 @@ from hwm.network.security import permissions
 from pkg_resources import Requirement, resource_filename
 
 class TestCoordinator(unittest.TestCase):
-  """
-  This test suite tests the functionality of the session coordinator.
+  """ This test suite tests the functionality of the SessionCoordinator class, which is responsible for setting up new
+  sessions based on the reservation schedule and managing other periodic tasks.
   """
   
   def setUp(self):
@@ -44,7 +44,7 @@ class TestCoordinator(unittest.TestCase):
     self.command_parser = None
   
   def test_schedule_update(self):
-    """This test checks that the session coordinator can correctly instruct the schedule manager to update its schedule.
+    """ This test checks that the session coordinator can instruct the schedule manager to update its schedule.
     """
     
     # Load in a test configuration & set defaults
@@ -68,6 +68,7 @@ class TestCoordinator(unittest.TestCase):
       # Verify that schedule's last update time has been updated. It is initialized to 0, so if the _update_schedule() 
       # function worked as intended then it'll be some integer > 0.
       self.assertTrue((test_schedule.last_updated > 0), "The session coordinator did not update the schedule correctly.")
+      self.assertTrue(len(test_schedule.schedule) > 0, "The session coordinator did not update the schedule correctly.")
     
     # Instruct the session manager to update the schedule
     schedule_update_deferred = session_coordinator._update_schedule()
@@ -75,9 +76,10 @@ class TestCoordinator(unittest.TestCase):
     
     return schedule_update_deferred
   
-  def test_active_reservation_session_creation(self):
-    """This test verifies that the session coordinator can correctly create (and skip) usage sessions from the 
-    reservation schedule.
+  def test_reservation_session_creation(self):
+    """ This test verifies that the session coordinator can correctly create usage sessions from the reservation 
+    schedule. It also tests that it correctly handles conflicting reservations. That is, reservations that concurrently
+    use the same pipeline or hardware devices.
     """
     
     # Load in a test configuration & set defaults
@@ -101,24 +103,29 @@ class TestCoordinator(unittest.TestCase):
       # Look for active reservations and create associated sessions
       session_coordinator._check_for_new_reservations()
       
-      # Verify that one of the conflicting active reservations is active and one is closed (due to an error)
+      # Make sure that RES.5 failed (it uses a pipeline that contains errors in its setup commands)
+      self.assertTrue('RES.5' in session_coordinator.closed_sessions and
+                      'RES.5' not in session_coordinator.active_sessions,
+                      "RES.5, which uses a pipeline that contains fatal setup command errors, was not marked as "+
+                      "closed as expected.")
+
+      # Verify that either RES.2 or RES.3 is active (these reservations use the same pipeline at the same time, so only
+      # one can be active at a time)
       self.assertTrue((('RES.2' in session_coordinator.active_sessions) and ('RES.3' in session_coordinator.closed_sessions)) or
                       (('RES.2' in session_coordinator.closed_sessions) and ('RES.3' in session_coordinator.active_sessions)),
                       "The conflicting active reservations (RES.2 or RES.3) defined in the test schedule aren't where "+
-                      "they should be (one should be active and one should be closed due to the conflict error.")
+                      "they should be (one should be active and one should be closed due to the conflict error).")
       
       # Verify that RES.4 didn't get started (uses an invalid pipeline)
       self.assertTrue(('RES.4' not in session_coordinator.active_sessions) and
                       ('RES.4' in session_coordinator.closed_sessions),
-                      "RES.4, which uses a non-existent pipeline, was either not marked as closed or was mistakenly "+
-                      "marked as active.")
+                      "RES.4, which uses a non-existent pipeline, was not marked closed as expected.")
       
       # Verify that the expired reservation (RES.1) was not started
-      self.assertTrue(('RES.1' not in session_coordinator.active_sessions) and
-                      ('RES.1' in session_coordinator.closed_sessions),
-                      "RES.1, which is expired, was started when it should have just been marked as closed.")
+      self.assertTrue(('RES.1' not in session_coordinator.active_sessions),
+                      "RES.1, which is expired, was started when it should have been ignored.")
       
-      # Attempt to reserve a pipeline that RES.2 or RES.3 is using (tests that it was correctly locked)
+      # Attempt to reserve the pipeline that RES.2 or RES.3 is using (tests that it was correctly locked)
       self.assertRaises(pipeline.PipelineInUse, test_pipelines.pipelines['test_pipeline'].reserve_pipeline)
     
     # Update the schedule to load in the reservations

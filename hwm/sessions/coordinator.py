@@ -37,7 +37,9 @@ class SessionCoordinator:
     
     # Initialize coordinator attributes
     self.active_sessions = {} # Sessions that are currently running or being prepared to run
-    self.closed_sessions = [] # Sessions that have been completed or experienced a fatal error during initialization
+    self.closed_sessions = [] # Sessions that have been completed or experienced a fatal error during initialization,
+                              # this is just an array of reservation IDs so that their session objects can get garbage
+                              # collected.
   
   def coordinate(self):
     """ Coordinates the operation of the hardware manager.
@@ -65,7 +67,7 @@ class SessionCoordinator:
   def _check_for_new_reservations(self):
     """ Creates sessions for new active reservations.
     
-    This method checks for newly active reservations in the reservation schedule and sets up Sessions for them.
+    This method checks for newly active reservations in the reservation schedule and sets up Session objects for them.
     
     @note If a session-fatal error occurs during the session initialization process, it will be logged by callbacks in 
           this class and gracefully fail.
@@ -84,6 +86,7 @@ class SessionCoordinator:
         except pipeline_manager.PipelineNotFound:
           logging.error("The pipeline requested for reservation '"+active_reservation['reservation_id']+"' could not "+
                         "be found. Requested pipeline: "+active_reservation['pipeline_id'])
+          self.closed_sessions.append(active_reservation['reservation_id'])
           continue
         
         # Create a session object for the newly active reservation
@@ -92,9 +95,9 @@ class SessionCoordinator:
                                                                                      self.command_parser)
         session_init_deferred = self.active_sessions[active_reservation['reservation_id']].start_session()
         session_init_deferred.addCallbacks(self._session_init_complete,
-                                           self._session_init_failed,
-                                           callbackArgs = (active_reservation['reservation_id']),
-                                           errbackArgs = (active_reservation['reservation_id']))
+                                           errback = self._session_init_failed,
+                                           callbackArgs = [active_reservation['reservation_id']],
+                                           errbackArgs = [active_reservation['reservation_id']])
   
   def _session_init_complete(self, session_command_results, reservation_id):
     """ Called once a new session is up and running.
@@ -112,7 +115,8 @@ class SessionCoordinator:
     if session_command_results is not None:
       for (command_status, command_results) in session_command_results:
         if not command_status:
-          logging.error("An non-fatal error occured executing a session setup command.")
+          logging.error("An non-fatal error occured executing a session setup command for the reservation: "+
+                        reservation_id)
 
           # TODO: Log the error event in the state manager
   
@@ -129,7 +133,7 @@ class SessionCoordinator:
     @param reservation_id  The ID of the reservation that could not be started.
     @return Returns True after the error has been dealt with.
     """
-    
+
     # Mark the session as closed and remove it from active_sessions so it won't be immediately re-run
     self.closed_sessions.append(reservation_id)
     self.active_sessions.pop(reservation_id, None)
@@ -143,7 +147,8 @@ class SessionCoordinator:
   def _update_schedule(self):
     """ Updates the schedule if appropriate.
     
-    This method instructs the schedule manager to update its schedule if it hasn't been updated recently.
+    This method instructs the schedule manager to update its schedule if it hasn't been updated recently ('recently' is
+    defined by the 'schedule-update-period' configuration option).
     
     @return Returns the schedule update deferred from the schedule manager.
     """
@@ -157,8 +162,6 @@ class SessionCoordinator:
   
   def _error_updating_schedule(self, failure):
     """ Handles failed schedule updates. 
-    
-    This is needed to keep the program from terminating if a schedule update fails.
     
     @param failure  The Failure object wrapping the generated exception.
     """

@@ -182,7 +182,7 @@ class TestPipeline(unittest.TestCase):
     self.assertRaises(pipeline.PipelineInUse, test_pipeline_b.reserve_pipeline)
 
     # Make sure that the 'test_device3' device in pipeline b (which is not used by pipeline a) was rolled back correctly 
-    # after the error occured
+    # after the locking error occured
     test_pipeline_b.devices['test_device3'].reserve_device()
 
   def _reset_config_entries(self):

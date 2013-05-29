@@ -101,7 +101,7 @@ class Pipeline:
         self.devices[device_id].reserve_device()
         successfully_locked_devices.append(device_id)
       except driver.DeviceInUse:
-        # A device in the pipeline is currently being used, rollback locking changes
+        # A device in the pipeline is currently being used, rollback hardware locks acquired thus far
         for locked_device in successfully_locked_devices:
           self.devices[locked_device].free_device()
 
