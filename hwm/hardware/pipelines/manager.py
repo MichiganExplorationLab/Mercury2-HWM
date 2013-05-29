@@ -9,6 +9,7 @@ pipelines.
 import logging, jsonschema
 from hwm.core import configuration
 from hwm.hardware.pipelines import pipeline
+from hwm.hardware.devices import manager as device_manager
 
 class PipelineManager:
   """ Provides access the collection of available hardware pipelines.
@@ -16,24 +17,28 @@ class PipelineManager:
   This class initializes and manages the collection of loaded hardware pipelines.
   """
   
-  def __init__(self):
+  def __init__(self, device_manager, command_parser):
     """ Sets up the pipeline manager.
     
     This constructor sets up the pipeline manager and calls a method that initializes the available pipelines.
     
-    @note This constructor may pass on exceptions from the pipeline initialization (see _initialize_pipelines).
     @note This class does not load the pipeline configuration file itself. Instead, Configuration is instructed to load
-          it at runtime and this class accesses it via configuration. Therefore, if this class is initialized before the 
-          pipeline configuration has been loaded an exception will be generated.
+          it at runtime and this class accesses it via the 'configuration' module. If this class is initialized before 
+          the pipeline configuration has been loaded an exception will be raised
+    
+    @throws May pass on exceptions from the pipeline initialization process (see _initialize_pipelines).
+
+    @param device_manager  A reference to the DeviceManager instance that should be used.
+    @param command_parser  A reference to a CommandParser that will be used to process pipeline setup commands.
     """
     
-    # Set the local configuration reference
+    # Setup class attributes
     self.config = configuration.Configuration
-    
-    # Initialize class variables
+    self.device_manager = device_manager
+    self.command_parser = command_parser
     self.pipelines = {}
     
-    # Initialize 
+    # Initialize the configured pipelines
     self._initialize_pipelines()
   
   def get_pipeline(self, pipeline_id):
@@ -62,7 +67,8 @@ class PipelineManager:
     
     @throw Throws PipelinesAllReadyInitialized if this method is called after pipelines have been initialized.
     @throw Throws PipelinesNotDefined if no pipelines are defined in the runtime configuration.
-    @throw May pass on PipelineConfigInvalid from _validate_pipelines() if the loaded pipeline configuration is invalid.
+    @throw May pass on PipelineSchemaInvalid exceptions if the pipeline configuration doesn't match the defined schema.
+    @throw May pass on PipelineConfigInvalid exceptions if the pipeline configuration contains other errors.
     """
     
     # Verify that no pipelines have been initialized yet
@@ -77,24 +83,24 @@ class PipelineManager:
       logging.error("No pipeline configurations defined, pipeline manager not initialized.")
       raise PipelinesNotDefined("No pipeline definitions were found in the configuration files.")
     
-    # Validate the pipeline configuration
-    self._validate_pipelines(pipeline_settings)
+    # Validate the pipeline configuration schema
+    self._validate_pipeline_schema(pipeline_settings)
     
     # Loop through and create a Pipeline object for each configured pipeline
     for pipeline_config in pipeline_settings:
-      temp_pipeline = pipeline.Pipeline(pipeline_config)
+      temp_pipeline = pipeline.Pipeline(pipeline_config, self.device_manager, self.command_parser)
       self.pipelines[temp_pipeline.id] = temp_pipeline
   
-  def _validate_pipelines(self, pipeline_configuration):
+  def _validate_pipeline_schema(self, pipeline_configuration):
     """ Validates the provided pipeline configuration.
     
     This method validates the provided pipeline configuration (loaded from the configuration files) by comparing it
     against the defined schema.
     
-    @note In addition to the schema check, this method also verifies that only one device in the pipeline is set as the
-          pipeline input or output (this check can't be specified in the JSON schema draft v3).
+    @note Each pipeline class may perform additional validations when initialized. This method simply checks the 
+          pipeline configuration schema as a whole.
     
-    @throw Throws PipelineConfigInvalid if the provided pipeline configuration is invalid.
+    @throw Throws PipelineSchemaInvalid if the provided pipeline configuration schema is invalid.
     
     @param pipeline_configuration  An object containing the pipeline configuration from the YAML configuration files.
     """
@@ -181,27 +187,7 @@ class PipelineManager:
     except jsonschema.ValidationError:
       # Invalid pipeline configuration
       logging.error("Failed to initialize the pipeline manager because the pipeline configuration was invalid.")
-      raise PipelineConfigInvalid("The loaded pipeline configuration does not conform to the defined schema.")
-    
-    # Loop through the pipeline hardware for each pipeline and make sure there aren't multiple inputs and outputs
-    for temp_pipeline in pipeline_configuration:
-      input_device_found = False
-      output_device_found = False
-      
-      for temp_device in temp_pipeline['hardware']:
-        if 'pipeline_input' in temp_device:
-          if input_device_found:
-            logging.error("The '"+temp_pipeline['id']+"' pipeline contained multiple input devices.")
-            raise PipelineConfigInvalid("The '"+temp_pipeline['id']+"' pipeline contained multiple input devices.")
-          else:
-            input_device_found = True
-        
-        if 'pipeline_output' in temp_device:
-          if output_device_found:
-            logging.error("The '"+temp_pipeline['id']+"' pipeline contained multiple output devices.")
-            raise PipelineConfigInvalid("The '"+temp_pipeline['id']+"' pipeline contained multiple output devices.")
-          else:
-            output_device_found = True
+      raise PipelineSchemaInvalid("The loaded pipeline configuration does not conform to the defined schema.")
 
 # Define PipelineManager exceptions
 class PipelinesNotDefined(Exception):
@@ -210,5 +196,5 @@ class PipelinesAlreadyInitialized(Exception):
   pass
 class PipelineNotFound(Exception):
   pass
-class PipelineConfigInvalid(Exception):
+class PipelineSchemaInvalid(Exception):
   pass

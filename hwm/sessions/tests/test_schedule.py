@@ -35,7 +35,7 @@ class TestSchedule(unittest.TestCase):
     
     return update_deferred
   
-  def test_local_file_load_invalid(self):
+  def test_local_file_load_invalid_schema(self):
     """Verifies that ScheduleManager rejects schedules that don't fit the schedule schema requirements (see included 
     documentation for requirements).
     """
@@ -73,8 +73,8 @@ class TestSchedule(unittest.TestCase):
     return self.assertFailure(update_deferred, schedule.ScheduleError)
   
   def test_get_active_reservations(self):
-    """Tests that the schedule manager returns the reservations that are active (i.e. time_start < current time < time_end), while
-    ignoring the inactive ones.
+    """Tests that the schedule manager returns the reservations that are active (i.e. time_start < current time < time_end),
+    while ignoring the inactive ones.
     
     @note The end time of one of the reservations in the test schedule is set to 2019 to make this test pass.
     """
@@ -89,9 +89,17 @@ class TestSchedule(unittest.TestCase):
     def check_schedule_update(update_results):
       # Attempt to get the active reservations
       active_reservations = schedule_manager.get_active_reservations()
-      
+      known_active_reservations = ['RES.2', 'RES.3', 'RES.4', 'RES.5']
+
       # Verify the correct number of active reservations was returned
-      self.assertEqual(len(active_reservations), 3, "Too many active reservations were returned based on the test JSON file.")
+      for known_active_reservation in known_active_reservations:
+        active_reservation_found = False
+        for active_reservation in active_reservations:
+          if active_reservation['reservation_id'] == known_active_reservation:
+            active_reservation_found = True
+
+        self.assertTrue(active_reservation_found, "A reservation that should be active (according to the test "+
+                                                  "schedule) was not returned by by the ScheduleManager.")
     
     update_deferred.addCallback(check_schedule_update)
     

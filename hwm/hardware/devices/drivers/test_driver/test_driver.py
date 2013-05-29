@@ -1,5 +1,5 @@
 """ @package hwm.hardware.devices.drivers.test_driver.test_driver
-Contains a simple empty driver for unit testing purposes. Do not use this for anything besides unit tests.
+Contains a simple empty driver for unit testing purposes. Do not use this for anything besides testing.
 """
 
 # Import required modules

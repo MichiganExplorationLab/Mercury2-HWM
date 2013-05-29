@@ -1,4 +1,5 @@
-# This configuration file contains a valid pipeline configuration and is used to test the pipeline manager
+# This configuration file contains a valid pipeline configuration and is used to test the PipelineManager and Pipeline 
+# classes.
 
 pipelines:
   - id: "test_pipeline"
@@ -6,13 +7,31 @@ pipelines:
     hardware:
       - device_id: "test_device"
         pipeline_input: true
+      - device_id: "test_device2"
+        pipeline_output: true
     setup_commands:
-      - command: "test_command"
+      - command: "station_time"
         destination: "system"
         parameters:
           command_argument: False
+      - command: "station_time"
+        destination: "system"
+  # This pipeline doesn't contain any setup commands
   - id: "test_pipeline2"
     mode: "receive"
     hardware:
+      - device_id: "test_device3"
+        pipeline_output: true
+      - device_id: "test_device2"
+        pipeline_input: true
+  # This pipeline contains setup commands, but one of them will generate an error (unrecognized command)
+  - id: "test_pipeline3"
+    mode: "transceive"
+    hardware:
       - device_id: "test_device"
         pipeline_output: true
+    setup_commands:
+      - command: "station_time"
+        destination: "system"
+      - command: "nonexistent_command"
+        destination: "system"

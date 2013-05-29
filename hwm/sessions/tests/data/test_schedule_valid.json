@@ -2,80 +2,87 @@
   "generated_at": 1360096490,
   "reservations": [
     {
-        "reservation_id": "RES.1",
-        "user_id": "7",
-        "time_start": 1360096495,
-        "time_end": 1360097495,
-        "description": "Reservation has all ready completed.",
-        "pipeline_id": "test_pipeline",
-        "hardware_settings": {
-            "device_id_1": {
-                "device_id": "device_id_1",
-                "setting_a": 10,
-                "setting_b": "\"Test setting\""
-            },
-            "device_id_2": {
-                "device_id": "device_id_2",
-                "some_setting": 15
-            }
+      "reservation_id": "RES.1",
+      "user_id": "1",
+      "username": "test_admin",
+      "time_start": 1360096495,
+      "time_end": 1360097495,
+      "description": "Reservation has all ready completed.",
+      "pipeline_id": "test_pipeline",
+      "setup_commands": [
+        {
+          "command": "test_command",
+          "destination": "test_device",
+          "parameters": {
+            "command_argument": true
+          }
+        },
+        {
+          "command": "test_command",
+          "destination": "system",
+          "parameters": {
+            "command_argument": false
+          }
         }
+      ]
     },
     {
       "reservation_id": "RES.2",
       "time_start": 1360096495,
       "time_end": 1660097495,
-      "user_id": "8",
-      "description": "Reservation should be active.",
+      "user_id": "4",
+      "username": "test_user",
+      "description": "Reservation should be active. Contains valid and invalid session setup commands.",
       "pipeline_id": "test_pipeline",
-      "hardware_settings": {
-        "device_id_4": {
-          "device_id": "device_id_4",
-          "setting_1": 2.0,
-          "setting_2": false
+      "setup_commands": [
+        {
+          "command": "station_time",
+          "destination": "system"
         },
-        "device_id_5": {
-          "device_id": "device_id_5",
-          "some_setting": "Test"
+        {
+          "command": "nonexistent_command",
+          "destination": "system"
         }
-      }
+      ]
     },
     {
       "reservation_id": "RES.3",
-      "user_id": "7",
+      "user_id": "1",
+      "username": "test_admin",
       "time_start": 1360096495,
       "time_end": 1660097495,
-      "description": "Reservation should be active and have the same parameters as RES.2.",
-      "pipeline_id": "test_pipeline",
-      "hardware_settings": {
-        "device_id_4": {
-          "device_id": "device_id_4",
-          "setting_1": 2.0,
-          "setting_2": false
-        },
-        "device_id_5": {
-          "device_id": "device_id_5",
-          "some_setting": "Test"
-        }
-      }
+      "description": "Reservation should be active and uses the same pipeline as RES.2 (meaning only one can be active at a time). It also doesn't contain any setup commands.",
+      "pipeline_id": "test_pipeline"
     },
     {
       "reservation_id": "RES.4",
-      "user_id": "9",
+      "user_id": "2",
+      "username": "test_user_old",
       "time_start": 1360096495,
       "time_end": 1660097495,
       "description": "Active reservation for a pipeline that doesn't exist.",
       "pipeline_id": "test_pipeline_doesnt_exist",
-      "hardware_settings": {
-        "device_id_4": {
-          "device_id": "device_id_4",
-          "setting_1": 2.0,
-          "setting_2": false
-        },
-        "device_id_5": {
-          "device_id": "device_id_5",
-          "some_setting": "Test"
+      "setup_commands": [
+        {
+          "command": "test_command",
+          "destination": "test_device"
         }
-      }
+      ]
+    },
+    {
+      "reservation_id": "RES.5",
+      "user_id": "1",
+      "username": "test_admin",
+      "time_start": 1360096495,
+      "time_end": 1660097495,
+      "description": "An active reservation for a different pipeline than RES.2 and RES.3.",
+      "pipeline_id": "test_pipeline3",
+      "setup_commands": [
+        {
+          "command": "station_time",
+          "destination": "system"
+        }
+      ]
     }
   ]
 }

@@ -44,7 +44,8 @@ class PermissionManager:
     
     @throws Throws PermissionsUserNotFound if the specified user doesn't have any permission settings saved.
     
-    @param user_id  The ID of the user to fetch permissions for.
+    @param user_id  The ID of the user to fetch permissions for. This refers to the UUID that was generated for the 
+                    user, not their username.
     @return Returns a deferred that will be fired with the user's permissions (or an error, if one occurs). 
     """
     
@@ -260,6 +261,7 @@ class PermissionManager:
       "required": True,
       "items": {
         "type": "object",
+        "additionalProperties": False,
         "properties": {
           "generated_at": {
             "type": "number",
@@ -269,6 +271,11 @@ class PermissionManager:
           "user_id": {
             "type": "string",
             "id": "user_id",
+            "required": True
+          },
+          "username": {
+            "type": "string",
+            "id": "username",
             "required": True
           },
           "ignore_session_protections": {

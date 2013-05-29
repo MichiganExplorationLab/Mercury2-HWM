@@ -44,7 +44,8 @@ class ScheduleManager:
           the local copy using callbacks. If use_local_schedule is true, the schedule will be loaded from a local file 
           (specified in the configuration files). If it is false, it will be loaded from the user interface API.
     
-    @return Returns a deferred that will be called with the result of the file access (the schedule object or a Failure).
+    @return Returns a deferred that will be called with the result of the file access (the schedule object or a 
+            Failure).
     """
     
     # Setup local variables
@@ -106,56 +107,60 @@ class ScheduleManager:
       "properties": {
         "generated_at": {
           "type": "number",
-          "id": "generated_at",
           "required": True
         },
         "reservations": {
           "type": "array",
-          "id": "reservations",
           "required": True,
           "items": {
             "type": "object",
-            "additionalProperties": True, # Allows extra properties to be added to each reservation object
+            "additionalProperties": True,
             "properties": {
-              "hardware_settings": {
-                "type": "object",
-                "id": "hardware_settings",
-                "required": True,
-                "additionalProperties": {
-                  # Device settings defined with these additional properties
+              "setup_commands": {
+                "type": "array",
+                "required": False,
+                "items": {
                   "type": "object",
-                  "additionalProperties": True, # Allows extra device properties to be set
+                  "additionalProperties": False,
                   "properties": {
-                    "device_id": {
+                    "command": {
                       "type": "string",
                       "required": True
+                    },
+                    "destination": {
+                      "type": "string",
+                      "required": True
+                    },
+                    "parameters": {
+                      "type": "object",
+                      "additionalProperties": True,
+                      "required": False
                     }
                   }
                 }
               },
               "pipeline_id": {
                 "type": "string",
-                "id": "pipeline_id",
                 "required": True
               },
               "time_end": {
                 "type": "number",
-                "id": "time_end",
                 "required": True
               },
               "time_start": {
                 "type": "number",
-                "id": "time_start",
                 "required": True
               },
               "reservation_id": {
                 "type": "string",
-                "id": "reservation_id",
                 "required": True
               },
               "user_id": {
                 "type": "string",
-                "id": "user_id",
+                "required": True
+              },
+              "username": {
+                "type": "string",
                 "required": True
               }
             }

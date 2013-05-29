@@ -119,7 +119,7 @@ class TestConfiguration(unittest.TestCase):
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
     
     # Validate required elements
-    self.assertRaises(Exception, self.config._check_required_configuration)
+    self.assertRaises(RequiredOptionNotFound, self.config._check_required_configuration)
   
   def test_protected_option_read(self):
     # Load the test configuration file
