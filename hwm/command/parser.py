@@ -215,7 +215,7 @@ class CommandParser:
     else:
       error_results = error_message
     
-    # Build the response
+    # Build the response dictionary
     error_response = failed_command.build_command_response(False, error_results)
     
     # Log the error

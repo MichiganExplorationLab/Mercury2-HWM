@@ -55,7 +55,7 @@ class Session:
             user.
     
     @note All of the pipeline setup commands will always be executed before any of the session setup commands are.
-    @note If a session fatal error occurs, the self._session_setup_error callback will automatically clean up the 
+    @note If a session-fatal error occurs, the self._session_setup_error callback will automatically clean up the 
           session. Whatever calls this function (i.e. SessionCoordinator) doesn't need to worry about it.
     
     @return Returns a deferred that will be fired with the results of session setup commands (an array containing the 
@@ -125,7 +125,7 @@ class Session:
     self.active_pipeline.free_pipeline()
 
     # Check if the fatal error is a FirstError type, indicating it came from a DeferredList and needs to be flattened
-    if isinstance(failure, defer.FirstError):
+    if isinstance(failure.value, defer.FirstError):
       return failure.value.subFailure
     else:
       # Just a normal exception, re-raise it

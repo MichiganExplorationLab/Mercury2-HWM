@@ -32,11 +32,15 @@
       "time_end": 1660097495,
       "user_id": "4",
       "username": "test_user",
-      "description": "Reservation should be active.",
+      "description": "Reservation should be active. Contains valid and invalid session setup commands.",
       "pipeline_id": "test_pipeline",
       "setup_commands": [
         {
-          "command": "test_command",
+          "command": "station_time",
+          "destination": "system"
+        },
+        {
+          "command": "nonexistent_command",
           "destination": "system"
         }
       ]
@@ -47,14 +51,8 @@
       "username": "test_admin",
       "time_start": 1360096495,
       "time_end": 1660097495,
-      "description": "Reservation should be active and uses the same pipeline as RES.2 (meaning only one can be active at a time).",
-      "pipeline_id": "test_pipeline",
-      "setup_commands": [
-        {
-          "command": "test_command",
-          "destination": "test_device"
-        }
-      ]
+      "description": "Reservation should be active and uses the same pipeline as RES.2 (meaning only one can be active at a time). It also doesn't contain any setup commands.",
+      "pipeline_id": "test_pipeline"
     },
     {
       "reservation_id": "RES.4",
@@ -68,6 +66,21 @@
         {
           "command": "test_command",
           "destination": "test_device"
+        }
+      ]
+    },
+    {
+      "reservation_id": "RES.5",
+      "user_id": "1",
+      "username": "test_admin",
+      "time_start": 1360096495,
+      "time_end": 1660097495,
+      "description": "An active reservation for a different pipeline than RES.2 and RES.3.",
+      "pipeline_id": "test_pipeline3",
+      "setup_commands": [
+        {
+          "command": "station_time",
+          "destination": "system"
         }
       ]
     }

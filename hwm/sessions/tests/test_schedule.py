@@ -73,8 +73,8 @@ class TestSchedule(unittest.TestCase):
     return self.assertFailure(update_deferred, schedule.ScheduleError)
   
   def test_get_active_reservations(self):
-    """Tests that the schedule manager returns the reservations that are active (i.e. time_start < current time < time_end), while
-    ignoring the inactive ones.
+    """Tests that the schedule manager returns the reservations that are active (i.e. time_start < current time < time_end),
+    while ignoring the inactive ones.
     
     @note The end time of one of the reservations in the test schedule is set to 2019 to make this test pass.
     """
@@ -91,7 +91,7 @@ class TestSchedule(unittest.TestCase):
       active_reservations = schedule_manager.get_active_reservations()
       
       # Verify the correct number of active reservations was returned
-      self.assertEqual(len(active_reservations), 3, "Too many active reservations were returned based on the test JSON file.")
+      self.assertEqual(len(active_reservations), 4, "Too many active reservations were returned based on the test JSON file.")
     
     update_deferred.addCallback(check_schedule_update)
     

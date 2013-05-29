@@ -106,7 +106,7 @@ class Pipeline:
           self.devices[locked_device].free_device()
 
         raise PipelineInUse("One or more of the devices in the '"+self.id+"' pipeline is currently being used so the "+
-                            +"pipeline can't be reserved.")
+                            "pipeline can't be reserved.")
     
     # Lock the pipeline
     self.in_use = True
@@ -162,7 +162,8 @@ class Pipeline:
       try:
         curr_device_driver = self.device_manager.get_device_driver(temp_device['device_id'])
       except device_manager.DeviceNotFound:
-        logging.error("The '"+temp_device['device_id']+"' device in the '"+self.id+"' pipeline could not be located.")
+        logging.error("The '"+temp_device['device_id']+"' device in the '"+self.id+"' pipeline configuration could "+
+                      "not be located.")
         raise PipelineConfigInvalid("The '"+self.id+"' pipeline configuration specified a "+
                                     "non-existent device: '"+temp_device['device_id']+"'")
       self.devices[temp_device['device_id']] = curr_device_driver
