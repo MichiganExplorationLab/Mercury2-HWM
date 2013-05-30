@@ -1,5 +1,5 @@
 # Import required modules
-import logging
+import logging, threading
 from twisted.trial import unittest
 from hwm.core.configuration import *
 from hwm.hardware.pipelines import pipeline
@@ -161,7 +161,7 @@ class TestPipeline(unittest.TestCase):
 
     # Unlock the pipeline and make sure that all of its devices were freed
     test_pipeline.free_pipeline()
-    self.assertTrue(not test_pipeline.in_use)
+    self.assertRaises(threading.ThreadError, test_pipeline.in_use.release)
     for temp_device in test_pipeline.devices:
       test_pipeline.devices[temp_device].reserve_device()
 

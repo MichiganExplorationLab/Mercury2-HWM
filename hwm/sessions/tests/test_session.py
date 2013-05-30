@@ -1,5 +1,5 @@
 # Import required modules
-import logging
+import logging, threading
 from twisted.internet import defer
 from twisted.trial import unittest
 from hwm.sessions import schedule, session
@@ -98,7 +98,9 @@ class TestSession(unittest.TestCase):
       self.assertTrue(isinstance(session_start_failure.value, parser.CommandFailed))
 
       # Make sure that the pipeline was freed after the error
-      self.assertTrue(not test_pipeline.in_use)
+      #test_pipeline.in_use.release()
+      self.assertRaises(threading.ThreadError, test_pipeline.in_use.release)
+      #self.assertTrue(not test_pipeline.in_use)
       for temp_device in test_pipeline.devices:
         # Try to lock the devices, if this fails then something wasn't unlocked correctly
         test_pipeline.devices[temp_device].reserve_device()

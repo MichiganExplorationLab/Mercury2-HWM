@@ -5,7 +5,7 @@ This modules contains the class that is used to represent individual hardware pi
 """
 
 # Import required packages
-import logging
+import logging, threading
 from twisted.internet import defer
 from hwm.hardware.devices import manager as device_manager
 from hwm.hardware.devices.drivers import driver
@@ -35,7 +35,7 @@ class Pipeline:
     self.mode = pipeline_configuration['mode']
     self.setup_commands = pipeline_configuration['setup_commands'] if 'setup_commands' in pipeline_configuration else None
     self.devices = {}
-    self.in_use = False
+    self.in_use = threading.Lock()
     self.input_device = None
     self.output_device = None
     
@@ -91,7 +91,7 @@ class Pipeline:
     successfully_locked_devices = []
 
     # Check if the pipeline is being used
-    if self.in_use:
+    if not self.in_use.acquire(False):
       raise PipelineInUse("The requested pipeline is all ready in use and can not be reserved.")
     
     # Lock all of the pipeline's hardware
@@ -107,9 +107,6 @@ class Pipeline:
 
         raise PipelineInUse("One or more of the devices in the '"+self.id+"' pipeline is currently being used so the "+
                             "pipeline can't be reserved.")
-    
-    # Lock the pipeline
-    self.in_use = True
   
   def free_pipeline(self):
     """ Frees the pipeline.
@@ -122,12 +119,11 @@ class Pipeline:
     """
     
     # Free the pipeline's hardware devices
-    if self.in_use:
+    if not self.in_use.acquire(False):
       for device_id in self.devices:
         self.devices[device_id].free_device()
-    
-    # The pipeline is free
-    self.in_use = False
+
+      self.in_use.release()
 
   def _setup_pipeline(self):
     """ Sets up the pipeline and performs additional validations.
