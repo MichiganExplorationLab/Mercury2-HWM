@@ -1,13 +1,33 @@
-## Contains the settings for the available hardware pipelines.
-## 
-## This file defines the settings for the hardware pipelines. For a complete description of the available settings, 
-## please reference the included configuration.
+# Mercury2 HWM Pipeline Configuration File
+# 
+# This file contains the pipeline definitions for the Mercury2 hardware manager. It specifies information about each
+# available pipeline such as its ID, constituent hardware, and setup commands that should be executed before the 
+# pipeline can be used.
+# 
+# For more details on setting up your hardware pipelines, please see the provided documentation.
 
-# Define the pipelines
-pipelines:
-  - id: "test_pipeline"
-    hardware:
-      - device_id: "device_1"
-  - id: "test_pipeline_2"
-    hardware:
-      - device_id: "device_2"
+# pipelines: An array containing the pipeline configuration for all available hardware pipelines.
+# 
+# At a minimum, each pipeline must at least specify an ID, mode (transmit, receive, or transceive), and some constituent
+# hardware devices. They can also specify optional setup commands, which are automatically run whenever a reservation
+# wants to use the pipeline. Setup commands can be used to ensure that the pipeline hardware is in the desired state
+# before starting the user reservation. An example of a valid pipeline configuration is presented below:
+# 
+# > pipelines:
+# >   - id: "test_pipeline"
+# >     mode: "transmit"
+# >     hardware:
+# >       - device_id: "test_device"
+# >         pipeline_input: true
+# >         pipeline_output: true
+# >     setup_commands:
+# >       - command: "flip_switch"
+# >         destination: "some_switch"
+# 
+# Some things to note:
+# - The device_id refers to a device defined in the device configuration file.
+# - You can use the pipeline_input and pipeline_output flags to indicate that a device is the pipeline input or output
+#   point. There can only be one input device and one output device for any given pipeline.
+# 
+# Required: True
+pipelines: []

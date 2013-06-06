@@ -1,0 +1,8 @@
+# This data file contains an invalid configuration that does not specify one of the required configuration options
+
+# Define all but one of the required configuration options
+station-name: "Mercury2 Ground Station"
+station-longitude: -125.753765
+#station-latitude: 39.031859
+station-altitude: 22
+mercury2-ui-location: "http://localhost/mercury2"

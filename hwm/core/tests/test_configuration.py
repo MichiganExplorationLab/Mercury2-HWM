@@ -87,42 +87,56 @@ class TestConfiguration(unittest.TestCase):
   
   def test_config_file_load(self):
     # Attempt to load a valid config file
-    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
   
   def test_config_file_invalid_load(self):
-    # Attempt to load an invalid config file
-    self.assertRaises(Exception, self.config.read_configuration, self.source_data_directory+'/core/tests/data/test_config_invalid.yml')
+    # Attempt to load a malformed config file
+    self.assertRaises(Exception, self.config.read_configuration, self.source_data_directory+'/core/tests/data/test_config_malformed.yml')
   
   def test_default_option_set(self):
+    """ Makes sure that the default values are getting set correctly for unspecified configuration options that have a 
+    defined default value.
+    """
+
     # Load a valid configuration file
-    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
     
     # Set the Mercury2 HWM defaults
-    self.config._set_default_configuration()
+    self.config.validate_configuration()
     
-    # Make sure one of those options can be read (shouldn't raise an exception)
-    self.config.get('offline-mode')
+    # Make sure that some unspecified options with associated default values were set correctly
+    self.assertEqual(self.config.get('offline-mode'), False)
+    self.assertEqual(self.config.get('schedule-update-timeout'), 10)
   
   def test_default_option_override(self):
+    """ Tests that custom values can be set for options that have a pre-defined default value.
+    """
+
     # Load a valid configuration file
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
     
     # Set the Mercury2 HWM defaults
-    self.config._set_default_configuration()
+    self.config.validate_configuration()
     
     # Verify the option has the correct value (the one set in the file)
     read_result = self.config.get('schedule-update-timeout')
     self.assertEqual(read_result, 3, 'The configuration option value does not match what was set in the file.')
   
   def test_required_option_not_set(self):
+    """ Makes sure that the configuration validator correctly rejects a configuration set that does not specify one of
+    the required options (invalid schema).
+    """
+
     # Load a valid configuration file
-    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_invalid_required_not_set.yml')
     
     # Validate required elements
-    self.assertRaises(RequiredOptionNotFound, self.config._check_required_configuration)
+    self.assertRaises(ConfigInvalid, self.config.validate_configuration)
   
   def test_protected_option_read(self):
     # Load the test configuration file
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
     
     # Attempt to read one of the loaded options
@@ -131,6 +145,7 @@ class TestConfiguration(unittest.TestCase):
   
   def test_protected_option_set_protection(self):
     # Load the test configuration file
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
     
     # Attempt to override a protected option
@@ -138,6 +153,7 @@ class TestConfiguration(unittest.TestCase):
   
   def test_protected_option_delete_protection(self):
     # Load the test configuration file
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config.yml')
     
     # Attempt to override a protected option

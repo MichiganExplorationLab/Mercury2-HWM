@@ -1,17 +1,111 @@
-## Contains the configuration for this hardware manager instance.
-##
-## If the configuration parser detects a YAML error, the application will exit.
-##
-## If any required configuration options are omitted, the hardware manager will reject the configuration file and exit.
-## If a configuration option is left out and a default value exists for it, that value will be used instead. Reference 
-## the documentation for descriptions of available configuration parameters.
+# Mercury2 HWM Primary Configuration File
+#
+# This file contains the configuration options that control how the Mercury2 hardware manager operates. All available
+# configuration options are listed below, along with their default values and any specific instructions. If any required
+# options are left unspecified, the HWM will reject the configuration and exit.
+#
+# The hardware device and pipeline configurations are in the 'devices.yml' and 'pipelines.yml' configuration files,
+# respectively. 
+#
+# Important Note: All local resource locations defined in this configuration file (e.g. ssl-private-key-location and 
+#                 schedule-location-local) can either be absolute or relative (to the user running the HWM). If a local
+#                 resource location is left unspecified in this configuration file, a default value will be used that 
+#                 points to a file in the default Mercury2 configuration directory. All user provided non-default values
+#                 are assumed to be absolute or relative to the HWM user directory (i.e. not relative to the
+#                 configuration directory).
+#
+# See the provided documentation for a complete overview of the Mercury2 HWM configuration system.
 
-# Ground station parameters
-station-name: "MXL"
-station-longitude: -83.712076
-station-latitude: 42.293385
-station-altitude: 264
+# station-name: A human-readable name used to represent this HWM installation in the user interface and elsewhere.
+#               Because the HWM instance is identified by the TLS certificate provided by the user interface, this can
+#               be changed without needing to worry about if the UI will still recognize the ground station.
+#
+# Required: True
+station-name: "Mercury2 Ground Station"
 
-# Network settings
-offline-mode: true
-mercury2-ui-location: "http://localhost/hwm_tests"
+# station-longitude: The longitude of the ground station that is running this HWM instance. This is needed to correctly
+#                    calibrate some location dependent scripts like the orbital propagator. Note that this is an 
+#                    east-west longitude (with negative being west and positive being east).
+#
+# Required: True
+station-longitude: -125.753765
+
+# station-latitude: The latitude of the ground station that is running this HWM instance. This is needed to correctly
+#                   calibrate some location dependent scripts like the orbital propagator.
+#
+# Required: True
+station-latitude: 39.031859
+
+# station-altitude: The altitude of the ground station above sea level in meters. This is needed to correctly calibrate
+#                   some location dependent scripts like the orbital propagator.
+#
+# Required: True
+station-altitude: 22
+
+# offline-mode: This option lets you specify if the ground station will be operated in offline mode. Offline mode
+#               indicates that the computer running this HWM instance will routinely not have access to the user
+#               interface API and should load its schedule and permission settings from a local location instead of 
+#               querying the UI.
+#
+#offline-mode: false
+
+# network-command-port: What port the station command socket should operate on. All commands from the network should be
+#                       sent to this port.
+#
+#network-command-port: 8080
+
+# mercury2-ui-location: The location of the Mercury2 User Interface. If the station is being operated in online mode,
+#                       it will fetch its schedule and user permissions from this UI installation. This should just be
+#                       the base URL with no trailing slash.
+#
+# Required: True
+mercury2-ui-location: "http://localhost/mercury2"
+
+# ssl-private-key-location: The local location of the TLS private key that was generated for this HWM instance by the 
+#                           user interface.
+#
+#ssl-private-key-location: "{HWM Configuration Directory}/ssl/mercury2_hwm-key.pem"
+
+# ssl-public-cert-location: The local location of the TLS public certificate that was generated for this HWM instance by
+#                           the user interface.
+#
+#ssl-public-cert-location: "{HWM Configuration Directory}/ssl/mercury2_hwm-cert.pem"
+
+# ssl-ca-cert-location: The local location of the TLS certificate authority certificate provided by the user interface. 
+#                       This file is used to verify that incomming command and telemetry connections are from a user 
+#                       known to the user interface.
+#
+#ssl-ca-cert-location: "{HWM Configuration Directory}/ssl/ca-cert.pem"
+
+# schedule-update-period: Defines how frequently (in seconds) the reservation schedule should be updated.
+#
+#schedule-update-period: 30
+
+# schedule-update-timeout: The timeout duration (in seconds) that should be used when loading the reservation schedule.
+#
+#schedule-update-timeout: 10
+
+# schedule-location-local: The local location of the reservation schedule for this ground station. This will only be
+#                          used if the ground station is in offline mode.
+#
+#schedule-location-local: "{HWM Configuration Directory}/schedules/offline_schedule.json"
+
+# schedule-location-network: The user interface API endpoint that will be used to load this station's reservation
+#                            schedule. It will be appended to the mercury2-ui-location. Note that it does not include
+#                            a prefixed slash.
+#
+#schedule-location-network: "test_schedule.json"
+
+# permissions-update-timeout: The timeout duration (in seconds) that should be used when loading user permissions.
+#
+#permissions-update-timeout: 10
+
+# permissions-location-local: The local location of the user permissions file. This will only be used if the ground
+#                             ground station is in offline mode.
+#
+#permissions-location-local: "{HWM Configuration Directory}/permissions/offline_permissions.json"
+
+# permissions-location-network: The user interface API endpoint that will be used to load user ground station access
+#                               permissions.
+#
+#permissions-location-network: "test_permissions.json"

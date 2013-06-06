@@ -47,9 +47,10 @@ class TestCoordinator(unittest.TestCase):
     """ This test checks that the session coordinator can instruct the schedule manager to update its schedule.
     """
     
-    # Load in a test configuration & set defaults
+    # Load in some valid configuration and set the defaults using validate_configuration()
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
-    self.config._set_default_configuration()
+    self.config.validate_configuration()
     
     # Setup the pipeline manager
     test_pipelines = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
@@ -82,9 +83,10 @@ class TestCoordinator(unittest.TestCase):
     use the same pipeline or hardware devices.
     """
     
-    # Load in a test configuration & set defaults
+    # Load in some valid configuration and set the defaults using validate_configuration()
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
-    self.config._set_default_configuration()
+    self.config.validate_configuration()
     
     # Setup the pipeline manager
     test_pipelines = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)

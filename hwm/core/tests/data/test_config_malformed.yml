@@ -1,0 +1,4 @@
+# Contains an invalid YAML document which is used to test the schedule manager's error handling abilities.
+
+protected-option: "Protected Value"
+  protected-option-2: "Second Protected Value"
