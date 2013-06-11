@@ -173,10 +173,14 @@ class DeviceManager:
     config_validator = jsonschema.Draft3Validator(device_schema)
     try:
       config_validator.validate(device_configuration)
+
+      if self.config.verbose_startup:
+        print "- Device configuration validated."
     except jsonschema.ValidationError:
       # Invalid device configuration
       logging.error("Failed to initialize the device manager because the device configuration was invalid.")
-      raise DeviceConfigInvalid("The loaded device configuration does not conform to the defined schema.")
+      raise DeviceConfigInvalid("The loaded device configuration was invalid (did not conform to the schema "+
+                                "requirements).")
   
 # Define schedule related exceptions
 class DeviceConfigInvalid(Exception):

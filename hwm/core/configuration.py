@@ -157,7 +157,7 @@ class Config:
     @note In the schema, all required options that have an associated default value must have "required" set to False,
           otherwise the schema validation will fail when it should just use the default value.
 
-    @throws May throw ConfigInvalid if the loaded configuration does not conform to the schema.
+    @throws May throw ConfigInvalid if the loaded configuration set does not conform to the schema.
     """
 
     # Define the configuration schema
@@ -228,6 +228,11 @@ class Config:
           "type": "string",
           "default": "test_schedule.json"
         },
+        "permissions-update-period": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 60
+        },
         "permissions-update-timeout": {
           "type": "integer",
           "minimum": 1,
@@ -251,13 +256,13 @@ class Config:
       configuration_validator.validate(self.options)
 
       if self.verbose_startup:
-        print "- Successfully validated the loaded configuration."
-      logging.info("The loaded configuration settings were successfully validated.")
-    except jsonschema.ValidationError:
+        print "- Basic configuration options validated. The device and pipeline configurations will be validated later."
+      logging.info("The loaded basic configuration settings were successfully validated.")
+    except jsonschema.ValidationError as config_error:
       # The loaded configuration did not conform to the schema
-      logging.error("The loaded configuration files did not contain all required configuration options or contained "+
-                    "invalid configuration options.")
-      raise ConfigInvalid("The loaded configuration was invalid (did not conform to the configuration schema).")
+      logging.error("The loaded configuration files did not conform to the configuration schema: "+str(config_error))
+      raise ConfigInvalid("The loaded configuration was invalid (did not conform to the configuration schema): "+
+                          str(config_error))
 
     # Copy over the required default values
     self._process_defaults(configuration_schema)
@@ -281,7 +286,7 @@ class Config:
         self.options.update({option_name: option_schema['default']})
 
   def _set_hwm_directories(self):
-    """ Sets the location of the Mercury2 configuration and data directories.
+    """ Sets the location of the Mercury2 HWM configuration and data directories.
     
     This method sets the locations of the various Mercury2 configuration and data directories, which contain the HWM 
     configuration files, logs, and telemetry dumps, among other things.

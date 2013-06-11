@@ -88,13 +88,18 @@ mercury2-ui-location: "http://localhost/mercury2"
 # schedule-location-local: The local location of the reservation schedule for this ground station. This will only be
 #                          used if the ground station is in offline mode.
 #
-#schedule-location-local: "{HWM Configuration Directory}/schedules/offline_schedule.json"
+#schedule-location-local: "{HWM Data Directory}/schedules/offline_schedule.json"
 
 # schedule-location-network: The user interface API endpoint that will be used to load this station's reservation
 #                            schedule. It will be appended to the mercury2-ui-location. Note that it does not include
 #                            a prefixed slash.
 #
 #schedule-location-network: "test_schedule.json"
+
+# permissions-update-period: How long (in seconds) user permissions should be cached for before requesting a new 
+#                            version. Permissions rarely change, so this shouldn't need to be updated that frequently. 
+#
+#permissions-update-period: 60
 
 # permissions-update-timeout: The timeout duration (in seconds) that should be used when loading user permissions.
 #
@@ -103,7 +108,7 @@ mercury2-ui-location: "http://localhost/mercury2"
 # permissions-location-local: The local location of the user permissions file. This will only be used if the ground
 #                             ground station is in offline mode.
 #
-#permissions-location-local: "{HWM Configuration Directory}/permissions/offline_permissions.json"
+#permissions-location-local: "{HWM Data Directory}/permissions/offline_permissions.json"
 
 # permissions-location-network: The user interface API endpoint that will be used to load user ground station access
 #                               permissions.

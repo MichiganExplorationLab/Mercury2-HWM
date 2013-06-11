@@ -24,7 +24,7 @@ from hwm.command.handlers import system as system_command_handler
 from hwm.network.security import verification, permissions
 
 def initialize():
-  """Initializes the hardware manager.
+  """ Initializes the Mercury2 Hardware Manager.
   
   This method sets up the hardware manager by initializing the required resources (e.g. pipeline manager, schedule 
   manager, configuration, etc.) and starting the event reactor. This is the main entry location for the hardware 
@@ -38,9 +38,6 @@ def initialize():
   
   # Announce program start
   _announce_start()
-  
-  # Check for user data (config, etc.) files
-  _verify_data_files()
   
   # Setup logging
   _setup_logs()
@@ -83,6 +80,44 @@ def initialize():
   # Exit the program
   sys.exit(0)
 
+def initial_setup():
+  """ Performs initial setup operations, such as copying default configuration files, if needed.
+  
+  This function performs various initial setup procedures such as copying the default configuration files, and setting 
+  up the application system directories.
+
+  @note This function only needs to be called once right after the hardware manager is installed. Any subsequent calls
+        will only copy files that don't already exist on the system (to prevent custom configuration files from being 
+        overridden).
+  """
+  
+  # Copy the default configuration directory
+  if not os.path.exists(Configuration.config_directory):
+    default_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"resources/config")
+    shutil.copytree(default_data_directory, Configuration.config_directory)
+    if Configuration.verbose_startup:
+      print ("- An existing Mercury2 HWM configuration directory was not found, copied defaults to: "+
+             Configuration.config_directory)
+  else:
+    if Configuration.verbose_startup:
+      print ("- Default configuration files not copied, an existing Mercury2 HWM configuration directory was found "+
+             "at: "+Configuration.config_directory)
+
+  # Setup the data directory
+  if not os.path.exists(Configuration.data_directory):
+    os.makedirs(Configuration.data_directory)
+    os.makedirs(Configuration.data_directory+"permissions")
+    os.makedirs(Configuration.data_directory+"schedules")
+    os.makedirs(Configuration.data_directory+"stream_dumps")
+    if Configuration.verbose_startup:
+      print "- Existing Mercury2 HWM data directory not found, created at: "+Configuration.data_directory
+
+  # Setup the log directory
+  if not os.path.exists(Configuration.log_directory):
+    os.makedirs(Configuration.log_directory)
+    if Configuration.verbose_startup:
+      print "- Existing Mercury2 HWM log directory not found, created at: "+Configuration.log_directory
+
 def _announce_start():
   """Announces the application start to the console and application logs."""
   
@@ -94,25 +129,6 @@ def _announce_start():
   print "| http://exploration.engin.umich.edu/blog/          |"
   print "|___________________________________________________|\n"
   print "Version: "+Configuration.version+"\n"
-
-def _verify_data_files():
-  """ Checks for the presence of required data file directories.
-  
-  This method verifies that required data files and data file directories exist in the proper directory (/var/local on 
-  linux). If they don't (i.e. if this is the first time that the program has been run), the defaults will be copied from
-  the package folder (in python2.7/dist-packages).
-  """
-  
-  # Check if the data directory exists
-  if not os.path.exists(Configuration.data_directory):
-    # Copy over the default data files/directories from the source copies
-    default_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"data")
-    shutil.copytree(default_data_directory, Configuration.data_directory)
-    if Configuration.verbose_startup:
-      print "- Data directory not found, copied defaults to: "+Configuration.data_directory
-  else:
-    if Configuration.verbose_startup:
-      print "- Data directory found at: "+Configuration.data_directory
 
 def _setup_schedule_manager():
   """ Initializes the schedule manager.
@@ -172,25 +188,28 @@ def _setup_network_listeners(command_parser):
   reactor.listenSSL(Configuration.get('network-command-port'), command_factory, server_context_factory)
 
 def _setup_configuration():
-  """Sets up the configuration object.
+  """ Sets up the HWM configuration class.
   
-  This function sets up the configuration object (a singleton) by loading the required configuration files, validating 
-  the required options, and populating the unspecified default options.
+  This function initializes the HWM configuration class (a singleton) by loading the required configuration files into
+  it and validating the loaded configuration against the configuration schema (which defines which options are required
+  and any formatting constraints).
+
+  @throws May pass on ConfigInvalid exceptions if the loaded configuration set is invalid or incomplete.
   """
   
   # Read the configuration files
-  Configuration.read_configuration(Configuration.data_directory+'/config/configuration.yml')
-  Configuration.read_configuration(Configuration.data_directory+'/config/devices.yml')
-  Configuration.read_configuration(Configuration.data_directory+'/config/pipelines.yml')
+  Configuration.read_configuration(Configuration.config_directory+'configuration.yml')
+  Configuration.read_configuration(Configuration.config_directory+'devices.yml')
+  Configuration.read_configuration(Configuration.config_directory+'pipelines.yml')
   
   # Verify that all required configuration options are set
-  Configuration.process_configuration()
+  Configuration.validate_configuration()
 
 def _setup_logs():
   """Sets up the logger."""
   
   # Configure the logger
-  logging.basicConfig(filename=Configuration.data_directory+'/logs/hardware_manager.log',
+  logging.basicConfig(filename=Configuration.log_directory+'hardware_manager.log',
                       format='%(asctime)s - %(levelname)s - %(message)s',
                       datefmt='%m/%d/%Y %H:%M:%S',
                       level=logging.DEBUG)

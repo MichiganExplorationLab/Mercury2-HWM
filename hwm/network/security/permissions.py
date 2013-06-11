@@ -22,7 +22,8 @@ class PermissionManager:
                                  the mercury2 user interface API or a file. If this points to the mercury2 API, it must 
                                  start with http or https.
     @param update_frequency      How often the user's permissions should be updated (i.e. if a user's permissions are 
-                                 requested and they are older than this value, update them). Specified in seconds.
+                                 requested and the cached version is older than this value, update them). Specified in 
+                                 seconds.
     """
     
     # Set up the manager attributes
