@@ -7,8 +7,7 @@ of the module).
 """
 
 # Load the required libraries
-import logging
-import yaml
+import logging, yaml, jsonschema
 
 class Config:
   """ Provides access to the hardware manager application configuration.
@@ -20,19 +19,18 @@ class Config:
   @note Although this class does store raw pipeline and hardware configuration settings (defined in the configuration 
         files), all interactions with the pipelines and hardware occur in the PipelineManager and DeviceManager classes,
         respectively.
+  @note Only user_options can be modified during program execution (using the setter/getter). This prevents
+        configuration options specified in a file from getting altered/deleted.
   """
   
   def __init__(self):
-    """ Initializes the Config class.
-    
-    @note Only user_options can be modified during program execution (using the setter/getter). This prevents
-          configuration options specified in a file from getting altered/deleted.
+    """ Initializes the Config class with some initial static configuration.
     """
     
-    # Program metadata
+    # Basic configuration options
     self.version = "1.0dev"
     self.verbose_startup = True
-    self.data_directory = '/var/local/Mercury2HWM'
+    self._set_hwm_directories()
     
     # This dictionary stores all pre-set configuration options (read from files)
     self.options = {}
@@ -45,8 +43,8 @@ class Config:
     
     Reads in all configuration settings from the specified YAML file and stores them in the 'options' dictionary.
     
-    @throws IOError            Thrown if the specified file can't be loaded.
-    @throws ConfigFileInvalid  Thrown if the specified file can't be parsed by the YAML parser.
+    @throws IOError              Thrown if the specified file can't be loaded.
+    @throws ConfigFileMalformed  Thrown if the specified file can't be parsed by the YAML parser.
     
     @note All configuration files are in YAML format.
     @note All configuration files are assumed to be required (i.e. this throws an exception if the file can't be 
@@ -65,7 +63,7 @@ class Config:
     try:
       config = yaml.load(config_stream)
     except:
-      raise ConfigFileInvalid("Error parsing the configuration file: '"+configuration_file+"'")
+      raise ConfigFileMalformed("Error parsing the configuration file: '"+configuration_file+"'")
     
     # Merge the dictionaries
     self.options = dict(self.options.items() + config.items())
@@ -75,27 +73,6 @@ class Config:
       print "- Read in configuration file: '"+configuration_file+"'."
     
     logging.info("Configuration: Read configuration file: '"+configuration_file+"'.")
-  
-  def process_configuration(self):
-    """ Loads default values for unspecified configuration options and verifies that the required configuration elements
-    have been set.
-    
-    This method first sets a default value for any unspecified option with an registered default value. It then verifies
-    that the required configuration elements have all been set. These elements were probably loaded from a YAML 
-    configuration file via read_configuration().
-    
-    @throw May pass on RequiredOptionNotFound exceptions if a required option can't be located in the loaded 
-           configuration.
-    
-    @note Only configuration options loaded before this method is called will be processed. It should be called after
-          all of the main configuration has been loaded (otherwise the required options check may fail).
-    """
-    
-    # Set the default configuration options
-    self._set_default_configuration()
-    
-    # Validate that the required options have been set
-    self._check_required_configuration()
   
   def set(self, option_key, option_value):
     """ Sets the indicated configuration option to the provided value.
@@ -121,7 +98,7 @@ class Config:
   
   def get(self, option_key):
     """ Retrieves the specified configuration option.
-    
+    http://www.bbc.co.uk/http://www.bbc.co.uk/
     This method returns the value of the specified option whether it is a user defined option or an option loaded from 
     a YAML configuration file.
     
@@ -130,7 +107,7 @@ class Config:
     @param option_key  The key of the option to query for.
     @return Returns the value of the specified option if it exists.
     """
-    
+
     # Check if the option was pre-set
     if option_key in self.options:
       return self.options[option_key]
@@ -150,7 +127,7 @@ class Config:
     @throws OptionProtected thrown if the user tries to delete a protected option (originally defined in a YAML 
             configuration file).
     @throws OptionNotFound thrown if the requested option can't be located.
-    
+    http://www.bbc.co.uk/
     @param option_key  The key of the option to remove.
     @return Returns True if the option was successfully deleted.
     """
@@ -168,90 +145,166 @@ class Config:
     
     # Option not found
     raise OptionNotFound("The specified configuration option ("+option_key+") could not be found.")
-  
-  def _set_default_configuration(self):
-    """ Sets the default values for configuration elements that have not been set.
+
+  def validate_configuration(self):
+    """ Verifies that the loaded configuration conforms to the schema.
+
+    This method compares the currently loaded configuration settings against the defined configuration schema. This 
+    ensures that all required options have been set and that they meet formatting requirements.
     
-    @note If a configuration option with a default value has been set (most likely from a file by read_configuration), 
-          that value will be used instead of the default.
-    @note The default values for network or local locations are prefixed with the user interface base URL and the base 
-          application data directory, respectively. This allows the station admin to set these to whatever they'd like 
-          (e.g. somewhere not in self.data_directory).
+    @note All configuration files that contain methods defined in this schema must be loaded before this method is
+          called.
+    @note In the schema, all required options that have an associated default value must have "required" set to False,
+          otherwise the schema validation will fail when it should just use the default value.
+
+    @throws May throw ConfigInvalid if the loaded configuration set does not conform to the schema.
     """
-    
-    # Set the UI location for the default location parameters. If this isn't set, then just use a blank string and 
-    # _check_required_configuration will take care of it.
-    if 'mercury2-ui-location' in self.options:
-      ui_location = self.options['mercury2-ui-location']
-    else:
-      ui_location = ''
-    
-    # Specify the option defaults
-    default_options = {
-      'offline-mode': False,
-      'schedule-update-period': 60, # seconds
-      'schedule-update-timeout': 15, # seconds
-      'schedule-location-local': self.data_directory + '/schedules/offline_schedule.yml',
-      'schedule-location-network': ui_location + '/test_schedule.json',
-      'permissions-update-period': 300, # seconds 
-      'permissions-update-timeout': 15, # seconds
-      'permissions-location-local': self.data_directory + '/permissions/offline_permissions.yml',
-      'permissions-location-network': ui_location + '/test_permissions.json',
-      'ssl-private-key-location': self.data_directory + '/ssl/mercury2_hwm-key.pem',
-      'ssl-public-cert-location': self.data_directory + '/ssl/mercury2_hwm-cert.pem',
-      'ssl-ca-cert-location': self.data_directory + '/ssl/ca-cert.pem',
-      'network-command-port': 8080
+
+    # Define the configuration schema
+    configuration_schema = {
+      "type": "object",
+      "$schema": "http://json-schema.org/draft-03/schema",
+      "additionalProperties": True,
+      "properties": {
+        "station-name": {
+          "type": "string",
+          "required": True,
+          "maxLength": 100
+        },
+        "station-longitude": {
+          "type": "number",
+          "required": True,
+          "minimum": -180,
+          "maximum": 180
+        },
+        "station-latitude": {
+          "type": "number",
+          "required": True,
+          "minimum": -90,
+          "maximum": 90
+        },
+        "station-altitude": {
+          "type": "number",
+          "required": True
+        },
+        "offline-mode": {
+          "type": "boolean",
+          "default": False
+        },
+        "network-command-port": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 8080
+        },
+        "mercury2-ui-location": {
+          "type": "string",
+          "required": True
+        },
+        "ssl-private-key-location": {
+          "type": "string",
+          "default": self.config_directory + "ssl/mercury2_hwm-key.pem"
+        },
+        "ssl-public-cert-location": {
+          "type": "string",
+          "default": self.config_directory + "ssl/mercury2_hwm-cert.pem"
+        },
+        "ssl-ca-cert-location": {
+          "type": "string",
+          "default": self.config_directory + "ssl/ca-cert.pem"
+        },
+        "schedule-update-period": {
+          "type": "integer",
+          "default": 30
+        },
+        "schedule-update-timeout": {
+          "type": "integer",
+          "default": 10
+        },
+        "schedule-location-local": {
+          "type": "string",
+          "default": self.config_directory + "schedules/offline_schedule.json"
+        },
+        "schedule-location-network": {
+          "type": "string",
+          "default": "test_schedule.json"
+        },
+        "permissions-update-period": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 60
+        },
+        "permissions-update-timeout": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60,
+          "default": 10
+        },
+        "permissions-location-local": {
+          "type": "string",
+          "default": self.config_directory + "permissions/offline_permissions.json"
+        },
+        "permissions-location-network": {
+          "type": "string",
+          "default": "test_permissions.json"
+        }
+      }
     }
-    
-    # Set the defaults
-    for default_option in default_options:
-      if default_option not in self.options:
-        self.options[default_option] = default_options[default_option]
-    
-    # Log and announce
-    if self.verbose_startup:
-      print "- Set default configuration options."
-    logging.info("Configuration: Successfully set default configuration options.")
-  
-  def _check_required_configuration(self):
-    """ Verifies that the required configuration elements have been set.
-    
-    This method verifies that the required configuration elements have properly been set.
-    
-    @throw Throws RequiredOptionNotFound if a required option can't be located in the loaded configuration. 
-    
-    @note Network locations must start with http (either http or https).
+
+    # Validate the loaded configuration against the schema
+    configuration_validator = jsonschema.Draft3Validator(configuration_schema)
+    try:
+      configuration_validator.validate(self.options)
+
+      if self.verbose_startup:
+        print "- Basic configuration options validated. The device and pipeline configurations will be validated later."
+      logging.info("The loaded basic configuration settings were successfully validated.")
+    except jsonschema.ValidationError as config_error:
+      # The loaded configuration did not conform to the schema
+      logging.error("The loaded configuration files did not conform to the configuration schema: "+str(config_error))
+      raise ConfigInvalid("The loaded configuration was invalid (did not conform to the configuration schema): "+
+                          str(config_error))
+
+    # Copy over the required default values
+    self._process_defaults(configuration_schema)
+
+  def _process_defaults(self, configuration_schema):
+    """ Copies the default values from the configuration schema to the options dictionary.
+
+    This method copies the default values for unspecified options from the defined configuration schema to the options
+    dictionary.
+
+    @note The JSON schema validation class does not currently provide this functionality, so it must be done using this 
+          method.
+
+    @see https://github.com/Julian/jsonschema/issues/4
+
+    @param configuration_schema  A dictionary containing the configuration schema to use when copying default values.
     """
+
+    for option_name, option_schema in configuration_schema['properties'].iteritems():
+      if option_name not in self.options and "default" in option_schema:
+        self.options.update({option_name: option_schema['default']})
+
+  def _set_hwm_directories(self):
+    """ Sets the location of the Mercury2 HWM configuration and data directories.
     
-    # Set some default error messages
-    missing_option_error = "Required configuration option not set: '{}'. Please specify it in a configuration file."
-    
-    # List the required configuration options
-    required_options = [
-      'station-name', 'station-longitude', 'station-latitude', 'station-altitude', # Station parameters
-      'offline-mode', 'network-command-port', 'mercury2-ui-location', # General networking
-      'ssl-private-key-location', 'ssl-public-cert-location', 'ssl-ca-cert-location', # Security
-      'schedule-update-period', 'schedule-update-timeout', 'schedule-location-local', 'schedule-location-network', # Schedule
-      'permissions-update-period', 'permissions-update-timeout', 'permissions-location-local', 'permissions-location-network', # Permissions
-      'devices', 'pipelines' # Devices & Pipelines
-    ]
-    
-    # Validate the options
-    for required_option in required_options:
-      if required_option not in self.options:
-        raise RequiredOptionNotFound(missing_option_error.format(required_option))
-    
-    # Log and announce
-    if self.verbose_startup:
-      print "- Validated required configuration options."
-    logging.info("Configuration: Successfully validated required configuration options.")
+    This method sets the locations of the various Mercury2 configuration and data directories, which contain the HWM 
+    configuration files, logs, and telemetry dumps, among other things.
+    """
+
+    application_folder = "Mercury2-HWM"
+
+    # Set the directory locations
+    self.config_directory = "/etc/"+application_folder+"/"
+    self.data_directory = "/var/local/"+application_folder+"/"
+    self.log_directory = "/var/log/"+application_folder+"/"
 
 # Define configuration exceptions
-class ConfigFileInvalid(Exception):
+class ConfigFileMalformed(Exception):
+  pass
+class ConfigInvalid(Exception):
   pass
 class OptionProtected(Exception):
-  pass
-class RequiredOptionNotFound(Exception):
   pass
 class OptionNotFound(Exception):
   pass

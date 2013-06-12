@@ -184,10 +184,14 @@ class PipelineManager:
     config_validator = jsonschema.Draft3Validator(pipeline_schema)
     try:
       config_validator.validate(pipeline_configuration)
+
+      if self.config.verbose_startup:
+        print "- Pipeline configuration validated."
     except jsonschema.ValidationError:
       # Invalid pipeline configuration
       logging.error("Failed to initialize the pipeline manager because the pipeline configuration was invalid.")
-      raise PipelineSchemaInvalid("The loaded pipeline configuration does not conform to the defined schema.")
+      raise PipelineSchemaInvalid("Failed to initialize the pipeline manager because the pipeline configuration was "+
+                                  "invalid. Please make sure that the pipelines.yml configuration file is correct.")
 
 # Define PipelineManager exceptions
 class PipelinesNotDefined(Exception):

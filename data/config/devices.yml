@@ -1,8 +1,0 @@
-## Contains the configuration settings for the available hardware.
-##
-## This configuration file contains the configuration settings describing the hardware available to the ground station.
-## The pipeline configuration references the devices defined here when specifying pipeline structure. Please refer to
-## the documentation for a detailed description of the hardware configuration format.
-
-# Define the available hardware devices
-devices: []

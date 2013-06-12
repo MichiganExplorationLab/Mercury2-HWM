@@ -26,7 +26,8 @@ setup(
   # Specify the script entry locations
   entry_points = {
     'console_scripts': [
-      'HardwareManager = hwm.core.initialization:initialize'
+      'mercury2_setup = hwm.core.initialization:initial_setup',
+      'mercury2 = hwm.core.initialization:initialize'
     ]
   },
 
@@ -40,9 +41,6 @@ setup(
   
   # Specify patterns for data files to include (will be copied to a user directory during installation)
   data_files = [
-    ('data/config', glob.glob('data/config/*')),
-    ('data/logs', glob.glob('data/logs/*')),
-    ('data/schedules', glob.glob('data/schedules/*')),
-    ('data/stream_dumps', glob.glob('data/stream_dumps/*'))
+    ('resources/config', glob.glob('resources/config/*'))
   ],
 )
