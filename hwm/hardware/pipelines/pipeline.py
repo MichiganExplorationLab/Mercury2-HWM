@@ -46,8 +46,8 @@ class Pipeline:
     """ Runs the pipeline setup commands.
     
     This method runs the pipeline setup commands, which are responsible for putting the pipeline in its intended state
-    before setting up the session.
-
+    before use by a session.
+    
     @return If successful, this method will return a DeferredList containing the results of the pipeline setup commands.
             If any of the commands fail additional validations (destination restrictions, etc.), a pre-fired failed
             deferred will be returned. Finally, if this pipeline doesn't have any setup commands None will be returned
@@ -80,7 +80,7 @@ class Pipeline:
     """ Locks the pipeline and its hardware.
     
     This method is used primarily by sessions to ensure that a pipeline and its hardware are never used concurrently
-    by two different sessions.
+    by two different sessions (unless a device is configured to allow for concurrent access).
     
     @note If a pipeline can not be reserved because one or more of its hardware devices is currently locked, it will 
           rollback any locks that it may have acquired already.
@@ -180,6 +180,12 @@ class Pipeline:
         else:
           self.output_device = curr_device_driver
           output_device_found = True
+
+        # Register the pipeline with the its output device
+        curr_device_driver.register_pipeline(self, True)
+      else:
+        # Register the pipeline with the device
+        curr_device_driver.register_pipeline(self)
 
 # Define the Pipeline exceptions
 class PipelineConfigInvalid(Exception):

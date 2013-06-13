@@ -156,9 +156,17 @@ class DeviceManager:
             "type": "string",
             "required": True
           },
+          "description": {
+            "type": "string",
+            "required": False
+          },
           "driver": {
             "type": "string",
             "required": True
+          },
+          "allow_concurrent_use": {
+            "type": "boolean",
+            "required": False
           },
           "settings": {
             "type": "object",
@@ -176,11 +184,12 @@ class DeviceManager:
 
       if self.config.verbose_startup:
         print "- Device configuration validated."
-    except jsonschema.ValidationError:
+    except jsonschema.ValidationError as driver_validation_error:
       # Invalid device configuration
-      logging.error("Failed to initialize the device manager because the device configuration was invalid.")
-      raise DeviceConfigInvalid("The loaded device configuration was invalid (did not conform to the schema "+
-                                "requirements).")
+      logging.error("Failed to initialize the device manager because the device configuration was invalid: "+
+                    str(driver_validation_error))
+      raise DeviceConfigInvalid("Failed to initialize the device manager because the device configuration was "+
+                                "invalid: "+str(driver_validation_error))
   
 # Define schedule related exceptions
 class DeviceConfigInvalid(Exception):

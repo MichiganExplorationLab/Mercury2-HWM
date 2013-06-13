@@ -51,8 +51,8 @@ class Session:
     @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline or
             executing the pipeline setup commands. This will cause the session coordinator to log the error and end the 
             session. Session setup command errors don't generate session-fatal errors and are simply noted by the 
-            session coordinator. This is done because these errors will often be recoverable with additional input from the 
-            session user.
+            session coordinator. This is done because these errors will often be recoverable with additional input from 
+            the session user.
     
     @note All of the pipeline setup commands will always be executed before any of the session setup commands are.
     @note If a session-fatal error occurs, the self._session_setup_error callback will automatically clean up the 

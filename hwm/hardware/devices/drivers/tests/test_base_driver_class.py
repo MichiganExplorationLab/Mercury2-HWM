@@ -1,6 +1,7 @@
 # Import required modules
 import logging
 from twisted.trial import unittest
+from mock import MagicMock
 from hwm.core.configuration import *
 from hwm.hardware.devices import manager
 from hwm.hardware.devices.drivers import driver
@@ -28,8 +29,31 @@ class TestBaseDriver(unittest.TestCase):
     # Reset the configuration reference
     self.config = None
   
+  def test_pipeline_registration(self):
+    """ Verifies that the base driver class can correctly register associated pipelines.
+    """
+
+    # Load a valid device configuration
+    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
+    device_manager = manager.DeviceManager()
+
+    # Load a driver to test with
+    test_driver = device_manager.get_device_driver("test_device")
+
+    # Create a mock pipeline to register
+    test_pipeline = MagicMock()
+    test_pipeline.id = "test_pipeline"
+
+    # Attempt to register the pipeline
+    test_driver.register_pipeline(test_pipeline, True)
+    self.assertTrue((test_driver.associated_pipelines[test_pipeline.id]['Pipeline'].id == test_pipeline.id) and
+                    (test_driver.associated_pipelines[test_pipeline.id]['output_to_pipeline'] == True))
+
+    # Make sure the pipeline can't be re-registered
+    self.assertRaises(driver.PipelineAlreadyRegistered, test_driver.register_pipeline, test_pipeline)
+
   def test_driver_locking(self):
-    """ Tests the locking functionality of the base driver class.
+    """ Tests the basic locking functionality of the base driver class.
     """
     
     # Load a valid device configuration

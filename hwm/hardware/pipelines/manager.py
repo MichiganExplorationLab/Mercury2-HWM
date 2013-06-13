@@ -121,6 +121,10 @@ class PipelineManager:
             "type": "string",
             "required": True
           },
+          "description": {
+            "type": "string",
+            "required": False
+          },
           "mode": {
             "type": "string",
             "enum": ["transmit", "receive", "transceive"],
@@ -187,11 +191,12 @@ class PipelineManager:
 
       if self.config.verbose_startup:
         print "- Pipeline configuration validated."
-    except jsonschema.ValidationError:
+    except jsonschema.ValidationError as pipeline_validation_error:
       # Invalid pipeline configuration
-      logging.error("Failed to initialize the pipeline manager because the pipeline configuration was invalid.")
+      logging.error("Failed to initialize the pipeline manager because the pipeline configuration was invalid: "+
+                    str(pipeline_validation_error))
       raise PipelineSchemaInvalid("Failed to initialize the pipeline manager because the pipeline configuration was "+
-                                  "invalid. Please make sure that the pipelines.yml configuration file is correct.")
+                                  "invalid: "+str(pipeline_validation_error))
 
 # Define PipelineManager exceptions
 class PipelinesNotDefined(Exception):

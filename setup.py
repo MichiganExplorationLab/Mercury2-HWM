@@ -37,10 +37,12 @@ setup(
                       'PyYAML>=3.10',
                       'pyOpenSSL>=0.13',
                       'doxypy>=0.4.2',
-                      'jsonschema'],
+                      'jsonschema',
+                      'mock'],
   
   # Specify patterns for data files to include (will be copied to a user directory during installation)
   data_files = [
+    ('resources/ssl', glob.glob('resources/ssl/*')),
     ('resources/config', glob.glob('resources/config/*'))
   ],
 )

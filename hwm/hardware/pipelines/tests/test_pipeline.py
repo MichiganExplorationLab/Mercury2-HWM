@@ -24,8 +24,7 @@ class TestPipeline(unittest.TestCase):
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     
     # Create a valid command parser and device manager for testing
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    self.device_manager = device_manager.DeviceManager()
+    self._reset_device_manager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser({'system': command_handler.SystemCommandHandler()}, permission_manager)
     
@@ -56,6 +55,7 @@ class TestPipeline(unittest.TestCase):
 
     # Load a pipeline configuration that specifies a non-existent device
     self._reset_config_entries()
+    self._reset_device_manager()
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid_device.yml')
     self.assertRaises(pipeline.PipelineConfigInvalid, pipeline.Pipeline,
                     self.config.get('pipelines')[1],
@@ -64,6 +64,7 @@ class TestPipeline(unittest.TestCase):
 
     # Load a pipeline configuration that specifies multiple output devices for a single pipeline
     self._reset_config_entries()
+    self._reset_device_manager()
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_multiple_output_devices.yml')
     self.assertRaises(pipeline.PipelineConfigInvalid, pipeline.Pipeline,
                     self.config.get('pipelines')[0],
@@ -184,6 +185,15 @@ class TestPipeline(unittest.TestCase):
     # Make sure that the 'test_device3' device in pipeline b (which is not used by pipeline a) was rolled back correctly 
     # after the locking error occured
     test_pipeline_b.devices['test_device3'].reserve_device()
+
+  def _reset_device_manager(self):
+    """ Resets the device manager instance. This is required if multiple pipeline configurations are tested in the same
+    test method because the device pipeline registrations don't get reset when the pipeline manager does.
+    """
+
+    # Load a valid device configuration and setup the device manager
+    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
+    self.device_manager = device_manager.DeviceManager()
 
   def _reset_config_entries(self):
     # Reset the recorded configuration entries
