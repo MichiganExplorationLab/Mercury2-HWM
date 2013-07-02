@@ -13,7 +13,7 @@ devices:
       address: "test2"
   - id: "test_device3"
     driver: "Test_Driver"
-  - id: "webcam"
+  - id: "test_webcam"
     driver: "Test_Driver"
-    description: "A shared webcam for monitoring the ground station during a pass."
+    description: "A shared webcam for monitoring the ground station during a pass that allows concurrent use."
     allow_concurrent_use: true

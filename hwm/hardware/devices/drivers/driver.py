@@ -23,6 +23,8 @@ class Driver(object):
     # Set driver attributes
     self.settings = device_configuration
     self.id = self.settings['id']
+    self.allow_concurrent_use = (False if ('allow_concurrent_use' not in self.settings) else 
+                                 self.settings['allow_concurrent_use'])
     self.access_lock = threading.Lock()
     self.associated_pipelines = {}
   
@@ -71,7 +73,8 @@ class Driver(object):
   def reserve_device(self):
     """ Reserves the device for a user reservation.
 
-    This method tries to acquire the device lock and raises an exception if it can't.
+    This method tries to acquire the device lock and raises an exception if it can't. However, if the device is
+    configured for concurrent access it will simply pass.
     
     @note Pipelines will typically use this method to lock their constituent hardware devices when a session requests a 
           specific pipeline. This prevents two different sess ions from accidentally allowing access to the same device 
@@ -81,21 +84,26 @@ class Driver(object):
     @throw Throws DeviceInUse if the device has already been reserved by another pipeline.
     """
     
-    # Check if the device is being used
-    if not self.access_lock.acquire(False):
-      raise DeviceInUse("The requested device is currently being used and can't be reserved.")
+    # Check if the device allows concurrent use
+    if not self.allow_concurrent_use:
+      # Check if the device is being used
+      if not self.access_lock.acquire(False):
+        raise DeviceInUse("The requested device is currently being used and can't be reserved.")
   
   def free_device(self):
     """ Frees the device lock.
     
     @note The pipeline that is currently using this device should call this during the sesssion cleanup process.
+    @note If a device allows concurrent use, this method will have no effect.
     """
     
-    # Free the device
-    try:
-      self.access_lock.release()
-    except ThreadError:
-      pass
+    # Check if the device allows concurrent use
+    if not self.allow_concurrent_use:
+      # Free the device
+      try:
+        self.access_lock.release()
+      except ThreadError:
+        pass
 
 # Define custom driver exceptions
 class PipelineAlreadyRegistered(Exception):

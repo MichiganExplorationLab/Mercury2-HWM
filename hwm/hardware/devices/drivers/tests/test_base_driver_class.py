@@ -73,6 +73,25 @@ class TestBaseDriver(unittest.TestCase):
     test_driver.free_device()
     test_driver.reserve_device()
   
+  def test_concurrent_driver_locking(self):
+    """ Verifies that the base driver class correctly handles concurrent device locks.
+    """
+
+    # Load a valid device configuration
+    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
+    device_manager = manager.DeviceManager()
+    
+    # Load a driver to test with
+    test_driver = device_manager.get_device_driver("test_webcam")
+    
+    # Try to lock the driver twice in a row (should be allowed because the device allows concurrent use)
+    test_driver.reserve_device()
+    test_driver.reserve_device()
+
+    # Unlock the device a few times, should have no effect
+    test_driver.free_device()
+    test_driver.free_device()
+  
   def _reset_config_entries(self):
     # Reset the recorded configuration entries
     self.config.options = {}
