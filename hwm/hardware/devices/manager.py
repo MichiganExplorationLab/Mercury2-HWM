@@ -8,6 +8,7 @@ each hardware device and provides an interface that the rest of the application 
 # Import required modules
 import logging, jsonschema
 from hwm.core import configuration
+from hwm.hardware.devices.drivers import driver
 
 class DeviceManager:
   """ Manages access to configured hardware devices.
@@ -37,7 +38,8 @@ class DeviceManager:
     self.config = configuration.Configuration
     
     # Initialize class variables
-    self.devices = {}
+    self.devices = {}          # Stores references to instances of the physical device drivers
+    self.virtual_devices = {}  # Stores references to the virtual device driver classes (initialized on the fly)
     
     # Initialize 
     self._initialize_devices()
@@ -45,7 +47,12 @@ class DeviceManager:
   def get_device_driver(self, device_id):
     """ Loads and returns the driver for the specified device.
     
-    This method returns a reference to the driver class associated with the 'device_id' device.
+    This method returns an instance of a device driver class for the specified device. If the requested device is a 
+    physical device, then a reference to a previously initialized driver will be returned. On the other hand, if the 
+    requested device is a virtual device then a new instance will be constructed and returned.
+
+    @note Virtual device driver instances are created on the fly because, unlike physical device drivers, they are tied
+          to a specific pipeline with each pipeline having its own instance.
     
     @throw Throws DeviceNotFound if the specified device can't be located.
     
@@ -53,16 +60,24 @@ class DeviceManager:
     @return Returns a reference to the driver class for the specified device.
     """
     
-    if device_id not in self.devices:
+    if device_id not in self.devices and device_id not in self.virtual_devices:
       logging.error("The '"+device_id+"' device hasn't been loaded into the device manager.")
       raise DeviceNotFound("The '"+device_id+"' device hasn't been loaded into the device manager.")
     
-    return self.devices[device_id]
+    # Check if the device is a virtual device
+    if device_id in self.virtual_devices:
+      # Create and return a new instance of the virtual device driver
+      return self.virtual_devices[device_id]['driver_class'](self.virtual_devices[device_id]['config'])
+    else:
+      # Return the existing physical device driver
+      return self.devices[device_id]
   
   def _initialize_devices(self):
     """ Initializes the drivers for each device.
     
-    This method initializes the drivers for every available device specified in the device configuration.
+    This method stores references to device driver instances or classes as defined by the device configuration. If a
+    device is a physical device, then its driver will be initialized and stored. However, if the device is a virtual
+    device then a reference to its class will be stored instead (so it can be initialized on the fly later).
     
     @note Device drivers should be named so that the lower case version of the driver name (as specified in devices.yml)
           refers to the package and module in hwm.devices.drivers. Underscores are allowed to improve readability. For 
@@ -95,7 +110,7 @@ class DeviceManager:
     # Loop through the device configuration and initialize the driver for each device
     for device_config in device_settings:
       # Check for duplicates
-      if (device_config['id'] in self.devices):
+      if (device_config['id'] in self.devices or device_config['id'] in self.virtual_devices):
         logging.error("Duplicate devices were found in the device configuration.")
         raise DeviceConfigInvalid("Could not initialize the '"+device_config['id']+"' device because it is a "+
               "duplicate of a previously initialized device.")
@@ -111,21 +126,27 @@ class DeviceManager:
         raise DriverNotFound("The driver package or module for the device '"+device_config['id']+"' could not be "+
                              "located.")
       
-      # Attempt to initialize the driver
+      # Attempt to load the driver
       if not hasattr(driver_module, device_config['driver']):
         logging.error("The driver class '"+device_config['driver']+"' could not be located in the '"+
                       driver_module+"' module.")
         raise DriverNotFound("The driver class '"+device_config['driver']+"' could not be located for the '"+
                              device_config['id']+"' device.")
-      
       device_driver_class = getattr(driver_module, device_config['driver'])
-      try:
-        self.devices[device_config['id']] = device_driver_class(device_config)
-      except Exception, driver_exception:
-        logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
-                      str(driver_exception))
-        raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
-                              "Received error message: "+str(driver_exception))
+
+      # Check if the driver is a virtual driver
+      if issubclass(device_driver_class, driver.VirtualDriver):
+        # Virtual driver, just store a reference to the class and its configuration for later
+        self.virtual_devices[device_config['id']] = {'driver_class':device_driver_class, 'config': device_config}
+      else:
+        # Physical driver, attempt to initialize
+        try:
+          self.devices[device_config['id']] = device_driver_class(device_config)
+        except Exception, driver_exception:
+          logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
+                        str(driver_exception))
+          raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
+                                "Received error message: "+str(driver_exception))
   
   def _validate_devices(self, device_configuration):
     """ Validates the provided device configuration.

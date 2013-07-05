@@ -107,6 +107,9 @@ class Pipeline:
 
         raise PipelineInUse("One or more of the devices in the '"+self.id+"' pipeline is currently being used so the "+
                             "pipeline can't be reserved.")
+      except exception.AttributeError:
+        # The device didn't have a reserve_device() method, must be a virtual device
+        continue
   
   def free_pipeline(self):
     """ Frees the pipeline.

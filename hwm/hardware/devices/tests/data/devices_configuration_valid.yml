@@ -1,5 +1,5 @@
-# This configuration file contains a valid device configuration and is used to test the device manager. The
-# "Test_Driver" driver is assumed to exist in the HWM drivers package.
+# This configuration file contains a valid device configuration and is used to test the device manager and other 
+# classes. The "Test_Driver" and "Test_Virtual_Driver" drivers are assumed to exist in the HWM drivers package.
 
 devices:
   - id: "test_device"
@@ -17,3 +17,7 @@ devices:
     driver: "Test_Driver"
     description: "A shared webcam for monitoring the ground station during a pass that allows concurrent use."
     allow_concurrent_use: true
+  - id: "test_device4"
+    driver: "Test_Virtual_Driver"
+    description: "A simple test virtual device."
+    allow_concurrent_use: false

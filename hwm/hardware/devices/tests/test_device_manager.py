@@ -73,6 +73,26 @@ class TestDeviceManager(unittest.TestCase):
     self.assertEqual(test_driver.device_name, "test_device2")
     self.assertEqual(test_driver.test_value(), "QWERTY")
   
+  def test_virtual_device_get(self):
+    """ Tests that the device manager correctly returns a new instance of a virtual device (with the correct initial
+    configuration) when requested.
+    """
+
+    # Initialize the device manager with a valid configuration
+    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
+    device_manager = manager.DeviceManager()
+    
+    # Load an instance of the virtual device
+    test_driver = device_manager.get_device_driver("test_device4")
+    self.assertEqual(test_driver.device_name, "test_device4")
+    self.assertEqual(test_driver.test_value(), "VIRTUAL_DRIVER")
+    test_driver.is_virtual_driver = False
+
+    # Make sure calling the get_device_driver function again returns a new instance of the driver
+    test_driver2 = device_manager.get_device_driver("test_device4")
+    self.assertTrue(test_driver2.is_virtual_driver)
+    self.assertNotEqual(test_driver, test_driver2)
+  
   def _reset_config_entries(self):
     # Reset the recorded configuration entries
     self.config.options = {}

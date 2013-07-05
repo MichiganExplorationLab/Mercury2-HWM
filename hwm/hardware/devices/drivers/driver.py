@@ -1,5 +1,6 @@
 """ @package hwm.hardware.devices.drivers.driver
-This module defines the standard Driver interface for Mercury2 hardware drivers.
+This module defines the base driver classes available to Mercury2. Namely, the HardwareDriver and VirtualDriver classes
+which are for are used to represent physical and virtual devices.
 """
 
 # Import required modules
@@ -8,9 +9,9 @@ import logging, threading
 class Driver(object):
   """ Provides the base driver class interface.
   
-  This class provides the interface that all hardware drivers must use. It defines several standard functions that will
-  be common to all drivers (such as the device locking methods) as well as several functions that derived drivers must 
-  implement.
+  This class provides the interface that all Mercury2 device drivers must be derived from. If defines several functions
+  common to both virtual and physical devices as well as abstract methods that derived drivers must implement. Note that
+  specific driver classes should instead inherit from either the HardwareDriver or VirtualDriver classes.
   """
   
   def __init__(self, device_configuration):
@@ -25,7 +26,6 @@ class Driver(object):
     self.id = self.settings['id']
     self.allow_concurrent_use = (False if ('allow_concurrent_use' not in self.settings) else 
                                  self.settings['allow_concurrent_use'])
-    self.access_lock = threading.Lock()
     self.associated_pipelines = {}
   
   def current_state(self):
@@ -70,6 +70,26 @@ class Driver(object):
     # Register the pipeline
     self.associated_pipelines[pipeline.id] = {"Pipeline": pipeline, "output_to_pipeline": output_to_pipeline}
 
+class HardwareDriver(Driver):
+  """ The base hardware driver interface.
+
+  This class provides the base driver interface that must be implemented when developing physical hardware device
+  drivers for the hardware manager.
+  """
+
+  def __init__(self, device_configuration):
+    """ Sets up the physical hardware driver.
+
+    @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
+                                 file).
+    """
+
+    # Call the base driver constructor
+    super(HardwareDriver,self).__init__(device_configuration)
+
+    # Set up attributes unique to physical devices
+    self.access_lock = threading.Lock()
+
   def reserve_device(self):
     """ Reserves the device for a user reservation.
 
@@ -77,7 +97,7 @@ class Driver(object):
     configured for concurrent access it will simply pass.
     
     @note Pipelines will typically use this method to lock their constituent hardware devices when a session requests a 
-          specific pipeline. This prevents two different sess ions from accidentally allowing access to the same device 
+          specific pipeline. This prevents two different sessions from accidentally allowing access to the same device 
           at the same time while still allowing access to the driver for other things (like admin commands which can 
           arrive at any time and are independent of an active session).
     
@@ -104,6 +124,23 @@ class Driver(object):
         self.access_lock.release()
       except ThreadError:
         pass
+
+class VirtualDriver(Driver):
+  """ Defines the base driver used for virtual devices.
+
+  @note The VirtualDriver interface does not provide driver locking methods because virtual devices are created
+        per-pipeline and can't be scheduled in a conflicting way (because pipelines can't be used concurrently).
+  """
+
+  def __init__(self, device_configuration):
+    """ Sets up the virtual device driver.
+
+    @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
+                                 file).
+    """
+
+    # Call the base driver constructor
+    super(VirtualDriver,self).__init__(device_configuration)
 
 # Define custom driver exceptions
 class PipelineAlreadyRegistered(Exception):
