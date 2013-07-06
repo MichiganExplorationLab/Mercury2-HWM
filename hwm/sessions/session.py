@@ -39,7 +39,121 @@ class Session:
     else:
       self.setup_commands = None
     self.active = False
+
+    self.data_streams = []
+    self.telem_streams = []
+
+  def write_telemetry_datum(self, source_id, stream, timestamp, telemetry_datum, **extra_headers):
+    """ Writes the provided telemetry datum to the registered telemetry streams.
+    
+    This method passes the provided telemetry datum and headers to all registered pipeline telemetry streams. It will be
+    called by this session's associated pipeline and facilitates the sending of pipeline telemetry (state, additional 
+    data streams, etc.) from the pipeline (and its devices) to the end user via the telemetry's streams 
+    write_telemetry_datum() method.
+    
+    @note Because the telemetry stream uses HTTP, it's actually more of a packet stream than a true data stream (like 
+          the main pipeline stream). The Twisted protocol that sends the pipeline telemetry to the end user uses 
+          addressed HTTP packets to ensure that multiple unrelated data streams can be multi-plexed over the same socket
+          without conflict. Thus, each call to this method will be with a complete "packet" of pipeline telemetry (i.e. 
+          a JSON state string or single webcam frame). What ever receives these HTTP packets on the other side of the 
+          socket will be responsible for assembling and displaying them in a coherent way.
+
+    @param source_id        The ID of the device or pipeline that generated the telemetry datum.
+    @param stream           A string identifying which of the device's telemetry streams the datum should be associated 
+                            with.
+    @param timestamp        A unix timestamp signifying when the telemetry was assembled.
+    @param telemetry_datum  The actual telemetry datum. Can take many forms (e.g. a JSON string or binary webcam image).
+    @param **extra_headers  A dictionary containing extra keyword arguments that should be included as additional
+                            headers when sending the telemetry datum.
+    """
+
+    # Pass along the telementry datum
+    for telemetry_stream in self.telem_streams:
+      telemetry_stream.write_telemetry_datum(source_id, stream, timestamp, telemetry_datum, **extra_headers)
+
+  def write_to_output_stream(self, output_data):
+    """ Writes the provided data chunk to the registered data streams. 
+    
+    This method writes the provided chunk of data (pipeline output) to all registered data streams. This method will 
+    typically be called by the pipeline associated with this session and facilitates passing pipeline output from the 
+    Pipeline class to the end user.
+
+    @note Whenever the pipeline generates any output data, this method will call the write_to_output_stream() method for
+          every data stream registered to this session. The data passed to this method will be of arbitrary size.
+
+    @param output_data  A data chunk of arbitrary size that is to be ouput to the registered data streams.
+    """
+
+    # Pass the data along to the registered data streams
+    for data_stream in self.data_streams:
+      data_stream.write_to_output_stream(output_data)
+ 
+  def write_to_input_stream(self, input_data):
+    """ Writes the provided chunk of data to the pipeline input stream.
+
+    This method writes the supplied chunk of data to the input stream of the pipeline associated with this session. This
+    is one step in the process of getting the pipeline input data from the end user to the pipeline's input device
+    (typically a radio).
+
+    @note This method sends the provided data to the pipeline via its write_to_pipeline() method.
+    @note Even though sessions can register multiple data streams, only one data stream should write to this method at a
+          time. If this convention isn't followed, it could result in jumbled data being sent to the pipeline (due to
+          the nature of streams).
+    
+    @param input_data  A data chunk of arbitrary size that is to be written to the pipeline's input stream. Normally,
+                       this comes from a Twisted protocol instance linked to the end user.
+    """
+
+    # Pass the data along to the pipeline
+    self.active_pipeline.write_to_pipeline(input_data)
+
+  def register_data_stream(self, data_stream):
+    """ Registers the provided data stream with the session.
+
+    This method is used to register the main pipeline data stream source/destination with the session. Typically, this 
+    data stream will consist of a Twisted Protocol class that routes the main pipeline data stream to and from the 
+    session user.
+
+    @note Multiple data streams can be registered to the session. Any data that the pipeline generates will be routed to
+          all registered data streams. This allows for simultaneous connections to the same session. However, if
+          multiple data streams attempt to write to the session the data will be interlaced randomly (because of the
+          stream based nature of the system).
+    
+    @throw Throws StreamAlreadyRegistered in the event that a data stream is registered twice.
+    
+    @param data_stream  An instance of a class that can generate and listen for pipeline data. Typically, this will be
+                        a Twisted protocol.
+    """
+
+    # Check if the data stream is already registered
+    if data_stream in self.data_streams:
+      raise StreamAlreadyRegistered("The specified pipeline data stream has already been registered with the session.")
+
+    self.data_streams.append(data_stream)
   
+  def register_telemetry_stream(self, telem_stream):
+    """ Registers the provided telemetry stream with the session.
+
+    This method registers the supplied telemetry stream with the session. The session will use this reference to pass 
+    extra data (i.e. not the main pipeline output) from the pipeline to the end user. This data will consist of things 
+    like extra data streams (e.g. a webcam feed) and live pipeline device state. This stream will be directed, with the 
+    data flowing from the pipeline to the end user (through this session).
+
+    @note This method allows multiple telemetry streams to be registered with the session. Whenever the pipeline
+          generates any telemetry, it will automatically be sent to each registered telemetry stream.
+
+    @throw Raises StreamAlreadyRegistered in the event that a telemetry stream is registered twice.
+
+    @param telem_stream  An instance of a class that can receive pipeline telemetry data. Typically, this will be a 
+                         Twisted protocol.
+    """
+
+    # Check if the telemetry stream is already registered
+    if telem_stream in self.telem_streams:
+      raise StreamAlreadyRegistered("The specified telemetry stream has already been registered with the session.")
+
+    self.telem_streams.append(telem_stream)
+
   def start_session(self):
     """ Sets up the session for use.
     
@@ -134,3 +248,7 @@ class Session:
     else:
       # Just a normal exception, re-raise it
       return failure
+
+# Define session related exceptions
+class StreamAlreadyRegistered(Exception):
+  pass

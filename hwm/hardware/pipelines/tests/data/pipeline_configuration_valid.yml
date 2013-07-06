@@ -3,11 +3,12 @@
 
 pipelines:
   - id: "test_pipeline"
-    description: "A basic test pipeline."
+    description: "A basic test pipeline that includes a virtual device."
     mode: "transmit"
     hardware:
       - device_id: "test_device"
         pipeline_input: true
+      - device_id: "test_device4"
       - device_id: "test_device2"
         pipeline_output: true
     setup_commands:
