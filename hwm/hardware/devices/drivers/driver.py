@@ -16,6 +16,8 @@ class Driver(object):
   
   def __init__(self, device_configuration):
     """ Initializes the new device driver.
+
+    @note Derived drivers should always call this method using super() as it sets several required attributes.
     
     @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
                                  file).
