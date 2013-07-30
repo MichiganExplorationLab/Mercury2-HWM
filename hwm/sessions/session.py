@@ -25,7 +25,7 @@ class Session:
     
     @param reservation_configuration  A dictionary containing the configuration settings for the reservation associated
                                       with this session.
-    @param session_pipeline           The pipeline that this session will use.
+    @param session_pipeline           The Pipeline that this session will use.
     @param command_parser             The CommandParser that will be used to execute the session setup commands.
     """
     
@@ -33,6 +33,7 @@ class Session:
     self.active_pipeline = session_pipeline
     self.command_parser = command_parser
     self.configuration = reservation_configuration
+    self.id = reservation_configuration['reservation_id']
     self.user_id = reservation_configuration['user_id']
     if 'setup_commands' in reservation_configuration:
       self.setup_commands = reservation_configuration['setup_commands']
@@ -160,6 +161,7 @@ class Session:
     This method sets up a new session by:
     - Reserving the pipeline hardware
     - Executing the pipeline setup commands
+    - Executing the Pipeline (and in turn Driver) class setup methods
     - Executing the session setup commands
     
     @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline or
@@ -181,9 +183,8 @@ class Session:
     try:
       self.active_pipeline.reserve_pipeline()
     except pipeline.PipelineInUse:
-      return defer.fail(pipeline.PipelineInUse("The pipeline requested for reservation '"+
-                                               self.configuration['reservation_id']+"' could not be locked: "+
-                                               self.active_pipeline.id))
+      return defer.fail(pipeline.PipelineInUse("The pipeline requested for reservation '"+self.id+"' could not be "+
+                                               "locked: "+self.active_pipeline.id))
     
     # Execute the pipeline setup commands
     pipeline_setup_deferred = self.active_pipeline.run_setup_commands()
@@ -195,10 +196,15 @@ class Session:
   def _run_setup_commands(self, pipeline_setup_commands_results):
     """ Runs the session setup commands.
     
-    This callback runs the session setup commands after the pipeline setup commands have all been executed successfully.
-    The session setup commands are responsible for putting the pipeline in the desired initial configuration based on 
-    this session's associated reservation. For example, setup commands can be used by the pipeline user to set the 
-    initial radio frequency.
+    This callback runs the session setup commands after the pipeline setup commands have all been executed successfully
+    and after the Pipeline activation method (and in turn the Device activation methods) has been called. The session 
+    setup commands are responsible for putting the pipeline in the desired initial configuration based on this session's 
+    associated reservation. For example, setup commands can be used by the pipeline user to set the initial radio 
+    frequency.
+
+    @note Before running the session setup commands, this method also registers itself with the pipeline. This must
+          happen after the pipeline setup commands have been executed (this callback is automatically called after that 
+          occurs).
     
     @param pipeline_setup_commands_results  An array containing the results of the pipeline setup commands. May be None
                                             if there were no pipeline setup commands.
@@ -207,6 +213,9 @@ class Session:
     """
     
     running_setup_commands = []
+
+    # Register the session with the pipeline
+    self.active_pipeline.register_session(self)
 
     # Run the session setup commands
     if self.setup_commands is not None:

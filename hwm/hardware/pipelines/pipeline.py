@@ -37,6 +37,7 @@ class Pipeline:
     self.in_use = False
     self.devices = {}
     self.services = {}
+    self.active_services = {}
     self.current_session = None
     self.input_device = None
     self.output_device = None
@@ -110,7 +111,8 @@ class Pipeline:
           to use them unless they were specifically designed to be able to do so.
     @note Devices may register multiple services of the same type. During the session setup process, the Pipeline will
           configure which service should be active for each service type. It is this service that will be returned when 
-          a device queries for a service of that type.
+          a device queries for a service of that type. All available services are stored in self.services whereas the 
+          active services are stored in self.active_services.
 
     @throws Raises ServiceAlreadyRegistered in the event that a device tries to register the same service twice.
 
@@ -128,18 +130,44 @@ class Pipeline:
 
     self.services[service.type][service.id] = service
 
+  def load_service(self, service_type):
+    """ Returns the active service for the specified service type.
+    
+    This method queries the pipeline's active service dictionary and returns the callable for the specified service 
+    type. Drivers will use this method to load services when sessions begin.
+    
+    @throw Raises ServiceTypeNotFound if there are currently not any active services for the specified type.
+
+    @note The registered services that should be active at any given time are specified by the reservation schedule and 
+          set in self._set_active_services() at the beginning of each session.
+    
+    @param service_type  A string indicating the desired service type.
+    @return Returns a service callable.
+    """
+
+    # Check if a service for the specified type is available
+    if service_type in self.active_services:
+      return self.active_services[service_type]
+    else:
+      raise ServiceTypeNotFound("An active service of the '"+service_type+"' variety was not found in the '"+
+                                self.id+"' pipeline.")
+
   def register_session(self, session):
     """ Registers the provided session with this pipeline.
 
     This method registers the session with the pipeline for the purpose of sending data such as the main pipeline output
-    and pipeline telemetry to the session (and to the data/telemetry streams in turn).
+    and pipeline telemetry to the session (and to the data/telemetry streams in turn). It also sets the active services
+    of a given type for the registered session. For example, if the pipeline's hardware offers two "tracker" services,
+    this method will set one of them to be "active" based on the reservation configuration.
 
     @note Only one session can be registered to the pipeline at a time. This is because pipelines can only be used by a 
           single session (or reservation) at a time. Because the session coordinator ends old sessions before it creates
           new ones, this shouldn't be a problem for back to back reservations.
     
     @throw Raises SessionAlreadyRegistered in the event that a session is registered to a pipeline that already has a 
-           registered session.
+           registered session. Sessions must be deregistered before a new one can be registered.
+    @throw May pass on ServiceInvalid exceptions if the session configuration specifies an invalid service (i.e. 
+           a non-existent service or service type).
 
     @param session  The Session instance that should currently be associated with the pipeline.
     """
@@ -150,6 +178,9 @@ class Pipeline:
                                      "because it is already associated with an existing session.")
 
     self.current_session = session
+
+    # Set the active services for the pipeline
+    self._set_active_services(session)
 
   def run_setup_commands(self):
     """ Runs the pipeline setup commands.
@@ -216,6 +247,9 @@ class Pipeline:
 
         raise PipelineInUse("One or more of the devices in the '"+self.id+"' pipeline is currently being used so the "+
                             "pipeline can't be reserved.")
+
+    # Set the pipeline as in use
+    self.in_use = True
   
   def free_pipeline(self):
     """ Frees the pipeline.
@@ -251,6 +285,44 @@ class Pipeline:
       return True
     else:
       return False
+
+  def _set_active_services(self, session):
+    """ Sets the pipeline's active services.
+
+    This method sets the active services for the pipeline based on the provided session's configuration. For example, if
+    the pipeline's devices offer multiple "tracker" services, this method will set the active one based on what's
+    specified in the session configuration.
+
+    @note The active_services dictionary gets reset every time a session is registered (because which services are
+          active always depends on the session configuration).
+
+    @throw Raises ServiceInvalid if the session configuration specifies a service that isn't registered to the pipeline
+           or if it specifies a service type that isn't available to the pipeline.
+
+    @param session  The Session object used to determine which services should be active.
+    """
+
+    # Reset the dictionary
+    self.active_services = {}
+
+    # Look through the session configuration and set the active services
+    if 'active_services' in session.configuration:
+      for service_type in session.configuration['active_services']:
+        # Try to locate the service callable in self.services
+        if service_type in self.services:
+          if session.configuration['active_services'][service_type] in self.services[service_type]:
+            # Service is available, store it in active_services (only one service per type)
+            temp_service_id = session.configuration['active_services'][service_type]
+            self.active_services[service_type] = self.services[service_type][temp_service_id]
+          else:
+            # Specific service not found in the pipeline
+            raise ServiceInvalid("The '"+session.id+"' session configuration specified a service '"+
+                                 session.configuration['active_services'][service_type]+"' that isn't registered to "+
+                                 "the pipeline.")
+        else:
+          # Service type not found in the pipeline
+          raise ServiceInvalid("The '"+session.id+"' session configuration specified a service type '"+service_type+
+                               "' that isn't available to the pipeline.")
 
   def _setup_pipeline(self):
     """ Sets up the pipeline and performs additional validations.
@@ -323,4 +395,6 @@ class SessionAlreadyRegistered(PipelineError):
 class ServiceInvalid(PipelineError):
   pass
 class ServiceAlreadyRegistered(PipelineError):
+  pass
+class ServiceTypeNotFound(PipelineError):
   pass

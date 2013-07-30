@@ -139,6 +139,13 @@ class ScheduleManager:
                   }
                 }
               },
+              "active_services": {
+                "type": "object",
+                "required": False,
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
               "pipeline_id": {
                 "type": "string",
                 "required": True

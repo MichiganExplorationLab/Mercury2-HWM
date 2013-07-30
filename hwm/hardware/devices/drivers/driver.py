@@ -130,6 +130,8 @@ class Driver(object):
           several pipelines at a time. In addition, some devices (such as webcams) allow for concurrent use by multiple 
           pipelines.
     @note Device registration occurs automatically during the initial pipeline setup process and only occurs once.
+    @note If a given Driver offers any services, it should override this method and register its services with the
+          pipeline (after using super() to call this base method).
     
     @throws Raises PipelineAlreadyRegistered in the event that the user tries to register the same pipeline twice with
             the device.
