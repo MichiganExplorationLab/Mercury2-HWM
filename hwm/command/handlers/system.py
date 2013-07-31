@@ -8,7 +8,7 @@ import hwm.command.metadata
 from hwm.command import command
 from hwm.command.handlers import handler
 
-class SystemCommandHandler(CommandHandler):
+class SystemCommandHandler(handler.CommandHandler):
   """ A command handler that responds to system commands.
   
   This class provides methods that handle various system level commands.

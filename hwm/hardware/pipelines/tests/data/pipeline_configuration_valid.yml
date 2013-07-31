@@ -20,7 +20,7 @@ pipelines:
         destination: "system"
   - id: "test_pipeline2"
     mode: "receive"
-    description: "This pipeline doesn't contain any setup commands."
+    description: "This pipeline doesn't contain any setup commands. It also uses a device used by test_pipeline."
     hardware:
       - device_id: "test_device3"
         pipeline_output: true

@@ -20,8 +20,9 @@ class CommandHandler(object):
   For system commands that require an active session, the individual command methods must perform any necessary 
   validations on the session to determine if the command should be executed. For device commands that require an active 
   session, the command parser will ensure that the command method only gets called if the user has an active session 
-  with a pipeline that contains that hardware device.
-  
+  with a pipeline that contains that hardware device (although the Session reference will still be passed to the
+  command method to allow for additional checks).
+    
   @note The rationale behind specifying the command meta-data at this level is so that command handlers (system or 
   	    device) can be developed and installed without requiring any changes to the user interface (unless you want 
   	    custom command forms). 

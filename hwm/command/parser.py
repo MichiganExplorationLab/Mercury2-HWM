@@ -19,15 +19,17 @@ class CommandParser:
   def __init__(self, system_command_handlers, permission_manager):
     """ Sets up the command parser instance.
     
-    @param system_command_handlers  A dictionary containing references to all of the system command handlers. If a
-                                    command's destination field references an element in this dictionary, that command
-                                    handler will be used. Otherwise, it will be delegated to a device command handler.
+    @param system_command_handlers  A array containing references to all of the system command handlers. If a command's 
+                                    destination field references an element in this dictionary, that command handler 
+                                    will be used. Otherwise, it will be delegated to a device command handler.
     @param permission_manager       A reference to the permissions manager instance that will be used to determine if a
                                     user has the permissions to execute a given command.
     """
     
     # Set the class attributes
-    self.system_handlers = system_command_handlers
+    self.system_handlers = {}
+    for command_handler in system_command_handlers:
+      self.system_handlers[command_handler.name] = command_handler
     self.permission_manager = permission_manager
 
   def system_command_handlers(self):

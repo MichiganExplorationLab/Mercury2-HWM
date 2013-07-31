@@ -25,7 +25,7 @@ class TestPipelineManager(unittest.TestCase):
     # Create a valid command parser and device manager for testing
     self._reset_device_manager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
-    self.command_parser = parser.CommandParser({'system': command_handler.SystemCommandHandler()}, permission_manager)
+    self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)

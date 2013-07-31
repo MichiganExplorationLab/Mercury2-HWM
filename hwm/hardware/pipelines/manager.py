@@ -199,11 +199,13 @@ class PipelineManager:
                                   "invalid: "+str(pipeline_validation_error))
 
 # Define PipelineManager exceptions
-class PipelinesNotDefined(Exception):
+class PipelineManagerError(Exception):
   pass
-class PipelinesAlreadyInitialized(Exception):
+class PipelinesNotDefined(PipelineManagerError):
   pass
-class PipelineNotFound(Exception):
+class PipelinesAlreadyInitialized(PipelineManagerError):
   pass
-class PipelineSchemaInvalid(Exception):
+class PipelineNotFound(PipelineManagerError):
+  pass
+class PipelineSchemaInvalid(PipelineManagerError):
   pass

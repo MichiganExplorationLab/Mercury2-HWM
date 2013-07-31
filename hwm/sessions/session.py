@@ -161,7 +161,6 @@ class Session:
     This method sets up a new session by:
     - Reserving the pipeline hardware
     - Executing the pipeline setup commands
-    - Executing the Pipeline (and in turn Driver) class setup methods
     - Executing the session setup commands
     
     @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline or
@@ -196,11 +195,10 @@ class Session:
   def _run_setup_commands(self, pipeline_setup_commands_results):
     """ Runs the session setup commands.
     
-    This callback runs the session setup commands after the pipeline setup commands have all been executed successfully
-    and after the Pipeline activation method (and in turn the Device activation methods) has been called. The session 
-    setup commands are responsible for putting the pipeline in the desired initial configuration based on this session's 
-    associated reservation. For example, setup commands can be used by the pipeline user to set the initial radio 
-    frequency.
+    This callback runs the session setup commands after the pipeline setup commands have all been executed successfully.
+    The session setup commands are responsible for putting the pipeline in the desired initial configuration based on 
+    this session's associated reservation. For example, setup commands can be used by the pipeline user to set the 
+    initial radio frequency.
 
     @note Before running the session setup commands, this method also registers itself with the pipeline. This must
           happen after the pipeline setup commands have been executed (this callback is automatically called after that 
@@ -214,7 +212,7 @@ class Session:
     
     running_setup_commands = []
 
-    # Register the session with the pipeline
+    # Register the session with its pipeline
     self.active_pipeline.register_session(self)
 
     # Run the session setup commands
@@ -259,5 +257,7 @@ class Session:
       return failure
 
 # Define session related exceptions
-class StreamAlreadyRegistered(Exception):
+class SessionError(Exception):
+  pass
+class StreamAlreadyRegistered(SessionError):
   pass
