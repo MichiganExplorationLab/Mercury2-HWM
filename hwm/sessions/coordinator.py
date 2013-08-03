@@ -65,9 +65,10 @@ class SessionCoordinator:
     print 'COORDINATE'
   
   def _check_for_new_reservations(self):
-    """ Creates sessions for new active reservations.
+    """ Sets up new reservations defined in the reservation schedule.
     
-    This method checks for newly active reservations in the reservation schedule and sets up Session objects for them.
+    This method checks for newly active reservations in the reservation schedule, sets up Session objects for them, and
+    reserves the pipeline specified in the reservation.
     
     @note If a session-fatal error occurs during the session initialization process, it will be logged by callbacks in 
           this class and gracefully fail.

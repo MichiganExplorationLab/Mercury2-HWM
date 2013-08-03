@@ -159,8 +159,8 @@ def _setup_command_system(device_manager):
   """
   
   # Initialize the command resources
-  system_command_handlers = {}
-  system_command_handlers['system'] = system_command_handler.SystemCommandHandler()
+  system_command_handlers = []
+  system_command_handlers.append(system_command_handler.SystemCommandHandler('system'))
   if Configuration.get('offline-mode'):
     permission_manager = permissions.PermissionManager(Configuration.get('permissions-location-local'),
                                                        Configuration.get('permissions-update-period'))

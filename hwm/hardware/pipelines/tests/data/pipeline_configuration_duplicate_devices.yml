@@ -4,6 +4,7 @@
 pipelines:
   - id: "test_pipeline"
     mode: "transceive"
+    description: "Invalid because it specifies the same device twice."
     hardware:
       - device_id: "test_device"
         pipeline_input: true

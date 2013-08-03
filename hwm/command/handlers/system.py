@@ -6,31 +6,13 @@ Contains a class that handles various system commands received by the ground sta
 import time
 import hwm.command.metadata
 from hwm.command import command
+from hwm.command.handlers import handler
 
-class SystemCommandHandler:
+class SystemCommandHandler(handler.CommandHandler):
   """ A command handler that responds to system commands.
   
-  This class provides methods that handle various system commands. Every command method begins with "command_" and will 
-  be called directly by the command parser. Functions that start with "settings_" return a dictionary containing 
-  meta-data about the command such as the parameters it accepts. The user interface uses this information to build an 
-  appropriate form for the command. If a command does not define a "settings_" method, it will not be included in user 
-  interface forms (if it's a device command).
-  
-  For system commands that require an active session, the individual commands must perform any necessary validations on 
-  the session. For device commands that require an active session, the command parser will ensure the command only gets
-  called if the user is using a pipeline that contains that hardware device.
-  
-  @note The rationale behind defining the command meta-data at this level is so that command handlers (system or device)
-        can be developed and installed without requiring any changes to the user interface (unless you want custom 
-        forms). 
+  This class provides methods that handle various system level commands.
   """
-  
-  def __init__(self):
-    """ Sets up the system command handler.
-    """
-    
-    # Define the command handler's attributes
-    self.name = "system"
   
   def command_station_time(self, active_command):
     """ Returns the current ground station time.

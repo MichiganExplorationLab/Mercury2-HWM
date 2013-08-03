@@ -4,12 +4,12 @@
 pipelines:
   - id: "test_pipeline"
     mode: "transceive"
+    description: "Causes a failure because it specifies multiple output devices."
     hardware:
       - device_id: "test_device"
         pipeline_input: true
         pipeline_output: true
       - device_id: "test_device2"
-        # Specify multiple output devices in a single pipeline
         pipeline_output: true
     setup_commands:
       - command: "test_command"

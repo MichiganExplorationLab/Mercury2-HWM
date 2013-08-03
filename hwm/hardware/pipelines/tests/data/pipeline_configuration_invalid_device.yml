@@ -9,11 +9,11 @@ pipelines:
         pipeline_output: true
   - id: "test_pipeline"
     mode: "transceive"
+    description: "Causes a failure because it specifies a nonexistent device."
     hardware:
       - device_id: "test_device"
         pipeline_input: true
         pipeline_output: true
-      # Specify a device that doesn't exist
       - device_id: "test_device_no_exist"
     setup_commands:
       - command: "test_command"

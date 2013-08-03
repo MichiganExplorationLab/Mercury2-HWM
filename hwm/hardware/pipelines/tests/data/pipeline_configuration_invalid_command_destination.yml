@@ -4,6 +4,7 @@
 pipelines:
   - id: "test_pipeline"
     mode: "transceive"
+    description: "Invalid because it specifies a setup command for a device not used by the pipeline."
     hardware:
       - device_id: "test_device"
         pipeline_input: true
@@ -12,7 +13,6 @@ pipelines:
     setup_commands:
       - command: "station_time"
         destination: "system"
-      # Specify a command for a device not contained in the pipeline
       - command: "some_command"
         destination: "test_device3"
   - id: "test_pipeline2"

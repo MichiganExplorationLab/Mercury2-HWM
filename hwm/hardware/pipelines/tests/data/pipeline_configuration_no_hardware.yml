@@ -14,5 +14,5 @@ pipelines:
           command_argument: False
   - id: "test_pipeline2"
     mode: "receive"
-    # Should cause a failure because at least one hardware device is required
+    description: "Causes a failure because no hardware devices are defined."
     hardware: []

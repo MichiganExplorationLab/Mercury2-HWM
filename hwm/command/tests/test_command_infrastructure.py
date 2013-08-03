@@ -27,7 +27,7 @@ class TestCommandInfrastructure(unittest.TestCase):
   
     # Initialize the command parser
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
-    self.command_parser = parser.CommandParser({'system': command_handler.SystemCommandHandler()}, permission_manager)
+    self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
   
   def tearDown(self):
     # Reset the recorded configuration values
