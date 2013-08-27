@@ -63,6 +63,33 @@ class SessionCoordinator:
     self._check_for_new_reservations()
     
     print 'COORDINATE'
+
+  def load_reservation_session(self, reservation_id):
+    """ Returns the Session instance for the requested reservation.
+
+    This method returns the Session for the specified reservation, assuming that the reservation is active and that a
+    Session instance has been created for it. It is typically used by network protocols to associate connections with 
+    sessions.
+
+    @throws Raises SessionNotFound if the specified reservation does not yet have an associated session or, if it does,
+            if its session is not active (can occur if a protocol tries to load a session that is still in the process
+            of executing its setup commands).
+
+    @param reservation_id  The ID of the requested session.
+    @return Returns the Session that represents the specified reservation.
+    """
+
+    # Check if the session has been created
+    if reservation_id in self.active_sessions:
+      requested_session = self.active_sessions[reservation_id]
+    else:
+      raise SessionNotFound("The reservation '"+reservation_id+"' does not exist or hasn't started yet.")
+
+    # Make sure that the session is active
+    if not requested_session.is_active:
+      raise SessionNotFound("The reservation '"+reservation_id+"' is not active yet.")
+
+    return requested_session
   
   def _check_for_new_reservations(self):
     """ Sets up new reservations defined in the reservation schedule.
@@ -171,3 +198,8 @@ class SessionCoordinator:
     logging.error("The session coordinator could not update the active schedule. Received error: "+
                   failure.getErrorMessage())
     failure.trap(schedule.ScheduleError)
+
+class CoordinatorError(Exception):
+  pass
+class SessionNotFound(CoordinatorError):
+  pass

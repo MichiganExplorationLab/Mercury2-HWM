@@ -191,10 +191,20 @@ class Config:
           "type": "boolean",
           "default": False
         },
-        "network-command-port": {
+        "command-port": {
           "type": "integer",
           "minimum": 1,
-          "default": 8080
+          "default": 45500
+        },
+        "pipeline-data-port": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 45501
+        },
+        "pipeline-telemetry-port": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 45502
         },
         "mercury2-ui-location": {
           "type": "string",

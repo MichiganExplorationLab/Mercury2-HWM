@@ -22,6 +22,7 @@ from hwm.hardware.pipelines import manager as pipelines
 from hwm.command import parser as command_parser_mod, connection as command_connection
 from hwm.command.handlers import system as system_command_handler
 from hwm.network.security import verification, permissions
+from hwm.network.protocols import data, telemetry
 
 def initialize():
   """ Initializes the Mercury2 Hardware Manager.
@@ -65,7 +66,7 @@ def initialize():
                                                        command_parser)
   
   # Initialize the required network listeners
-  _setup_network_listeners(command_parser);
+  _setup_network_listeners(command_parser, session_coordinator);
   
   # Set up the session coordinator looping call
   coordination_loop = LoopingCall(session_coordinator.coordinate)
@@ -171,21 +172,30 @@ def _setup_command_system(device_manager):
   
   return command_parser
 
-def _setup_network_listeners(command_parser):
+def _setup_network_listeners(command_parser, session_coordinator):
   """ Initializes the various network listeners used by the hardware manager.
   
-  This method initializes the network listeners required to accept ground station commands and relay ground station 
-  data streams.
+  This method initializes the network listeners required to accept ground station commands and relay pipeline data 
+  streams.
   
-  @param command_parser  An instance of CommandParser which will be used to handle commands received over the network.
+  @param command_parser       An instance of CommandParser which will be used to handle commands received over the 
+                              network.
+  @param session_coordinator  A SessionCoordinator instance that will be passed to the pipeline protocol factories which
+                              will allow them to associate connections with existing sessions. 
   """
     
-  # Create an SSL context for the various listeners
-  server_context_factory = verification.create_ssl_context_factory()
+  # Create a TLS context factory for the various listeners
+  tls_context_factory = verification.create_tls_context_factory()
   
   # Setup the command listener
   command_factory = Site(command_connection.CommandResource(command_parser))
-  reactor.listenSSL(Configuration.get('network-command-port'), command_factory, server_context_factory)
+  reactor.listenSSL(Configuration.get('command-port'), command_factory, tls_context_factory)
+
+  # Setup the pipeline data & telemetry stream listeners
+  pipeline_data_factory = data.PipelineDataFactory(session_coordinator)
+  reactor.listenSSL(Configuration.get('pipeline-data-port'), pipeline_data_factory, tls_context_factory)
+  pipeline_telemetry_factory = telemetry.PipelineTelemetryFactory(session_coordinator)
+  reactor.listenSSL(Configuration.get('pipeline-telemetry-port'), pipeline_telemetry_factory, tls_context_factory)
 
 def _setup_configuration():
   """ Sets up the HWM configuration class.
