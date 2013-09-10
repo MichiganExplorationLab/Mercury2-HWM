@@ -10,24 +10,6 @@ from hwm.core.configuration import Configuration
 from OpenSSL import SSL
 from twisted.internet import ssl
 
-def authentication_callback(connection, x509, errnum, errdepth, ok):
-  """ Called when a user's SSL certificate can't be authenticated.
-  
-  @param connection  Relevant connection object.
-  @param x509        SSL certificate information.
-  @param errnum      Number of errors encountered.
-  @param errdepth    How deep the errors go?
-  @param ok          Whether or not the authentication was successful or not.
-  """
-  
-  # Simply verify that the SSL validation worked
-  if not ok:
-    logging.error("Authentication Error - A user's SSL certificates could not be authenticated: "+
-                  x509.get_subject().commonName.decode())
-    return False
-  
-  return True
-
 def create_tls_context_factory():
   """ Creates and returns a new ssl.ContextFactory used to create TLS contexts for various ground station connections.
   

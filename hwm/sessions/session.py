@@ -39,9 +39,11 @@ class Session:
       self.setup_commands = reservation_configuration['setup_commands']
     else:
       self.setup_commands = None
-    self.active = False
     self.data_protocols = []
     self.telemetry_protocols = []
+
+    # Private session attributes
+    self._active = False
 
   def write_telemetry(self, source_id, stream, timestamp, telemetry_datum, binary=False, **extra_headers):
     """ Writes the provided telemetry datum to the registered telemetry protocols.
@@ -207,13 +209,13 @@ class Session:
   def is_active(self):
     """ Indicates if the Session is active.
 
-    This property checks if the session is currently active. That is, if it has already executed its setup commands and 
+    This property checks if the session is currently active. That is, if it has already completed its setup process and 
     is ready for user interaction.
 
     @return Returns True if the Session is currently active and False otherwise.
     """
 
-    return self.active
+    return self._active
   
   def _run_setup_commands(self, pipeline_setup_commands_results):
     """ Runs the session setup commands.
@@ -262,7 +264,7 @@ class Session:
     """
 
     # Activate the session
-    self.active = True
+    self._active = True
 
     return setup_command_results
   

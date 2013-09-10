@@ -35,7 +35,6 @@ class Pipeline:
     self.id = pipeline_configuration['id']
     self.mode = pipeline_configuration['mode']
     self.setup_commands = pipeline_configuration['setup_commands'] if 'setup_commands' in pipeline_configuration else None
-    self.in_use = False
     self.produce_telemetry = True
     self.current_session = None
     self.input_device = None
@@ -43,11 +42,14 @@ class Pipeline:
     self.devices = {}
     self.services = {}
     self.active_services = {}
+
+    # Private pipeline state attributes
+    self._active = False
     
     # Load the pipeline's devices and perform additional validations
     self._load_pipeline_devices()
 
-    # Create a telemetry producer to regulate the telemetry production rate
+    # Create a telemetry producer to regulate the pipeline's telemetry production rate
     self.telemetry_producer = PipelineTelemetryProducer(self)
 
   def write(self, input_data):
@@ -233,18 +235,20 @@ class Pipeline:
     """ Locks the pipeline and its hardware.
     
     This method is used primarily by sessions to ensure that a pipeline and its hardware are never used concurrently
-    by two different sessions (unless a device is configured to allow for concurrent access).
+    by two different sessions (unless a device is configured to allow for concurrent access). A session will reserve its
+    pipeline as the session is being set up.
     
-    @note If a pipeline can not be reserved because one or more of its hardware devices is currently locked, it will 
-          rollback any locks that it may have acquired already.
+    @note If a pipeline can not be reserved because one or more of its hardware devices is currently reserved, it will 
+          rollback any reservations that it may have acquired already.
     
-    @throw Raises PipelineInUse if the pipeline or any of its hardware is currently being used and can't be locked.
+    @throw Raises PipelineInUse if the pipeline (or any of its hardware devices) is currently being used and can't be 
+           reserved.
     """
     
     successfully_locked_devices = []
 
     # Check if the pipeline is being used
-    if self.in_use:
+    if self.is_active:
       raise PipelineInUse("The requested pipeline is all ready in use and can not be reserved.")
     
     # Lock all of the pipeline's hardware
@@ -261,8 +265,8 @@ class Pipeline:
         raise PipelineInUse("One or more of the devices in the '"+self.id+"' pipeline is currently being used so the "+
                             "pipeline can't be reserved.")
 
-    # Set the pipeline as in use
-    self.in_use = True
+    # Set the pipeline as reserved
+    self._active = True
   
   def free_pipeline(self):
     """ Frees the pipeline.
@@ -270,34 +274,33 @@ class Pipeline:
     This method is used to free the hardware pipeline. This typically occurs at the conclusion of a usage session, but 
     it can also occur in the event that a session that is currently using the pipeline experiences a fatal error.
 
-    @note This method will only unlock hardware devices if the pipeline is in use. This will prevent the pipeline from 
+    @note This method will only unlock hardware devices if the pipeline is reserved. This will prevent the pipeline from 
           unlocking devices that are being used by other pipelines that share some of the same hardware devices.
     """
     
     # Free the pipeline's hardware devices if the pipeline is in use
-    if self.in_use:
+    if self.is_active:
       for device_id in self.devices:
         self.devices[device_id].free_device()
 
-      self.in_use = False
+      self._active = False
 
   @property
   def is_active(self):
-    """ Indicates that the pipeline is currently active.
+    """ Indicates if the pipeline is currently active.
+  
+    This property checks if the pipeline is active. That is to say, whether or not it is being used by a session. This 
+    method is commonly used to determine if a given driver should write data to the pipeline or not (if the pipeline is 
+    registered with the device).
 
-    This property checks if the pipeline is currently being used by a session. This method is commonly used to determine
-    if a given device should write data to the pipeline or not.
-
-    @note This method is used instead of accessing self.in_use directly because it prevents drivers from changing the 
-          pipeline's state accidentally.  
+    @note Because pipelines can only ever be used by a single session at a time, an active pipeline can also be
+          considered locked. This differs from drivers, which can be active and unlocked at the same time (in the case
+          of concurrent access devices).   
 
     @return Returns True if the pipeline is currently being used and False otherwise.
     """
 
-    if self.in_use:
-      return True
-    else:
-      return False
+    return self._active
 
   def _set_active_services(self):
     """ Sets the pipeline's active services.

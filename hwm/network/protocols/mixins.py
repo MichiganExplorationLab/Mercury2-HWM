@@ -6,7 +6,7 @@ Contains mixins commonly used by the HWM network protocols.
 from twisted.internet import reactor
 from hwm.sessions import coordinator
 
-class AuthUtilities(Object):
+class AuthUtilities(object):
   """ Contains authentication related mixins used by most HWM network protocols.
   
   This class contains several authorization related methods used by the HWM network protocols. Among other things, it 
@@ -24,6 +24,8 @@ class AuthUtilities(Object):
 
     @note This method uses the clients's TLS certificate's common name field to determine what session it should load.
           If the requested session is not yet active, the connection will be terminated.
+    @note After setting the protocol's TLS certificate, this method will call the _perform_registrations() callback 
+          on the protocol which will give it a change to perform various registrations with the session.
 
     @todo This method should probably wait if a user connects a few minutes before their session begins instead of 
           immediately disconnecting.
@@ -40,7 +42,7 @@ class AuthUtilities(Object):
     cert_subject = user_cert.get_subject()
     cert_reservation_id = cert_subject.commonName
     try:
-      requested_session = self.session_manager.load_reservation_session(cert_reservation_id)
+      requested_session = self.session_coordinator.load_reservation_session(cert_reservation_id)
     except coordinator.SessionNotFound:
       # The session couldn't be found or isn't ready yet, kill the connection
       self.transport.abortConnection()

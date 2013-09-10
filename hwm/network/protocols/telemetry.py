@@ -29,7 +29,7 @@ class PipelineTelemetry(Protocol, mixins.AuthUtilities):
 
     # Set protocol attributes
     self.session_coordinator = session_coordinator
-    self.session = session
+    self.session = None
 
   def write_telemetry(self, source_id, stream, timestamp, telemetry_datum, binary=False, **extra_headers):
     """ Sends a telemetry data point to the user.
@@ -140,7 +140,7 @@ class PipelineTelemetry(Protocol, mixins.AuthUtilities):
     }
 
     # Append the additional headers (if any)
-    telemetry_point.append(extra_headers)
+    telemetry_point.update(extra_headers)
 
     return json.dumps(telemetry_point)
 
@@ -163,7 +163,7 @@ class PipelineTelemetryFactory(Factory):
 
     self.session_coordinator = session_coordinator
 
-  def buildProtocol(self):
+  def buildProtocol(self, addr):
     """ Constructs a new PipelineTelemetry protocol.
     
     This method creates and returns a new PipelineTelemetry instance initialized with the active SessionCoordinator
