@@ -11,6 +11,7 @@ from OpenSSL import SSL
 from twisted.internet import reactor, ssl
 from twisted.internet.task import LoopingCall
 from twisted.web.server import Site
+from txws import WebSocketFactory
 from pkg_resources import Requirement, resource_filename
 
 # HWM modules
@@ -189,13 +190,19 @@ def _setup_network_listeners(command_parser, session_coordinator):
   
   # Setup the command listener
   command_factory = Site(command_connection.CommandResource(command_parser))
-  reactor.listenSSL(Configuration.get('command-port'), command_factory, tls_context_factory)
+  reactor.listenSSL(Configuration.get('command-port'),
+                    command_factory,
+                    tls_context_factory)
 
   # Setup the pipeline data & telemetry stream listeners
   pipeline_data_factory = data.PipelineDataFactory(session_coordinator)
-  reactor.listenSSL(Configuration.get('pipeline-data-port'), pipeline_data_factory, tls_context_factory)
+  reactor.listenSSL(Configuration.get('pipeline-data-port'),
+                    pipeline_data_factory,
+                    tls_context_factory)
   pipeline_telemetry_factory = telemetry.PipelineTelemetryFactory(session_coordinator)
-  reactor.listenSSL(Configuration.get('pipeline-telemetry-port'), pipeline_telemetry_factory, tls_context_factory)
+  reactor.listenSSL(Configuration.get('pipeline-telemetry-port'),
+                    WebSocketFactory(pipeline_telemetry_factory), 
+                    tls_context_factory)
 
 def _setup_configuration():
   """ Sets up the HWM configuration class.

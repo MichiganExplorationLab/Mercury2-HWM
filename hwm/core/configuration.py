@@ -210,15 +210,15 @@ class Config:
           "type": "string",
           "required": True
         },
-        "ssl-private-key-location": {
+        "tls-private-key-location": {
           "type": "string",
           "default": self.config_directory + "ssl/mercury2_hwm-key.pem"
         },
-        "ssl-public-cert-location": {
+        "tls-public-cert-location": {
           "type": "string",
           "default": self.config_directory + "ssl/mercury2_hwm-cert.pem"
         },
-        "ssl-ca-cert-location": {
+        "tls-ca-cert-location": {
           "type": "string",
           "default": self.config_directory + "ssl/ca-cert.pem"
         },

@@ -3,11 +3,12 @@ This module contains the Twisted Protocol (and related classes) used to broadcas
 """
 
 # Import required modules
-import base64, json
+import base64, json, logging
 from twisted.internet.protocol import Protocol, Factory
-from hwm.network.protocols import mixins
+from hwm.network.protocols import utilities
+from hwm.sessions import session
 
-class PipelineTelemetry(Protocol, mixins.AuthUtilities):
+class PipelineTelemetry(Protocol):
   """ Represents a pipeline telemetry connection.
 
   This Protocol is used to represent a connection to a pipeline's telemetry stream. It is responsible for relaying
@@ -69,16 +70,21 @@ class PipelineTelemetry(Protocol, mixins.AuthUtilities):
     """ Sets up the telemetry protocol before any data transfer occurs.
 
     This method sets up the protocol right after the connection has been established. It is responsible for calling a
-    method that will wait and load the user's certificate after the TLS handshake has been performed.
+    function that will wait and load the user's certificate after the TLS handshake has been performed.
 
     @note Because this method may be (and probably will be) called before the connection's TLS handshake is complete,
-          it calls an additional method that periodically checks if the client's certificate is available. Until it is,
-          any data that the user tries to pass to the connection will be dropped. However, the TLS handshake process is 
-          normally pretty fast and only occurs once per connection.
+          it calls an additional function that periodically checks if the client's certificate is available and, once it
+          is, returns it via a deferred. Any data that the user tries to pass to the connection before the TLS handshake
+          has completed will be dropped.
+    @return Returns a deferred that will be fired with the requested Session.
     """
 
     # Wait for the user's certificate and load the requested session
-    self._wait_for_session()
+    tls_handshake_deferred = utilities.load_session_after_tls_handshake(self)
+    tls_handshake_deferred.addCallback(self.perform_registrations)
+    tls_handshake_deferred.addErrback(self._connection_setup_error)
+
+    return tls_handshake_deferred
 
   def connectionLost(self):
     """ Called when the connection to the user is lost.
@@ -86,24 +92,32 @@ class PipelineTelemetry(Protocol, mixins.AuthUtilities):
 
     return
 
-  def _perform_registrations(self):
-    """ Performs the necessary registrations with the protocol's Session instance.
+  def perform_registrations(self, requested_session):
+    """ Performs the necessary registrations between the protocol and its associated session.
 
-    This method makes the necessary registrations between the pipeline telemetry protocol and the associated Session 
-    instance. It is automatically called by self._wait_for_session() after the requested session has been loaded.
+    This callback makes the necessary registrations between the pipeline data protocol, its Session, and its pipeline's
+    telemetry producer. It will be called with session specified in the client's TLS certificate after the TLS handshake
+    is complete.
+
+    @throw May pass along session.ProtocolAlreadyRegistered exceptions when trying to register this protocol with its
+           session.
+
+    @param requested_session  The session associated with the protocol.
+    @return Returns the newly loaded Session that was passed to this callback.
     """
+
+    # Store the session
+    self.session = requested_session
 
     # Perform the registrations between the data protocol and its associated session
     if self.session is not None:
-      try:
-        self.session.register_telemetry_protocol(self)
-      except session.ProtocolAlreadyRegistered:
-        logging.error("A pipeline telemetry protocol for the '"+self.session.id+"' reservation tried to register "+
-                      "itself with its session twice.")
+      self.session.register_telemetry_protocol(self)
 
       # Register the telemetry producer with the protocol's transport
       telemetry_producer = self.session.get_pipeline_telemetry_producer()
       self.transport.registerProducer(telemetry_producer, True)
+
+    return requested_session
 
   def _package_telemetry(self, source_id, stream, timestamp, telemetry_datum, binary=False, **extra_headers):
     """ Packages a telemetry point into a JSON string.
@@ -136,6 +150,7 @@ class PipelineTelemetry(Protocol, mixins.AuthUtilities):
       'source': source_id,
       'stream': stream,
       'generated_at': timestamp,
+      'binary': binary,
       'telemetry': payload
     }
 
@@ -143,6 +158,22 @@ class PipelineTelemetry(Protocol, mixins.AuthUtilities):
     telemetry_point.update(extra_headers)
 
     return json.dumps(telemetry_point)
+
+  def _connection_setup_error(self, failure):
+    """ Handles errors that arise during the telemetry protocol connection setup.
+
+    This callback handles errors that may occur when authenticating the protocol user and loading their requested
+    session. It logs the error and cleans up the protocol's connection.
+
+    @param failure  A Failure object encapsulating the error.
+    @return Returns None after handling the error.
+    """
+
+    # Close the connection and log the error
+    self.transport.abortConnection()
+    logging.error("An error occured setting up a pipeline telemetry connection: '"+str(failure.value)+"'")
+
+    return None
 
 class PipelineTelemetryFactory(Factory):
   """ Constructs PipelineTelemetry protocol instances for pipeline telemetry stream connections.

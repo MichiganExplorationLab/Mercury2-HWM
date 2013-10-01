@@ -312,6 +312,7 @@ class Pipeline:
     @note The active_services dictionary gets reset every time a session is registered (because which services are
           active always depends on the session configuration). This method should only be called from 
           self.register_session().
+    @note Only one service per service type can be active at any given time.
 
     @throw Raises ServiceInvalid if the session configuration specifies a service that isn't registered to the pipeline
            or if it specifies a service type that isn't available to the pipeline.

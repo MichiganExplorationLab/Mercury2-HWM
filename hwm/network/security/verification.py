@@ -25,9 +25,9 @@ def create_tls_context_factory():
   # Load the server's private key, public X509 certificate, and the certificate authority's X509 certificate
   with open(Configuration.get('tls-ca-cert-location')) as ca_certificate_file:
     ca_certificate = ssl.Certificate.loadPEM(ca_certificate_file.read())
-  with (open(Configuration.get('tls-private-key-location')) as private_key_file, 
-        open(Configuration.get('tls-public-cert-location')) as public_certificate_file):
-    server_certificate = ssl.PrivateCertificate.loadPEM(private_key_file.read() + public_certificate_file.read())
+  with open(Configuration.get('tls-private-key-location')) as private_key_file:
+    with open(Configuration.get('tls-public-cert-location')) as public_certificate_file:
+      server_certificate = ssl.PrivateCertificate.loadPEM(private_key_file.read() + public_certificate_file.read())
 
   server_context_factory = server_certificate.options(ca_certificate)
 
