@@ -54,7 +54,7 @@ def initialize():
   device_manager = devices.DeviceManager()
   
   # Setup the command parser
-  command_parser = _setup_command_system(device_manager)
+  command_parser = _setup_command_system()
   
   # Initialize the pipeline manager
   pipeline_manager = pipelines.PipelineManager(device_manager,
@@ -148,15 +148,13 @@ def _setup_schedule_manager():
   
   return schedule_manager
 
-def _setup_command_system(device_manager):
+def _setup_command_system():
   """ Sets up the command system.
   
   This function sets up the CommandParser class which is responsible for parsing, validating, and executing commands
-  (either from the network or internal scripts). It also, consequently, initializes the permission system which tracks
-  user command execution permissions.
+  (either from the network or internal scripts). It also, consequently, initializes the permission system which updates
+  and exposes user command execution permissions.
   
-  @param device_manager  A DeviceManager instance that has been initialized with the station hardware configuration.
-                         The command parser requires this so that it can load device command handlers when needed.
   @return Returns a reference to the new CommandParser instance.
   """
   

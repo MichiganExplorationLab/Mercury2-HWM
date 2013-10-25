@@ -48,15 +48,15 @@ class TestBaseDriver(unittest.TestCase):
     # Load a device to test with
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
     device_manager = manager.DeviceManager()
-    test_driver = device_manager.get_device_driver("test_device")
+    test_driver = device_manager.get_device_driver("test_device4")
 
     # Try to load the command handler for a device that doesn't have one
-    self.assertRaises(driver.CommandHandlerNotDefined, test_driver.device_command_handler)
+    self.assertRaises(driver.CommandHandlerNotDefined, test_driver.get_command_handler)
 
     # Give the device a mock command handler and try to load it
     test_command_handler = MagicMock()
     test_driver.command_handler = test_command_handler
-    self.assertTrue(test_driver.device_command_handler() is test_command_handler)
+    self.assertTrue(test_driver.get_command_handler() is test_command_handler)
 
   def test_writing_device_output(self):
     """ Tests that the Driver class can pass its output to its registered pipelines. The default implementation of the 

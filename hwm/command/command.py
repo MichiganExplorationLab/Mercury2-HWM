@@ -36,10 +36,13 @@ class Command:
     self.user_id = user_id
     self.kernel_mode = kernel_mode
     self.valid = False
+    self._user_sessions = []
     
     # Convenience attributes set after validate_command
     self.command = None
     self.destination = None
+    self.pipeline = None
+    self.full_destination = None
     self.parameters = {}
   
   def validate_command(self):
@@ -89,7 +92,8 @@ class Command:
         "destination": {
           "type": "string",
           "id": "destination",
-          "required": True
+          "required": True,
+          "pattern": "^(\w+\.\w+)|(\w+)$"
         },
         "parameters": {
           "type": "object",
@@ -133,8 +137,11 @@ class Command:
     command_response['received_at'] = self.time_received
     command_response['completed_at'] = int(time.time())
     command_response['status'] = 'okay' if success else 'error'
-    if self.destination:
-      command_response['destination'] = self.destination
+    if self.destination is not None:
+      command_response['destination'] = ''
+      if self.pipeline:
+        command_response['destination'] = self.pipeline+'.'
+      command_response['destination'] += self.destination
     command_response['result'] = command_results
     
     # Store the command response (what will actually be sent back to the user)
@@ -154,12 +161,39 @@ class Command:
     
     if self.valid or self.command_dict == None:
       self.command = self.command_dict['command']
-      self.destination = self.command_dict['destination']
       self.parameters = self.command_dict['parameters'] if ('parameters' in self.command_dict) else None
+      self.full_destination = self.command_dict['destination']
+
+      if '.' in self.full_destination:
+        self.pipeline = self.full_destination.split('.')[0]
+        self.destination = self.full_destination.split('.')[1]
+      else:
+        self.destination = self.full_destination
       
       return True
     else:
       return False
+
+  @property
+  def active_user_sessions(self):
+    """ Returns an array of the active Sessions associated with the user who submitted the command.
+    
+    @note The user's active sessions are loaded by the command parser after the command has been initialized.
+    @note Returns an empty array if the user doesn't have any active sessions or if this is a kernel level command.
+
+    @return Returns an array of active Sessions.
+    """
+
+    return self._user_sessions
+
+  @active_user_sessions.setter
+  def active_user_sessions(self, active_sessions):
+    """ Sets the active sessions for the user associated with this command.
+
+    @param active_sessions  An array containing the user's active Sessions.
+    """
+
+    self._user_sessions = active_sessions
 
 # Create some exceptions for the Command class
 class CommandNotFound(Exception):

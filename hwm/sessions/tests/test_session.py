@@ -12,6 +12,7 @@ from hwm.command import parser, command
 from hwm.command.handlers import system as command_handler
 from hwm.network.security import permissions
 from pkg_resources import Requirement, resource_filename
+from hwm.sessions.tests.utilities import *
 
 class TestSession(unittest.TestCase):
   """ This test suite is used to test the functionality of the Session class, which is used to represent user hardware
@@ -32,6 +33,8 @@ class TestSession(unittest.TestCase):
     self.device_manager = device_manager.DeviceManager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
+    self.command_parser.pipeline_manager = MagicMock()
+    self.session_coordinator = MockSessionCoordinator(self.command_parser)
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)

@@ -11,7 +11,8 @@
       },
       {
         "command": "test_command",
-        "destination": "test_device"
+        "destination": "test_device",
+        "pipelines": ["test_pipeline","test_pipeline3"]
       }
     ]
   },

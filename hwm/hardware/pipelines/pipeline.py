@@ -197,6 +197,21 @@ class Pipeline:
     # Set the active services for the pipeline
     self._set_active_services()
 
+  def get_device(self, device_id):
+    """ Returns the driver for the specified device.
+
+    @throw May throw DeviceNotFound if the specified device is not present in the pipeline.
+
+    @param device_id  The ID of the device driver to load.
+    @return Returns a Driver instance for the specified device.
+    """
+
+    if device_id not in self.devices:
+      raise device_manager.DeviceNotFound("The specified device '"+device_id+"' could not be located in the '"+
+                                          self.id+"' pipeline.")
+
+    return self.devices[device_id]
+
   def run_setup_commands(self):
     """ Runs the pipeline setup commands.
     

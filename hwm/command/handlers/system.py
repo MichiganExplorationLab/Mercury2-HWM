@@ -4,7 +4,7 @@ Contains a class that handles various system commands received by the ground sta
 
 # Import required modules
 import time
-import hwm.command.metadata
+from hwm.command.metadata import *
 from hwm.command import command
 from hwm.command.handlers import handler
 
@@ -32,18 +32,6 @@ class SystemCommandHandler(handler.CommandHandler):
     """
     
     # The station_command does not take any parameters
-    command_parameters = [{}]
-    
-    return build_metadata_dict(command_parameters, 'station_time', self.name, requires_active_session = False,
-                               dangerous = False)
-  
-  def command_test_error(self, active_command):
-    """ Generates a simple command error for testing purposes.
-    
-    @throw Throws CommandError for testing.
-    
-    @param active_command  The command object associated with the executing command.
-    """
-    
-    # raise the exception.
-    raise command.CommandError("Command Error Test.", {"submitted_command": active_command.command})
+    command_parameters = []
+
+    return build_metadata_dict(command_parameters, 'station_time', self.name, requires_active_session = False)

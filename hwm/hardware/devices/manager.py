@@ -47,12 +47,13 @@ class DeviceManager:
   def get_device_driver(self, device_id):
     """ Loads and returns the driver for the specified device.
     
-    This method returns an instance of a device driver class for the specified device. If the requested device is a 
-    physical device, then a reference to a previously initialized driver will be returned. On the other hand, if the 
-    requested device is a virtual device then a new instance will be constructed and returned.
+    This method returns an instance of the device driver class for the specified device. If the requested device is a 
+    physical device a reference to a previously initialized driver will be returned. If the requested device is a 
+    virtual device a new instance will be constructed and returned.
 
-    @note Virtual device driver instances are created on the fly because, unlike physical device drivers, they are tied
-          to a specific pipeline with each pipeline having its own instance.
+    @note This method is typically called by pipelines during initialization when loading their devices. Virtual device 
+          driver instances are created on the fly because, unlike physical device drivers, they are typically tied to a 
+          specific pipeline with each pipeline having its own instance.
     
     @throw Throws DeviceNotFound if the specified device can't be located.
     

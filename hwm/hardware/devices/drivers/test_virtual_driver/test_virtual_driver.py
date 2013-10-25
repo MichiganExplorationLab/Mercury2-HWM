@@ -8,6 +8,8 @@ from hwm.hardware.devices.drivers import driver
 class Test_Virtual_Driver(driver.VirtualDriver):
   """ A simple test virtual driver used by unit tests to test the correctness of the device manager and the virtual
   device mechanisms.
+
+  @note This test driver does not have a command handler (some tests depend on this).
   """
   
   def __init__(self, device_configuration):

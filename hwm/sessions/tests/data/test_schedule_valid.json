@@ -30,8 +30,8 @@
       "reservation_id": "RES.2",
       "time_start": 1360096495,
       "time_end": 1660097495,
-      "user_id": "4",
-      "username": "test_user",
+      "user_id": "1",
+      "username": "test_admin",
       "description": "Reservation should be active. Contains valid and invalid session setup commands.",
       "pipeline_id": "test_pipeline",
       "setup_commands": [

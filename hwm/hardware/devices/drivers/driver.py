@@ -95,11 +95,11 @@ class Driver(object):
 
     return
 
-  def device_command_handler(self):
+  def get_command_handler(self):
     """ Returns the device's command handler.
 
     This method returns the device's command handler. Individual device drivers are responsible for defining and 
-    initializing their command handler, as well as assigning it to their "command_handler" attribute.
+    initializing their command handler, as well as assigning it to their driver's "command_handler" attribute.
 
     @throw Raises CommandHandlerNotDefined if the device driver does not specify a command handler.
     

@@ -33,11 +33,9 @@ class CommandResource(Resource):
   def render_POST(self, request):
     """ Responds to POST'd command requests.
     
-    @note All submitted commands must be POST'd to the hardware manager's root address.
-    
     @param request  The request object for the submitted command.
     @return Returns NOT_DONE_YET, indicating that the results of the request may not be ready yet (results handled by
-            _command_response_ready).
+            self._command_response_ready).
     """
     
     # Store the user's ID from the SSL certificate

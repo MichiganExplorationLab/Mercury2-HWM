@@ -29,6 +29,7 @@ class TestPipeline(unittest.TestCase):
     self._reset_device_manager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
+    self.command_parser.pipeline_manager = MagicMock()
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -43,6 +44,21 @@ class TestPipeline(unittest.TestCase):
     # Reset the other resource references
     self.device_manager = None
     self.command_parser = None
+
+  def test_loading_pipeline_device(self):
+    """ Tests that the pipeline can return references to its devices.
+    """
+
+    # Create a test pipeline to work with
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+
+    # Load a device
+    temp_device = test_pipeline.get_device("test_device4")
+    self.assertEqual(temp_device.id, "test_device4")
+
+    # Try loading a non-existent device
+    self.assertRaises(device_manager.DeviceNotFound, test_pipeline.get_device, "non-existent-device")
 
   def test_writing_pipeline_output(self):
     """ Checks that the Pipeline class can pass pipeline output to its currently registered session. The pipeline's 

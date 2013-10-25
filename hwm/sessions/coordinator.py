@@ -34,12 +34,15 @@ class SessionCoordinator:
     self.pipelines = pipeline_manager
     self.command_parser = command_parser
     self.config = configuration.Configuration
+
+    # Register the session coordinator with the command parser so it can check command session requirements
+    command_parser.session_coordinator = self
     
     # Initialize coordinator attributes
     self.active_sessions = {} # Sessions that are currently running or being prepared to run
     self.closed_sessions = [] # Sessions that have been completed or experienced a fatal error during initialization,
                               # this is just an array of reservation IDs so that their session objects can get garbage
-                              # collected.
+                              # collected
   
   def coordinate(self):
     """ Coordinates the operation of the hardware manager.
@@ -90,6 +93,25 @@ class SessionCoordinator:
       raise SessionNotFound("The reservation '"+reservation_id+"' is not active yet.")
 
     return requested_session
+
+  def load_user_sessions(self, user_id):
+    """ Returns any active user sessions that the specified user may have.
+
+    This method returns a list of the currently active sessions for the specified user.
+
+    @param user_id  The ID of the user to load sessions for.
+    @return Returns an array of the user's currently active sessions.
+    """
+
+    user_sessions = []
+
+    # Locate the user's active sessions
+    for active_session_id in self.active_sessions:
+      active_session = self.active_sessions[active_session_id]
+      if int(active_session.user_id) == user_id:
+        user_sessions.append(active_session)
+    
+    return user_sessions
   
   def _check_for_new_reservations(self):
     """ Sets up new reservations defined in the reservation schedule.

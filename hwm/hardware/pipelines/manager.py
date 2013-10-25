@@ -37,6 +37,9 @@ class PipelineManager:
     self.device_manager = device_manager
     self.command_parser = command_parser
     self.pipelines = {}
+
+    # Register this PipelineManager with the command parser so that it can process device commands
+    command_parser.pipeline_manager = self
     
     # Initialize the configured pipelines
     self._initialize_pipelines()
@@ -45,7 +48,7 @@ class PipelineManager:
     """ Returns a reference to the specified pipeline.
     
     @note This method does not perform any pipeline locking. That is managed by the individual pipeline classes and is
-          typically done by the session coordinator.
+          typically triggered by the session coordinator.
     
     @throw Throws PipelineNotFound when the requested pipeline can't be found.
     
@@ -55,7 +58,7 @@ class PipelineManager:
     
     # Verify that the pipeline exists
     if pipeline_id not in self.pipelines:
-      raise PipelineNotFound
+      raise PipelineNotFound("The '"+pipeline_id+"' pipeline does not exist.")
     
     return self.pipelines[pipeline_id]
   

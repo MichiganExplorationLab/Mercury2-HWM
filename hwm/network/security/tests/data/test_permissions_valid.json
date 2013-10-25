@@ -11,7 +11,12 @@
       },
       {
         "command": "test_command",
-        "destination": "test_device"
+        "destination": "test_device",
+        "pipelines": ["test_pipeline","test_pipeline3"]
+      },
+      {
+        "command": "requires_session",
+        "destination": "test"
       }
     ]
   },
@@ -50,8 +55,17 @@
         "destination": "system"
       },
       {
-        "command": "test_error",
-        "destination": "system"
+        "command": "generate_error",
+        "destination": "test"
+      },
+      {
+        "command": "requires_session",
+        "destination": "test"
+      },
+      {
+        "command": "requires_session",
+        "destination": "test_device",
+        "pipelines": ["test_pipeline"]
       }
     ]
   },
