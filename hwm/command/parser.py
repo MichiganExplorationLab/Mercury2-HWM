@@ -9,6 +9,9 @@ as they're received. Once a command has been executed, it returns the results of
 import time, logging
 from twisted.internet import defer, threads
 from hwm.command import command
+from hwm.hardware.devices.drivers import driver
+from hwm.hardware.devices import manager as device_manager
+from hwm.hardware.pipelines import manager as pipeline_manager
 
 class CommandParser:
   """ Processes all commands received by the hardware manager.
@@ -24,6 +27,12 @@ class CommandParser:
                                     will be used. Otherwise, it will be delegated to a device command handler.
     @param permission_manager       A reference to the permissions manager instance that will be used to determine if a
                                     user has the permissions to execute a given command.
+
+    @note This class requires that a SessionCoordinator instance be initialized with an instance of this class before it 
+          can parse commands. It needs the session coordinator to load the user's active sessions, and the session 
+          coordinator needs this class so that it can pass it to newly created sessions for their setup commands.
+    @note This class requires that a PipelineManager instance be initialized with an instance of this class before it 
+          can parse device commands. This is required so that it can relay device commands to the specified device.
     """
     
     # Set the class attributes
@@ -31,6 +40,8 @@ class CommandParser:
     for command_handler in system_command_handlers:
       self.system_handlers[command_handler.name] = command_handler
     self.permission_manager = permission_manager
+    self.pipeline_manager = None
+    self.session_coordinator = None
 
   def system_command_handlers(self):
     """ Provides access to the loaded system command handlers.
@@ -50,7 +61,7 @@ class CommandParser:
     * Executes the command in a new thread
     * Returns a deferred that will be fired with the results of the command
     
-    Some of these steps may be skipped depending on the type of command. For example, kernel commands skip the 
+    Some of these steps may be skipped depending on the type of command. For example, kernel level commands skip the 
     permission checking phase.
     
     @note In the event of an error with the command (e.g. invalid schema or permission error), the error will be logged
@@ -61,7 +72,6 @@ class CommandParser:
           accessed via the 'response' key of the callback parameter. The calling module is responsible for converting 
           this dictionary into an appropriate format.
     @note The actual command execution occurs in a new thread. *Make sure that command code is thread safe!*
-    @note Seriously, make sure the command code is thread safe.
     
     @param raw_command  A raw command containing metadata about the command in an arbitrary format (specific Command
                         classes are responsible for parsing different formats).
@@ -80,7 +90,7 @@ class CommandParser:
     # Create the new command (currently there is only one command type to worry about)
     new_command = command.Command(time_command_received, raw_command, user_id=user_id, kernel_mode=kernel_mode)
     
-    # Asynchronously validate the command (format and schema)
+    # Validate the command (format and schema)
     command_deferred = new_command.validate_command()
     
     # Add callbacks to handle validation results (_command_error added second so it can handle errors from 
@@ -96,10 +106,6 @@ class CommandParser:
     This callback runs after the command has been validated and is responsible for loading a user's permissions to make
     sure that the user has permission to execute the command. If the command is being executed in kernel mode, then this
     step will be skipped and a pre-fired deferred will be returned to continue the execution process.
-    
-    @note This callback returns a deferred which means that the parent deferred's (from validate_command) callback chain
-          will pause until the returned deferred has been fired. The returned deferred's callbacks will then execute 
-          before the remaining callbacks on the parent deferred.
     
     @throw This callback may throw several exceptions indicating errors about the command. These exceptions will 
            automatically be picked up by the errback chain on the parent deferred.
@@ -126,7 +132,13 @@ class CommandParser:
       return permission_load_deferred
   
   def _run_command(self, user_permissions, valid_command):
-    """ Continues command execution after the user's permissions have been retrieved.
+    """ Executes the command after it has been validated.
+
+    This callback sends the command to it's specified destination after it has been validated by previous callbacks. It
+    will eventually return the command response via a deferred.
+
+    @throw May throw CommandError and other exceptions indicating that the command has failed. A subsequent errback in 
+           the main command deferred chain will automatically handle all command errors. 
     
     @param user_permissions  A dictionary containing the user's permissions. If the command is being running in kernel
                              mode, this will just be None.
@@ -136,38 +148,91 @@ class CommandParser:
     
     # Determine where to send the command
     device_command = False
-    command_handler = None
-    if valid_command.destination in self.system_handlers:
-      command_handler = self.system_handlers[valid_command.destination]
-    else:
+    destination = valid_command.destination
+    full_destination = valid_command.full_destination
+    pipeline = valid_command.pipeline
+    if destination in self.system_handlers:
+      # System Command
+      command_handler = self.system_handlers[destination]
+    elif pipeline is not None:
+      # Device Command
       device_command = True
-      
-      # TODO: Validate and load device command handler
+
+      try:
+        dest_pipeline = self.pipeline_manager.get_pipeline(pipeline)
+      except pipeline_manager.PipelineNotFound as e:
+        raise command.CommandError(str(e), {"command": valid_command.command, "destination": full_destination})
+
+      try:
+        dest_device = dest_pipeline.get_device(destination)
+      except device_manager.DeviceNotFound as e:
+        raise command.CommandError(str(e), {"command": valid_command.command, "destination": full_destination})
+
+      try:
+        command_handler = dest_device.get_command_handler()
+      except driver.CommandHandlerNotDefined as e:
+        raise command.CommandError(str(e), {"command": valid_command.command, "destination": full_destination})
+    else:
+      # Invalid Command
+      raise command.CommandError("The received command was invalid because it specified an invalid command "+
+                                 "destination.", {"command": valid_command.command, "destination": full_destination})
     
-    # Verify that the command exists
+    # Verify that the command exists in the command handler
     if not hasattr(command_handler, 'command_'+valid_command.command):
-      handler_string = "'"+valid_command.destination+"'"
+      handler_string = "'"+destination+"'"
       if device_command:
         handler_string += " device"
       
       raise command.CommandError("The received command could not be located in the "+handler_string+" command handler.",
-                                 {"invalid_command": valid_command.command})
+                                 {"command": valid_command.command, "destination": full_destination})
     
-    # Check user permissions and session requirements if required
     if not valid_command.kernel_mode:
       # Check the user's permissions
       user_has_permission = False
       for command_permission in user_permissions['permitted_commands']:
         if (command_permission['command'] == valid_command.command and 
-            command_permission['destination'] == valid_command.destination):
-          user_has_permission = True
+            command_permission['destination'] == destination):
+          if 'pipelines' in command_permission:
+            if pipeline is not None and pipeline in command_permission['pipelines']:
+              user_has_permission = True
+          else:
+            user_has_permission = True
       
       if not user_has_permission:
-        raise command.CommandError("You do not have permission to execute that command.",
-                                   {"restricted_command": valid_command.command})
-    
-      # TODO: Check the command's session requirements
-    
+        raise command.CommandError("You do not have permission to execute that command on that device.",
+                                   {"command": valid_command.command, "destination": full_destination})
+
+      # Check the command's session requirements
+      active_user_sessions = self.session_coordinator.load_user_sessions(valid_command.user_id)
+      valid_command.active_user_sessions = active_user_sessions
+      if not user_permissions['ignore_session_protections']:
+        # Load the command meta-data to see if it requires an active session
+        try:
+          command_metadata = getattr(command_handler, 'settings_'+valid_command.command)
+          require_session = command_metadata()['requires_active_session']
+        except AttributeError:
+          # Command metadata not specified, default to True for safety
+          require_session = True
+        
+        if require_session:
+          if device_command:
+            # Device command, make sure one of the user's active sessions uses the specified pipeline
+            session_requirements_met = False
+            for user_session in active_user_sessions:
+              if user_session.active_pipeline.id == pipeline:
+                session_requirements_met = True
+                break
+            
+            if not session_requirements_met:
+              raise command.CommandError("You must have a currently active session for a pipeline that contains the "+
+                                         "destination device to use that command.",
+                                         {"command": valid_command.command, "destination": full_destination})
+          else:
+            # System command, make sure the user has at least one active session
+            if len(active_user_sessions) <= 0:
+              raise command.CommandError("You must have an active session to use that command.",
+                                         {"command": valid_command.command, "destination": full_destination})
+
     # Execute the command in a new thread
     command_deferred = threads.deferToThread(getattr(command_handler, 'command_'+valid_command.command), valid_command)
     command_deferred.addCallback(self._command_complete, valid_command)
@@ -216,10 +281,10 @@ class CommandParser:
       error_results = dict(failure.value.error_parameters.items() + error_message.items())
     else:
       error_results = error_message
-    
+
     # Build the response dictionary
     error_response = failed_command.build_command_response(False, error_results)
-    
+
     # Log the error
     if failed_command.command:
       logging.error("A command ("+failed_command.command+") failed for the following reason: "+str(failure.value))

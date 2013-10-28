@@ -37,8 +37,8 @@ class PermissionManager:
     """ Returns the permissions structure for the indicated user.
     
     If the user does not have any permissions loaded, they will be downloaded/loaded in a thread and returned via a 
-    deferred. If the user does have permissions in the system, they will be fired immediately into the returned 
-    deferred (and get updated in the background if they are too old).
+    deferred. If the user does have cached permissions, they will be fired immediately into the returned deferred (and 
+    will get updated in the background if they are too old).
     
     @note The permissions returned from this function are a copy. That is, they don't reference the permission manager's
           main permission dictionary.
@@ -74,12 +74,12 @@ class PermissionManager:
     """ Removes all old permission settings.
     
     This method removes all permission settings entries older than the specified value. Once the permissions have been 
-    removed, calls to get_user_permissions will fail and the permissions will need to be re-downloaded.
+    removed, applicable calls to get_user_permissions will fail and the permissions will be re-downloaded.
     
-    @note The preferred way to update user permissions is to simply let get_user_permissions do it automatically. It 
-          will return the old cached user permissions while they're being updated. If purge_user_permissions is used 
-          instead, the deferred returned from get_user_permissions will take longer more often as the permissions are
-          being updated.
+    @note The preferred way to update user permissions is to simply let get_user_permissions do it automatically if 
+          needed and return the old cached user permissions while they're being updated. If this method is used instead,
+          the deferred returned from get_user_permissions will take longer more often as the permissions are being 
+          updated.
     
     @param age  Any permission entries older than age will be purged. The age is specified in seconds.
     """
@@ -301,6 +301,15 @@ class PermissionManager:
                   "type": "string",
                   "id": "destination",
                   "required": True
+                },
+                "pipelines": {
+                  "type": "array",
+                  "id": "pipelines",
+                  "required": False,
+                  "minitems": 1,
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }

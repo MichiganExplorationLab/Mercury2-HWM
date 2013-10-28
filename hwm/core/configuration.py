@@ -191,24 +191,34 @@ class Config:
           "type": "boolean",
           "default": False
         },
-        "network-command-port": {
+        "command-port": {
           "type": "integer",
           "minimum": 1,
-          "default": 8080
+          "default": 45500
+        },
+        "pipeline-data-port": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 45501
+        },
+        "pipeline-telemetry-port": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 45502
         },
         "mercury2-ui-location": {
           "type": "string",
           "required": True
         },
-        "ssl-private-key-location": {
+        "tls-private-key-location": {
           "type": "string",
           "default": self.config_directory + "ssl/mercury2_hwm-key.pem"
         },
-        "ssl-public-cert-location": {
+        "tls-public-cert-location": {
           "type": "string",
           "default": self.config_directory + "ssl/mercury2_hwm-cert.pem"
         },
-        "ssl-ca-cert-location": {
+        "tls-ca-cert-location": {
           "type": "string",
           "default": self.config_directory + "ssl/ca-cert.pem"
         },

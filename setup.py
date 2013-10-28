@@ -38,7 +38,8 @@ setup(
                       'pyOpenSSL>=0.13',
                       'doxypy>=0.4.2',
                       'jsonschema',
-                      'mock'],
+                      'mock',
+                      'txws'],
   
   # Specify patterns for data files to include (will be copied to a user directory during installation)
   data_files = [

@@ -66,11 +66,11 @@ class TestPermissionManager(unittest.TestCase):
     def user_permissions_callback(permission_settings):
       # Verify that the returned permissions are correct
       self.assertEqual(permission_settings['user_id'], '1')
-      self.assertEqual(len(permission_settings['permitted_commands']), 2) 
+      self.assertEqual(len(permission_settings['permitted_commands']), 3) 
       
       # Manually make sure the permissions were saved
       self.assertEqual(permission_manager.permissions['1']['username'], 'test_admin')
-      self.assertEqual(len(permission_manager.permissions['1']['permitted_commands']), 2) 
+      self.assertEqual(len(permission_manager.permissions['1']['permitted_commands']), 3) 
     
     # Force a file load
     update_deferred = permission_manager.get_user_permissions('1')

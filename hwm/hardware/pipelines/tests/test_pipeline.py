@@ -29,6 +29,7 @@ class TestPipeline(unittest.TestCase):
     self._reset_device_manager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
+    self.command_parser.pipeline_manager = MagicMock()
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -44,10 +45,25 @@ class TestPipeline(unittest.TestCase):
     self.device_manager = None
     self.command_parser = None
 
+  def test_loading_pipeline_device(self):
+    """ Tests that the pipeline can return references to its devices.
+    """
+
+    # Create a test pipeline to work with
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+
+    # Load a device
+    temp_device = test_pipeline.get_device("test_device4")
+    self.assertEqual(temp_device.id, "test_device4")
+
+    # Try loading a non-existent device
+    self.assertRaises(device_manager.DeviceNotFound, test_pipeline.get_device, "non-existent-device")
+
   def test_writing_pipeline_output(self):
     """ Checks that the Pipeline class can pass pipeline output to its currently registered session. The pipeline's 
-    output device will normally use Pipeline.write_pipeline_output() to pass its output to the pipeline (and in turn to
-    the end user).
+    registered output device will normally use Pipeline.write_output() to pass its output to the pipeline (and in turn 
+    to the session).
     """
 
     # Create a test pipeline to work with
@@ -59,16 +75,16 @@ class TestPipeline(unittest.TestCase):
     test_pipeline.register_session(test_session)
 
     # Write some output data to the pipeline and see if it was passed to the session
-    test_pipeline.write_pipeline_output("waffles")
-    test_session.write_to_output_stream.assert_called_once_with("waffles")
+    test_pipeline.write_output("waffles")
+    test_session.write_output.assert_called_once_with("waffles")
 
     # Unregister the session and try again (should have no effect)
     test_pipeline.current_session = None
-    test_pipeline.write_pipeline_output("waffles")
+    test_pipeline.write_output("waffles")
 
   def test_writing_telemetry_datum(self):
     """ This test verifies that the Pipeline class can correctly relay telemetry data to it's currently registered
-    session. Drivers use Pipeline.write_telemetry_datum() to send additional data (i.e. separate from the main pipeline
+    session. Drivers use Pipeline.write_telemetry() to send additional data (i.e. separate from the main pipeline
     datastream) and state to the Pipeline (and in turn to the Session).
     """
 
@@ -82,16 +98,19 @@ class TestPipeline(unittest.TestCase):
 
     # Write a telemetry datum point and make sure it was passed to the session
     test_timestamp = int(time.time())
-    test_pipeline.write_telemetry_datum("pipeline_test", "test_stream", test_timestamp, "waffles", test_header=True)
-    test_session.write_telemetry_datum.assert_called_once_with("pipeline_test", "test_stream", test_timestamp,
-                                                               "waffles", test_header=True)
+    test_pipeline.write_telemetry("pipeline_test", "test_stream", test_timestamp, "waffles", binary=True,
+                                  test_header=True)
+    test_session.write_telemetry.assert_called_once_with("pipeline_test", "test_stream", test_timestamp, "waffles",
+                                                         binary=True, test_header=True)
 
     # Unregister the session and try writing telemetry data (should have no effect)
     test_pipeline.current_session = None
-    test_pipeline.write_telemetry_datum("pipeline_test", "test_stream", test_timestamp, "waffles", test_header=True)
+    test_pipeline.write_telemetry("pipeline_test", "test_stream", test_timestamp, "waffles", test_header=True)
+    test_session.write_telemetry.assert_called_once_with("pipeline_test", "test_stream", test_timestamp, "waffles",
+                                                         binary=True, test_header=True)
 
   def test_writing_to_pipeline(self):
-    """ Verifies that upon receiving data (from the session), the pipeline correctly routes it to its input device.
+    """ Verifies that upon receiving data from the session, the pipeline correctly routes it to its input device.
     """
 
     # Create a test pipeline to work with
@@ -99,15 +118,17 @@ class TestPipeline(unittest.TestCase):
     test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
 
     # Mock the input device's write_to_device method
-    test_pipeline.input_device.write_to_device = MagicMock()
+    test_pipeline.input_device.write = MagicMock()
 
     # Write to the pipeline and make sure it made it to the driver
-    test_pipeline.write_to_pipeline("waffles")
-    test_pipeline.input_device.write_to_device.assert_called_once_with("waffles")
+    test_pipeline.write("waffles")
+    test_pipeline.input_device.write.assert_called_once_with("waffles")
 
     # Remove the input device and try writing to the pipeline again (call should have no effect)
+    old_input_device = test_pipeline.input_device
     test_pipeline.input_device = None
-    test_pipeline.write_to_pipeline("waffles")
+    test_pipeline.write("waffles")
+    old_input_device.write.assert_called_once_with("waffles")
 
   def test_service_activation_and_lookup(self):
     """ This tests that the service activation and lookup methods are working as expected. In order for a service to be 
@@ -333,13 +354,16 @@ class TestPipeline(unittest.TestCase):
     # Try re-locking the pipeline
     self.assertRaises(pipeline.PipelineInUse, test_pipeline.reserve_pipeline)
 
+    # Make sure the pipeline is active
+    self.assertTrue(test_pipeline.is_active)
+
     # Make sure the devices were correctly locked
     for temp_device in test_pipeline.devices:
       self.assertRaises(driver.DeviceInUse, test_pipeline.devices[temp_device].reserve_device)
 
     # Unlock the pipeline and make sure that all of its devices were freed
     test_pipeline.free_pipeline()
-    self.assertTrue(not test_pipeline.in_use)
+    self.assertTrue(not test_pipeline.is_active)
     for temp_device in test_pipeline.devices:
       test_pipeline.devices[temp_device].reserve_device()
 
@@ -358,6 +382,10 @@ class TestPipeline(unittest.TestCase):
 
     # Make sure the second pipeline can't be locked
     self.assertRaises(pipeline.PipelineInUse, test_pipeline_b.reserve_pipeline)
+
+    # Make sure the correct pipelines are active
+    self.assertTrue(test_pipeline_a.is_active)
+    self.assertTrue(not test_pipeline_b.is_active)
 
     # Make sure that the 'test_device3' device in pipeline b (which is not used by pipeline a) was rolled back correctly 
     # after the locking error occured

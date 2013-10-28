@@ -1,6 +1,7 @@
 # Import required modules
 from twisted.trial import unittest
 from hwm.core.configuration import *
+from mock import MagicMock
 from hwm.sessions import schedule, coordinator
 from hwm.hardware.pipelines import manager as pipeline_manager, pipeline
 from hwm.hardware.devices import manager as device_manager
@@ -27,6 +28,7 @@ class TestCoordinator(unittest.TestCase):
     self.device_manager = device_manager.DeviceManager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
+    self.command_parser.pipeline_manager = MagicMock()
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -80,7 +82,8 @@ class TestCoordinator(unittest.TestCase):
   def test_reservation_session_creation(self):
     """ This test verifies that the session coordinator can correctly create usage sessions from the reservation 
     schedule. It also tests that it correctly handles conflicting reservations. That is, reservations that concurrently
-    use the same pipeline or hardware devices.
+    use the same pipeline or hardware devices. Finally, it also tests that the session coordinator can return a list of
+    a given user's active sessions.
     """
     
     # Load in some valid configuration and set the defaults using validate_configuration()
@@ -102,6 +105,10 @@ class TestCoordinator(unittest.TestCase):
     
     # Define an inline callback to resume execution after the schedule has been loaded
     def continue_test(loaded_schedule):
+      # Try loading the user's reservations before they have been activated
+      active_sessions = session_coordinator.load_user_sessions(1)
+      self.assertTrue(len(active_sessions)==0)
+
       # Look for active reservations and create associated sessions
       session_coordinator._check_for_new_reservations()
       
@@ -129,6 +136,11 @@ class TestCoordinator(unittest.TestCase):
       
       # Attempt to reserve the pipeline that RES.2 or RES.3 is using (tests that it was correctly locked)
       self.assertRaises(pipeline.PipelineInUse, test_pipelines.pipelines['test_pipeline'].reserve_pipeline)
+
+      # Load test_admin's active sessions (either RES.2 or RES.3)
+      active_sessions = session_coordinator.load_user_sessions(1)
+      self.assertTrue(len(active_sessions)==1)
+      self.assertTrue(active_sessions[0].id=="RES.2" or active_sessions[0].id=="RES.3")
     
     # Update the schedule to load in the reservations
     schedule_update_deferred = test_schedule.update_schedule()

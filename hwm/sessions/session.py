@@ -39,18 +39,19 @@ class Session:
       self.setup_commands = reservation_configuration['setup_commands']
     else:
       self.setup_commands = None
-    self.active = False
+    self.data_protocols = []
+    self.telemetry_protocols = []
 
-    self.data_streams = []
-    self.telem_streams = []
+    # Private session attributes
+    self._active = False
 
-  def write_telemetry_datum(self, source_id, stream, timestamp, telemetry_datum, **extra_headers):
-    """ Writes the provided telemetry datum to the registered telemetry streams.
+  def write_telemetry(self, source_id, stream, timestamp, telemetry_datum, binary=False, **extra_headers):
+    """ Writes the provided telemetry datum to the registered telemetry protocols.
     
-    This method passes the provided telemetry datum and headers to all registered pipeline telemetry streams. It will be
-    called by this session's associated pipeline and facilitates the sending of pipeline telemetry (state, additional 
-    data streams, etc.) from the pipeline (and its devices) to the end user via the telemetry's streams 
-    write_telemetry_datum() method.
+    This method passes the provided telemetry datum and headers to all registered telemetry protocols. It will be called
+    by this session's associated pipeline and facilitates the sending of pipeline telemetry (state, additional data 
+    streams, etc.) from the pipeline (and its devices) to the pipeline user via the registered telemetry protocols 
+    write_telemetry() methods.
     
     @note Because the telemetry stream uses HTTP, it's actually more of a packet stream than a true data stream (like 
           the main pipeline stream). The Twisted protocol that sends the pipeline telemetry to the end user uses 
@@ -62,98 +63,108 @@ class Session:
     @param source_id        The ID of the device or pipeline that generated the telemetry datum.
     @param stream           A string identifying which of the device's telemetry streams the datum should be associated 
                             with.
-    @param timestamp        A unix timestamp signifying when the telemetry was assembled.
-    @param telemetry_datum  The actual telemetry datum. Can take many forms (e.g. a JSON string or binary webcam image).
+    @param timestamp        A unix timestamp specifying when the telemetry point was assembled.
+    @param telemetry_datum  The actual telemetry datum. Can take many forms (e.g. a dictionary or binary webcam image).
+    @param binary           Whether or not the telemetry payload consists of binary data. If set to true, the data will
+                            be encoded before being sent to the user.
     @param **extra_headers  A dictionary containing extra keyword arguments that should be included as additional
                             headers when sending the telemetry datum.
     """
 
     # Pass along the telementry datum
-    for telemetry_stream in self.telem_streams:
-      telemetry_stream.write_telemetry_datum(source_id, stream, timestamp, telemetry_datum, **extra_headers)
+    for telemetry_protocol in self.telemetry_protocols:
+      telemetry_protocol.write_telemetry(source_id, stream, timestamp, telemetry_datum, binary=binary, **extra_headers)
 
-  def write_to_output_stream(self, output_data):
-    """ Writes the provided data chunk to the registered data streams. 
+  def write_output(self, output_data):
+    """ Writes the provided data chunk to the registered data protocols. 
     
-    This method writes the provided chunk of data (pipeline output) to all registered data streams. This method will 
+    This method writes the provided chunk of data (pipeline output) to all registered data protocols. This method will 
     typically be called by the pipeline associated with this session and facilitates passing pipeline output from the 
     Pipeline class to the end user.
 
-    @note Whenever the pipeline generates any output data, this method will call the write_to_output_stream() method for
-          every data stream registered to this session. The data passed to this method will be of arbitrary size.
+    @note Whenever the pipeline generates any output data, this method will call the write_output() method for
+          every data protocol registered to this session. The data passed to this method will be of arbitrary size.
 
-    @param output_data  A data chunk of arbitrary size that is to be ouput to the registered data streams.
+    @param output_data  A chunk of pipeline output of arbitrary size.
     """
 
-    # Pass the data along to the registered data streams
-    for data_stream in self.data_streams:
-      data_stream.write_to_output_stream(output_data)
+    # Pass the data along to the registered data protocols
+    for data_protocol in self.data_protocols:
+      data_protocol.write_output(output_data)
  
-  def write_to_input_stream(self, input_data):
-    """ Writes the provided chunk of data to the pipeline input stream.
+  def write(self, input_data):
+    """ Writes the chunk of data to the pipeline.
 
-    This method writes the supplied chunk of data to the input stream of the pipeline associated with this session. This
-    is one step in the process of getting the pipeline input data from the end user to the pipeline's input device
-    (typically a radio).
+    This method writes the supplied chunk of data to the input stream of the pipeline associated with this session via 
+    its write() method. This is one step in the process of getting the pipeline input data from the end user to the 
+    pipeline's input device (typically a radio).
 
-    @note This method sends the provided data to the pipeline via its write_to_pipeline() method.
-    @note Even though sessions can register multiple data streams, only one data stream should write to this method at a
-          time. If this convention isn't followed, it could result in jumbled data being sent to the pipeline (due to
-          the nature of streams).
+    @note Even though sessions can register multiple data protocols, only one protocol should write to this method at a 
+          time. This convention is followed by the default PipelineData protocol, which will only write to the session
+          if that particular connection is allowed to do so.
     
     @param input_data  A data chunk of arbitrary size that is to be written to the pipeline's input stream. Normally,
                        this comes from a Twisted protocol instance linked to the end user.
     """
 
     # Pass the data along to the pipeline
-    self.active_pipeline.write_to_pipeline(input_data)
+    self.active_pipeline.write(input_data)
 
-  def register_data_stream(self, data_stream):
-    """ Registers the provided data stream with the session.
+  def register_data_protocol(self, data_protocol):
+    """ Registers the provided data protocol with the session.
 
-    This method is used to register the main pipeline data stream source/destination with the session. Typically, this 
-    data stream will consist of a Twisted Protocol class that routes the main pipeline data stream to and from the 
-    session user.
+    This method is used to register a pipeline data protocol with the session. The session uses its registered data
+    protocols to route the pipeline output and input streams to and from the end user.
 
-    @note Multiple data streams can be registered to the session. Any data that the pipeline generates will be routed to
-          all registered data streams. This allows for simultaneous connections to the same session. However, if
-          multiple data streams attempt to write to the session the data will be interlaced randomly (because of the
-          stream based nature of the system).
+    @note Multiple data protocols can be registered to the session. Any data that the pipeline generates will be routed
+          to all registered data protocols. This allows for simultaneous connections to the same session. However, if
+          multiple data protocols attempt to write to the session at the same time the data may be interlaced randomly 
+          (because of the stream based nature of the system).
     
-    @throw Throws StreamAlreadyRegistered in the event that a data stream is registered twice.
+    @throw Throws ProtocolAlreadyRegistered in the event that the data protocol has already been registered.
     
-    @param data_stream  An instance of a class that can generate and listen for pipeline data. Typically, this will be
-                        a Twisted protocol.
+    @param data_protocol  A Twisted Protocol class used to relay the pipeline's data stream to and from the session 
+                          user.
     """
 
-    # Check if the data stream is already registered
-    if data_stream in self.data_streams:
-      raise StreamAlreadyRegistered("The specified pipeline data stream has already been registered with the session.")
+    # Check if the protocol is already registered
+    if data_protocol in self.data_protocols:
+      raise ProtocolAlreadyRegistered("The specified data protocol has already been registered with the session.")
 
-    self.data_streams.append(data_stream)
+    self.data_protocols.append(data_protocol)
   
-  def register_telemetry_stream(self, telem_stream):
-    """ Registers the provided telemetry stream with the session.
+  def register_telemetry_protocol(self, telemetry_protocol):
+    """ Registers the provided telemetry protocol with the session.
 
-    This method registers the supplied telemetry stream with the session. The session will use this reference to pass 
+    This method registers the supplied telemetry protocol with the session. The session will use this reference to pass 
     extra data (i.e. not the main pipeline output) from the pipeline to the end user. This data will consist of things 
     like extra data streams (e.g. a webcam feed) and live pipeline device state. This stream will be directed, with the 
     data flowing from the pipeline to the end user (through this session).
 
-    @note This method allows multiple telemetry streams to be registered with the session. Whenever the pipeline
-          generates any telemetry, it will automatically be sent to each registered telemetry stream.
+    @note This method allows multiple telemetry protocols to be registered with the session. Whenever the pipeline
+          generates any telemetry, it will automatically be sent to each registered telemetry protocol.
 
-    @throw Raises StreamAlreadyRegistered in the event that a telemetry stream is registered twice.
+    @throw Raises ProtocolAlreadyRegistered in the event that the telemetry protocol has already been registered.
 
-    @param telem_stream  An instance of a class that can receive pipeline telemetry data. Typically, this will be a 
-                         Twisted protocol.
+    @param telem_protocol  A Twisted Protocol class used to relay the pipeline's telemetry stream to the pipeline user.
     """
 
-    # Check if the telemetry stream is already registered
-    if telem_stream in self.telem_streams:
-      raise StreamAlreadyRegistered("The specified telemetry stream has already been registered with the session.")
+    # Check if the protocol is already registered
+    if telemetry_protocol in self.telemetry_protocols:
+      raise ProtocolAlreadyRegistered("The specified telemetry protocol has already been registered with the session.")
 
-    self.telem_streams.append(telem_stream)
+    self.telemetry_protocols.append(telemetry_protocol)
+
+  def get_pipeline_telemetry_producer(self):
+    """ Returns the telemetry producer for the session's pipeline.
+
+    This method returns the PipelineTelemetryProducer belonging to the session's pipeline. This is typically used by the
+    telemetry protocol to regulate the production of pipeline telemetry. 
+
+    @return Returns the PipelineTelemetryProducer instance belonging to the session's pipeline.
+    """
+
+    return self.active_pipeline.telemetry_producer
 
   def start_session(self):
     """ Sets up the session for use.
@@ -162,6 +173,7 @@ class Session:
     - Reserving the pipeline hardware
     - Executing the pipeline setup commands
     - Executing the session setup commands
+    - Activating the session
     
     @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline or
             executing the pipeline setup commands. This will cause the session coordinator to log the error and end the 
@@ -188,9 +200,22 @@ class Session:
     # Execute the pipeline setup commands
     pipeline_setup_deferred = self.active_pipeline.run_setup_commands()
     pipeline_setup_deferred.addCallback(self._run_setup_commands)
+    pipeline_setup_deferred.addCallback(self._activate_session)
     pipeline_setup_deferred.addErrback(self._session_setup_error)
     
     return pipeline_setup_deferred
+
+  @property
+  def is_active(self):
+    """ Indicates if the Session is active.
+
+    This property checks if the session is currently active. That is, if it has already completed its setup process and 
+    is ready for user interaction.
+
+    @return Returns True if the Session is currently active and False otherwise.
+    """
+
+    return self._active
   
   def _run_setup_commands(self, pipeline_setup_commands_results):
     """ Runs the session setup commands.
@@ -203,6 +228,8 @@ class Session:
     @note Before running the session setup commands, this method also registers itself with the pipeline. This must
           happen after the pipeline setup commands have been executed (this callback is automatically called after that 
           occurs).
+    @note Session setup command failures will never trigger the errback chain because they are often recoverable with 
+          additional input from the user, unlike pipeline setup commands. 
     
     @param pipeline_setup_commands_results  An array containing the results of the pipeline setup commands. May be None
                                             if there were no pipeline setup commands.
@@ -226,6 +253,20 @@ class Session:
     else:
       # No session setup commands to run
       return defer.succeed(None)
+
+  def _activate_session(self, setup_command_results):
+    """ Marks the session as active.
+
+    This callback marks the session as active after its setup commands have been executed.
+
+    @param setup_command_results  An array containing the results of the Session setup commands.
+    @return Passes along the unmodified setup command results originally passed to this callback.
+    """
+
+    # Activate the session
+    self._active = True
+
+    return setup_command_results
   
   def _session_setup_error(self, failure):
     """ Cleans up after session-fatal errors and passes the failure along.
@@ -259,5 +300,5 @@ class Session:
 # Define session related exceptions
 class SessionError(Exception):
   pass
-class StreamAlreadyRegistered(SessionError):
+class ProtocolAlreadyRegistered(SessionError):
   pass

@@ -19,9 +19,9 @@ def build_metadata_dict(command_parameters, command_id, command_handler_name, re
   @throws May throw InvalidCommandParameters in the event that the supplied parameter dictionary isn't valid.
   @throws May throw InvalidCommandAddress if neither command_handler_name or device_id are set.
   
-  @param command_parameters       An array of dictionaries containing the parameters that the command accepts along with any
-                                  basic restrictions on the parameter value. Currently, the following types and restrictions
-                                  are supported:
+  @param command_parameters       An array of dictionaries containing the parameters that the command accepts along with
+                                  any basic restrictions on the parameter value. Currently, the following types and 
+                                  restrictions are supported:
                                   
                                   - type: string
                                       + minlength    - The min length of the string (integer)
@@ -36,7 +36,8 @@ def build_metadata_dict(command_parameters, command_id, command_handler_name, re
                                       + options      - An array containing valid [title, value] pairs for the argument 
                                                        (required for select, array)
                                   - Any Type
-                                      + required     - Whether or not the argument is required to submit the command (boolean)
+                                      + required     - Whether or not the argument is required to submit the command 
+                                                       (boolean)
                                       + description  - A description of the argument (string)
                                       + title        - A short title for the argument (required, string)
                                   
