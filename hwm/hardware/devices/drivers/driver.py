@@ -129,6 +129,26 @@ class Driver(object):
 
     raise StateNotDefined("The '"+self.id+"' device did not specify any device state.")
 
+  def prepare_for_session(self):
+    """ Allows the driver to prepare for new sessions.
+
+    This method gives the driver a chance to perform any setup that it may need to make before a new session starts that
+    uses a pipeline that contains this device. For example, it could use this callback to load its required services 
+    from its active pipeline and set up any services that it may offer.
+    
+    @throw Any exceptions thrown in this method will cause a session-fatal error. The error message will be reported 
+           to the pipeline user via the user interface.
+
+    @note This method is called during the session setup process because the services offered by the device's active 
+          pipeline may change with each session. It also gives the driver a chance to start threads, etc. for its own 
+          services. It is called after the pipeline sets its active services for the new session but before the pipeline
+          and session setup commands are executed.
+    @note The device shouldn't register its services with its pipelines during this step, that occurs once during the
+          pipeline/driver initialization process (via the self._register_services() callback).
+    """
+
+    return
+
   def register_pipeline(self, pipeline):
     """ Associates a pipeline with the device.
 

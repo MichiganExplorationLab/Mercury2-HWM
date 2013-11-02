@@ -3,7 +3,7 @@ import logging, time
 from twisted.trial import unittest
 from mock import MagicMock
 from hwm.core.configuration import *
-from hwm.hardware.pipelines import pipeline
+from hwm.hardware.pipelines import pipeline, manager as pipeline_manager
 from hwm.hardware.devices import manager as device_manager
 from hwm.hardware.devices.drivers import driver
 from hwm.command import parser, command
@@ -29,7 +29,8 @@ class TestPipeline(unittest.TestCase):
     self._reset_device_manager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
-    self.command_parser.pipeline_manager = MagicMock()
+    self.pipeline_manager = MagicMock()
+    self.command_parser.pipeline_manager = self.pipeline_manager
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -44,6 +45,7 @@ class TestPipeline(unittest.TestCase):
     # Reset the other resource references
     self.device_manager = None
     self.command_parser = None
+    self.pipeline_manager = None
 
   def test_loading_pipeline_device(self):
     """ Tests that the pipeline can return references to its devices.
@@ -129,6 +131,48 @@ class TestPipeline(unittest.TestCase):
     test_pipeline.input_device = None
     test_pipeline.write("waffles")
     old_input_device.write.assert_called_once_with("waffles")
+
+  def test_prepare_for_session_error(self):
+    """ Tests that the prepare_for_session() method returns a failed deferred if one of its devices throws an 
+    exception.
+    """
+
+    # Create a mock method that will raise an error
+    def mock_prepare_for_session():
+      raise TestPipelineError
+
+    # Create a test pipeline to work with and replace its device's prepare_for_session() methods with mock methods
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    test_pipeline.devices["test_device4"].prepare_for_session = mock_prepare_for_session
+
+    # Define a callback to test the error
+    def check_results(setup_error):
+      self.assertTrue(isinstance(setup_error.value, TestPipelineError))
+
+    # Call the pipeline's prepare_for_session() method and make sure it calls it on all of its devices
+    test_deferred = test_pipeline.prepare_for_session()
+    test_deferred.addErrback(check_results)
+
+    return test_deferred
+  
+  def test_prepare_for_session(self):
+    """ Verifies that the pipeline calls the prepare_for_session() method on each of its devices when asked, which is 
+    used to give drivers an opportunity to load and setup services before a new session begins.
+    """
+
+    # Create a test pipeline to work with and replace its device's prepare_for_session() methods with mock methods
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    for device_id in test_pipeline.devices:
+      test_pipeline.devices[device_id].prepare_for_session = MagicMock()
+
+    # Call the pipeline's prepare_for_session() method and make sure it calls it on all of its devices
+    test_deferred = test_pipeline.prepare_for_session()
+    for device_id in test_pipeline.devices:
+      test_pipeline.devices[device_id].prepare_for_session.assert_called_once_with()
+
+    return test_deferred
 
   def test_service_activation_and_lookup(self):
     """ This tests that the service activation and lookup methods are working as expected. In order for a service to be 
@@ -265,20 +309,6 @@ class TestPipeline(unittest.TestCase):
                     self.device_manager,
                     self.command_parser)
 
-  def test_setup_commands_errors(self):
-    """ Tests that the Pipeline class correctly rejects pipeline configurations that contain setup command errors.
-    """
-
-    # Load a pipeline configuration that contains a pipeline setup command that uses a device that the pipeline doesn't
-    # have access to
-    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid_command_destination.yml')
-    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
-
-    # Run the setup commands
-    setup_commands_deferred = test_pipeline.run_setup_commands()
-
-    return self.assertFailure(setup_commands_deferred, pipeline.PipelineConfigInvalid)
-
   def test_setup_commands_none_specified(self):
     """ Tests that the Pipeline class behaves correctly when it doesn't have any configured setup commands.
     """
@@ -292,8 +322,27 @@ class TestPipeline(unittest.TestCase):
       self.assertEqual(setup_command_results, None)
 
     # Try to run the setup commands
-    setup_commands_deferred = test_pipeline.run_setup_commands()
+    setup_commands_deferred = test_pipeline.run_setup_commands(True)
     setup_commands_deferred.addCallback(check_results)
+
+    return setup_commands_deferred
+
+  def test_setup_commands_failed_device_command(self):
+    """ Checks that the Pipeline class correctly responds to failed pipeline setup device commands.
+    """
+
+    # Load a pipeline configuration that contains an invalid setup command (which will generate an error when executed)
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[3], self.device_manager, self.command_parser)
+
+    # Define a callback to check the results of the setup command execution
+    def check_results(setup_command_failure):
+      # Make sure that returned error is correct
+      self.assertTrue(isinstance(setup_command_failure.value.subFailure.value, parser.CommandFailed))
+
+    # Run the setup commands
+    setup_commands_deferred = test_pipeline.run_setup_commands(True)
+    setup_commands_deferred.addErrback(check_results)
 
     return setup_commands_deferred
 
@@ -301,23 +350,24 @@ class TestPipeline(unittest.TestCase):
     """ Checks that the Pipeline class can correctly run valid setup commands.
     """
 
-    # Load a pipeline configuration that contains some valid setup commands
+    # Load a pipeline configuration that contains some device commands and setup the pipeline manager
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
-    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    self.pipeline_manager = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
+    test_pipeline = self.pipeline_manager.get_pipeline("test_pipeline")
 
     # Define a callback to check the results of the setup command execution
     def check_results(setup_command_results):
       # Make sure that the correct command response is present for both pipeline setup commands
       self.assertTrue('timestamp' in setup_command_results[0]['response']['result'])
-      self.assertTrue('timestamp' in setup_command_results[1]['response']['result'])
+      self.assertTrue('device_timestamp' in setup_command_results[1]['response']['result'])
 
     # Run the setup commands
-    setup_commands_deferred = test_pipeline.run_setup_commands()
+    setup_commands_deferred = test_pipeline.run_setup_commands(True)
     setup_commands_deferred.addCallback(check_results)
 
     return setup_commands_deferred
 
-  def test_setup_commands_failed(self):
+  def test_setup_commands_failed_system_command(self):
     """ Checks that the Pipeline class correctly responds to failed pipeline setup commands.
     """
 
@@ -331,7 +381,7 @@ class TestPipeline(unittest.TestCase):
       self.assertTrue(isinstance(setup_command_failure.value.subFailure.value, parser.CommandFailed))
 
     # Run the setup commands
-    setup_commands_deferred = test_pipeline.run_setup_commands()
+    setup_commands_deferred = test_pipeline.run_setup_commands(True)
     setup_commands_deferred.addErrback(check_results)
 
     return setup_commands_deferred
@@ -431,3 +481,6 @@ class TestPipeline(unittest.TestCase):
     # Reset the recorded configuration entries
     self.config.options = {}
     self.config.user_options = {}
+
+class TestPipelineError(Exception):
+  pass

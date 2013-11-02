@@ -17,6 +17,11 @@
       {
         "command": "requires_session",
         "destination": "test"
+      },
+      {
+        "command": "requires_session",
+        "destination": "test_device",
+        "pipelines": ["test_pipeline"]
       }
     ]
   },

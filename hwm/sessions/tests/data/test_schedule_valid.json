@@ -42,6 +42,14 @@
         {
           "command": "nonexistent_command",
           "destination": "system"
+        },
+        {
+          "command": "requires_session",
+          "destination": "test_pipeline.test_device"
+        },
+        {
+          "command": "device_time_restricted",
+          "destination": "test_pipeline.test_device"
         }
       ]
     },

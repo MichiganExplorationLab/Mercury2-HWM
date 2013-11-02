@@ -2,6 +2,7 @@
 """
 
 # Import required modules
+import time
 from hwm.command.metadata import *
 from hwm.command import command
 from hwm.command.handlers import handler
@@ -20,6 +21,30 @@ class TestCommandHandler(handler.CommandHandler):
     
     # raise the exception.
     raise command.CommandError("Command Error Test.", {"submitted_command": active_command.command})
+
+  def command_device_time_restricted(self, active_command):
+    """ A command that no users should have permission to execute.
+    
+    @param active_command  The command object associated with the executing command.
+    """
+    
+    return {'timestamp': int(time.time())}
+
+  def command_device_time(self, active_command):
+    """ Returns the current UNIX timestamp.
+
+    @param active_command  The command object associated with the executing command.
+    """
+
+    return {'device_timestamp': int(time.time())}
+
+  def settings_device_time(self):
+    """ Returns the metadata for the device_time command.
+    
+    @return Returns a standard dictionary containing meta-data about the command.
+    """
+
+    return build_metadata_dict([], 'device_time', self.name, requires_active_session = False)
 
   def command_requires_session(self, active_command):
     """ This test command requires that the user have an active session.

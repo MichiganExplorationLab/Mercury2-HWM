@@ -8,6 +8,7 @@ This module contains a class that is used to fetch, maintain, and provide access
 import logging, json, jsonschema, threading, urllib2, time
 from hwm.core.configuration import Configuration
 from twisted.internet import threads
+from hwm.command import command
 
 class ScheduleManager:
   """ Represents a reservation access schedule.
@@ -119,25 +120,7 @@ class ScheduleManager:
               "setup_commands": {
                 "type": "array",
                 "required": False,
-                "items": {
-                  "type": "object",
-                  "additionalProperties": False,
-                  "properties": {
-                    "command": {
-                      "type": "string",
-                      "required": True
-                    },
-                    "destination": {
-                      "type": "string",
-                      "required": True
-                    },
-                    "parameters": {
-                      "type": "object",
-                      "additionalProperties": True,
-                      "required": False
-                    }
-                  }
-                }
+                "items": command.schema
               },
               "active_services": {
                 "type": "object",
