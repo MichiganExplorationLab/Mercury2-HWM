@@ -6,6 +6,32 @@ Contains a class used to store the state of submitted ground station commands.
 import time, json, jsonschema
 from twisted.internet import defer 
 
+# Define the command schema
+schema = {
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "required": True,
+  "additionalProperties": False,
+  "properties": {
+    "command": {
+      "type": "string",
+      "id": "command",
+      "required": True
+    },
+    "destination": {
+      "type": "string",
+      "id": "destination",
+      "required": True,
+      "pattern": "^(\w+\.\w+)|(\w+)$"
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": True,
+      "required": False
+    }
+  }
+}
+
 class Command:
   """ Used to represent user commands.
   
@@ -77,34 +103,8 @@ class Command:
     else:
       self.command_dict = self.command_raw
     
-    # Define the command schema
-    command_schema = {
-      "type": "object",
-      "$schema": "http://json-schema.org/draft-03/schema",
-      "required": True,
-      "additionalProperties": False,
-      "properties": {
-        "command": {
-          "type": "string",
-          "id": "command",
-          "required": True
-        },
-        "destination": {
-          "type": "string",
-          "id": "destination",
-          "required": True,
-          "pattern": "^(\w+\.\w+)|(\w+)$"
-        },
-        "parameters": {
-          "type": "object",
-          "additionalProperties": True,
-          "required": False
-        }
-      }
-    }
-    
     # Validate the command schema
-    command_validator = jsonschema.Draft3Validator(command_schema)
+    command_validator = jsonschema.Draft3Validator(schema)
     try:
       command_validator.validate(self.command_dict)
       self.valid = True

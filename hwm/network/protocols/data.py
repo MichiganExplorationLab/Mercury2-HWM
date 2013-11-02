@@ -58,7 +58,7 @@ class PipelineData(Protocol):
     @param data  A chunk of data of indeterminate size that is to be passed to the session.
     """
 
-    # Make sure the connection is allowed to write to the session
+    # Make sure the session has been set
     if self.session is not None:
       self.session.write(data)
 

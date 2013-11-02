@@ -5,7 +5,7 @@ from twisted.trial import unittest
 from mock import MagicMock
 from hwm.sessions import schedule, session
 from hwm.core.configuration import *
-from hwm.hardware.pipelines import pipeline
+from hwm.hardware.pipelines import pipeline, manager as pipeline_manager
 from hwm.hardware.devices import manager as device_manager
 from hwm.hardware.devices.drivers import driver
 from hwm.command import parser, command
@@ -33,7 +33,8 @@ class TestSession(unittest.TestCase):
     self.device_manager = device_manager.DeviceManager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
-    self.command_parser.pipeline_manager = MagicMock()
+    self.pipeline_manager = MagicMock()
+    self.command_parser.pipeline_manager = self.pipeline_manager
     self.session_coordinator = MockSessionCoordinator(self.command_parser)
     
     # Disable logging for most events
@@ -247,12 +248,22 @@ class TestSession(unittest.TestCase):
 
     return schedule_update_deferred
 
-  def test_session_startup_pipeline_setup_errors(self):
-    """ Tests that the Session class correctly handles fatal pipeline setup errors when starting a new session.
+  def test_session_startup_pipeline_setup_command_errors(self):
+    """ Tests that the Session class correctly handles fatal pipeline setup command errors when starting a new session.
     """
 
     # First create a pipeline that contains invalid pipeline setup commands (to force an error)
     test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[2], self.device_manager, self.command_parser)
+
+    # Create the expected mock services
+    test_tracker_service = MagicMock()
+    test_tracker_service.id = "sgp4"
+    test_tracker_service.type = "tracker"
+    test_pipeline.register_service(test_tracker_service)
+    test_logger_service = MagicMock()
+    test_logger_service.id = "basic"
+    test_logger_service.type = "logger"
+    test_pipeline.register_service(test_logger_service)
 
     # Define a callback to check the results of the session start procedure
     def check_results(session_start_failure, test_session):
@@ -288,16 +299,59 @@ class TestSession(unittest.TestCase):
 
     return schedule_update_deferred
 
-  def test_session_startup_no_session_setup_commands(self):
-    """ Tests that the Session class can correctly start a session that doesn't specify any setup commands.
+  def test_session_startup_error_during_device_session_preparation(self):
+    """ Verifies that the session class can correctly handle errors that may occur during device prepare_for_session()
+    method calls; such errors are supposed to be fatal to the session.
     """
 
-    # First create a pipeline to run the session on
+    # Create a mock method that will raise an error
+    def mock_prepare_for_session():
+      raise TestSessionError
+
+    # First create a pipeline to run the session on and replace some of its device's methods for testing
     test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    test_pipeline.devices["test_device4"].prepare_for_session = mock_prepare_for_session
+
+    # Define an errback to check the results of the session start procedure
+    def check_results(session_start_failure):
+      self.assertTrue(isinstance(session_start_failure.value, TestSessionError))
+
+    # Define a callback to continue the test after the schedule has been loaded
+    def continue_test(reservation_schedule):
+      # Find the reservation that we want to test with
+      test_reservation_config = self._load_reservation_config(reservation_schedule, 'RES.3')
+
+      # Create a new session
+      test_session = session.Session(test_reservation_config, test_pipeline, self.command_parser)
+
+      # Start the session
+      session_start_deferred = test_session.start_session()
+      session_start_deferred.addErrback(check_results)
+
+      return session_start_deferred
+
+    # Now load up a test schedule to work with
+    schedule_update_deferred = self._load_test_schedule()
+    schedule_update_deferred.addCallback(continue_test)
+
+    return schedule_update_deferred
+
+  def test_session_startup_no_session_setup_commands(self):
+    """ Tests that the Session class can correctly start a session that doesn't specify any session setup commands.
+    """
+
+    # First create a pipeline to run the session on and replace some of its device's methods for testing
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    for device_id in test_pipeline.devices:
+      test_pipeline.devices[device_id].prepare_for_session = MagicMock()
 
     # Define a callback to check the results of the session start procedure
     def check_results(session_start_results, test_session):
       self.assertEqual(session_start_results, None)
+
+      # Verify that the prepare_for_session() method was called on each of the pipeline's devices
+      for device_id in test_pipeline.devices:
+        test_pipeline.devices[device_id].prepare_for_session.assert_called_once_with()
 
       # Make sure the session is active
       self.assertTrue(test_session.is_active)
@@ -325,12 +379,15 @@ class TestSession(unittest.TestCase):
   def test_session_startup_setup_commands_mixed_success(self):
     """ Tests that the Session class can correctly start a session based on a reservation that specifies some valid, and
     invalid, session setup commands. Because session setup command errors are considered non-fatal, invalid commands 
-    should still leave the session in a running state. In addition, this test also verifies that the session correctly
-    registers itself with its pipeline (which occurs right before the session setup commands are executed).
+    should still leave the session in a running state. This test also verifies that the session: 
+    * Correctly registers itself with its pipeline (which occurs right before the session setup commands are executed)
+    * Successfully executes a valid device command that requires a session for the test pipeline.
+    * Fails to execute a device command that specifies a device the user doesn't have permission to execute.
     """
 
-    # First create a pipeline to run the session on
-    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    # Setup the pipeline manager and load the test pipeline
+    self.pipeline_manager = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
+    test_pipeline = self.pipeline_manager.get_pipeline("test_pipeline")
 
     # Define a callback to check the results of the session start procedure
     def check_results(session_start_results, test_session):
@@ -344,6 +401,14 @@ class TestSession(unittest.TestCase):
       # Make sure that the second command failed as expected
       self.assertTrue(not session_start_results[1][0])
       self.assertTrue(isinstance(session_start_results[1][1].value, parser.CommandFailed))
+
+      # Make sure that the third command (a valid device command) executed correctly
+      self.assertTrue(session_start_results[2][0])
+      self.assertTrue('some_results' in session_start_results[2][1]['response']['result'])
+
+      # Make sure that the fourth command (a device command that the user doesn't have permission for) didn't execute
+      self.assertTrue(not session_start_results[3][0])
+      self.assertTrue(isinstance(session_start_results[3][1].value, parser.CommandFailed))
 
       # Make sure the session is active
       self.assertTrue(test_session.is_active)
@@ -399,3 +464,6 @@ class TestSession(unittest.TestCase):
     # Reset the recorded configuration entries
     self.config.options = {}
     self.config.user_options = {}
+
+class TestSessionError(Exception):
+  pass

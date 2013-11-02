@@ -16,8 +16,8 @@ pipelines:
         destination: "system"
         parameters:
           command_argument: False
-      - command: "station_time"
-        destination: "system"
+      - command: "device_time"
+        destination: "test_pipeline.test_device"
   - id: "test_pipeline2"
     mode: "receive"
     description: "This pipeline doesn't contain any setup commands. It also uses a device used by test_pipeline."
@@ -27,7 +27,7 @@ pipelines:
       - device_id: "test_device2"
         pipeline_input: true
   - id: "test_pipeline3"
-    description: "This pipeline contains setup commands, but one of them will generate an error (unrecognized command)."
+    description: "This pipeline contains setup commands, but one of them will generate an error (unrecognized system command)."
     mode: "transceive"
     hardware:
       - device_id: "test_device"
@@ -37,3 +37,14 @@ pipelines:
         destination: "system"
       - command: "nonexistent_command"
         destination: "system"
+  - id: "test_pipeline4"
+    description: "This pipeline contains setup commands, but one of them will generate an error (unrecognized device command)."
+    mode: "transceive"
+    hardware:
+      - device_id: "test_device"
+        pipeline_output: true
+    setup_commands:
+      - command: "station_time"
+        destination: "system"
+      - command: "nonexistent_command"
+        destination: "test_pipeline4.test_device"

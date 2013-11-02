@@ -170,7 +170,7 @@ class Pipeline:
     """ Registers the provided session with this pipeline.
 
     This method registers the session with the pipeline for the purpose of sending data such as the main pipeline output
-    and pipeline telemetry to the session (and to the data/telemetry streams in turn). It also calls a method that 
+    and pipeline telemetry to the session (and to the data/telemetry protocols in turn). It also calls a method that 
     enables the session's active services.
 
     @note Only one session can be registered to the pipeline at a time. This is because pipelines can only be used by a 
@@ -212,16 +212,44 @@ class Pipeline:
 
     return self.devices[device_id]
 
-  def run_setup_commands(self):
+  def prepare_for_session(self):
+    """ Prepares the Pipeline and its devices for a new session.
+    
+    This method sets up the pipeline and its devices for a new session by calling an overridable method on each device
+    which they can use to locate their required services, setup any services that they may offer, and take any other 
+    steps required to prepare the device before the user can take control of the session.
+    
+    @note The pipeline's active services for the new session must have been set up buy this point using
+          Pipeline._set_active_services() so that devices will be able to locate any services that they may need.
+    @note This step must occur before any pipeline and session setup commands are run so that any devices that the setup 
+          commands may be addressed to will be completely setup and ready to receive commands.
+
+    @return If successful, this will return a deferred pre-fired with "True." If any of the device setup methods throw
+            an exception, it will trigger the errback chain on the return deferred.
+    """
+
+    # Call the setup method on each of the pipeline's devices
+    for device_id in self.devices:
+      try:
+        self.devices[device_id].prepare_for_session()
+      except Exception as e:
+        # Session fatal error, return a failed defered
+        return defer.fail(e)
+
+    return defer.succeed(True)
+
+  def run_setup_commands(self, session_preparation_results):
     """ Runs the pipeline setup commands.
     
     This method runs the pipeline setup commands, which are responsible for putting the pipeline in its intended state
     before use by a session.
     
+    @param session_preparation_results  The results of the prepare_for_session() call, should always be True (otherwise
+                                        the errback chain would have triggered).
     @return If successful, this method will return a DeferredList containing the results of the pipeline setup commands.
-            If any of the commands fail additional validations (destination restrictions, etc.), a pre-fired failed
-            deferred will be returned. Finally, if this pipeline doesn't have any setup commands None will be returned
-            via a pre-fired successful deferred.
+            If any of the commands fail additional validations by the command parser, a pre-fired failed deferred will 
+            be returned. Finally, if this pipeline doesn't have any setup commands None will be returned via a pre-fired
+            successful deferred.
     """
 
     running_setup_commands = []
@@ -229,13 +257,6 @@ class Pipeline:
     # Run the pipeline setup commands 
     if self.setup_commands is not None:
       for temp_command in self.setup_commands:
-        # First, make sure the command belongs to a system command handler or to a device used by this pipeline
-        if (temp_command['destination'] not in self.command_parser.system_command_handlers() and
-            temp_command['destination'] not in self.devices):
-          return defer.fail(PipelineConfigInvalid("The '"+self.id+"' pipeline configuration contained a setup command "+
-                                                  "'"+temp_command['command']+"' with a destination that the pipeline "+
-                                                  "does not have access to: "+temp_command['destination']))
-        
         # Execute the command and add it to the list
         temp_command_deferred = self.command_parser.parse_command(temp_command, kernel_mode = True)
         running_setup_commands.append(temp_command_deferred)

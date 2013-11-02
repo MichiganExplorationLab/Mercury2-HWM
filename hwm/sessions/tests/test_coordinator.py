@@ -93,6 +93,16 @@ class TestCoordinator(unittest.TestCase):
     
     # Setup the pipeline manager
     test_pipelines = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
+
+    # Create the expected mock services
+    test_tracker_service = MagicMock()
+    test_tracker_service.id = "sgp4"
+    test_tracker_service.type = "tracker"
+    test_pipelines.pipelines['test_pipeline3'].register_service(test_tracker_service)
+    test_logger_service = MagicMock()
+    test_logger_service.id = "basic"
+    test_logger_service.type = "logger"
+    test_pipelines.pipelines['test_pipeline3'].register_service(test_logger_service)
     
     # Setup the schedule manager
     test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')

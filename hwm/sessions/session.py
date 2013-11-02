@@ -171,15 +171,16 @@ class Session:
     
     This method sets up a new session by:
     - Reserving the pipeline hardware
+    - Registering the session with its pipeline
     - Executing the pipeline setup commands
     - Executing the session setup commands
     - Activating the session
     
-    @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline or
-            executing the pipeline setup commands. This will cause the session coordinator to log the error and end the 
-            session. Session setup command errors don't generate session-fatal errors and are simply noted by the 
-            session coordinator. This is done because these errors will often be recoverable with additional input from 
-            the session user.
+    @throws May fire the errback callback chain on the returned deferred if there is a problem reserving the pipeline,
+            registering the session, or executing the pipeline setup commands. This will cause the session coordinator 
+            to log the error and end the session. Session setup command errors don't generate session-fatal errors and 
+            are simply noted by the session coordinator. This is done because these errors will often be recoverable 
+            with additional input from the session user.
     
     @note All of the pipeline setup commands will always be executed before any of the session setup commands are.
     @note If a session-fatal error occurs, the self._session_setup_error callback will automatically clean up the 
@@ -197,8 +198,12 @@ class Session:
       return defer.fail(pipeline.PipelineInUse("The pipeline requested for reservation '"+self.id+"' could not be "+
                                                "locked: "+self.active_pipeline.id))
     
+    # Register the session with its pipeline
+    self.active_pipeline.register_session(self)
+
     # Execute the pipeline setup commands
-    pipeline_setup_deferred = self.active_pipeline.run_setup_commands()
+    pipeline_setup_deferred = self.active_pipeline.prepare_for_session()
+    pipeline_setup_deferred.addCallback(self.active_pipeline.run_setup_commands)
     pipeline_setup_deferred.addCallback(self._run_setup_commands)
     pipeline_setup_deferred.addCallback(self._activate_session)
     pipeline_setup_deferred.addErrback(self._session_setup_error)
@@ -225,9 +230,6 @@ class Session:
     this session's associated reservation. For example, setup commands can be used by the pipeline user to set the 
     initial radio frequency.
 
-    @note Before running the session setup commands, this method also registers itself with the pipeline. This must
-          happen after the pipeline setup commands have been executed (this callback is automatically called after that 
-          occurs).
     @note Session setup command failures will never trigger the errback chain because they are often recoverable with 
           additional input from the user, unlike pipeline setup commands. 
     
@@ -238,9 +240,6 @@ class Session:
     """
     
     running_setup_commands = []
-
-    # Register the session with its pipeline
-    self.active_pipeline.register_session(self)
 
     # Run the session setup commands
     if self.setup_commands is not None:

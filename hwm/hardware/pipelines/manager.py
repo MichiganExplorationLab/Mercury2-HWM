@@ -10,6 +10,7 @@ import logging, jsonschema
 from hwm.core import configuration
 from hwm.hardware.pipelines import pipeline
 from hwm.hardware.devices import manager as device_manager
+from hwm.command import command
 
 class PipelineManager:
   """ Provides access the collection of available hardware pipelines.
@@ -161,27 +162,7 @@ class PipelineManager:
             "type": "array",
             "required": False,
             "additionalItems": False,
-            "items": {
-              "type": "object",
-              "additionalProperties": False,
-              "properties": {
-                "command": {
-                  "type": "string",
-                  "id": "command",
-                  "required": True
-                },
-                "destination": {
-                  "type": "string",
-                  "id": "destination",
-                  "required": True
-                },
-                "parameters": {
-                  "type": "object",
-                  "additionalProperties": True,
-                  "required": False
-                }
-              }
-            }
+            "items": command.schema
           }
         }
       }
