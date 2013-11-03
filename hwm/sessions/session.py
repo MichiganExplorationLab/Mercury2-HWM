@@ -188,7 +188,7 @@ class Session:
           about it.
     
     @return Returns a deferred that will be fired with the results of session setup commands (an array containing the 
-            results for each setup command). 
+            results for each setup command).
     """
     
     # Lock the pipeline and pipeline hardware

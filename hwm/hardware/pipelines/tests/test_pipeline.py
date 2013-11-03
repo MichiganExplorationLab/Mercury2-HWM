@@ -2,6 +2,7 @@
 import logging, time
 from twisted.trial import unittest
 from mock import MagicMock
+from pkg_resources import Requirement, resource_filename
 from hwm.core.configuration import *
 from hwm.hardware.pipelines import pipeline, manager as pipeline_manager
 from hwm.hardware.devices import manager as device_manager
@@ -10,7 +11,6 @@ from hwm.command import parser, command
 from hwm.command.handlers import system as command_handler
 from hwm.network.security import permissions
 from hwm.sessions import schedule, session
-from pkg_resources import Requirement, resource_filename
 
 class TestPipeline(unittest.TestCase):
   """ This test suite is used to test the functionality of the Pipeline class, which is used to represent and provide
@@ -138,7 +138,7 @@ class TestPipeline(unittest.TestCase):
     """
 
     # Create a mock method that will raise an error
-    def mock_prepare_for_session():
+    def mock_prepare_for_session(session_pipeline):
       raise TestPipelineError
 
     # Create a test pipeline to work with and replace its device's prepare_for_session() methods with mock methods
@@ -172,7 +172,7 @@ class TestPipeline(unittest.TestCase):
     # Call the pipeline's prepare_for_session() method and make sure it calls it on all of its devices
     test_deferred = test_pipeline.prepare_for_session(test_session)
     for device_id in test_pipeline.devices:
-      test_pipeline.devices[device_id].prepare_for_session.assert_called_once_with()
+      test_pipeline.devices[device_id].prepare_for_session.assert_called_once_with(test_pipeline)
 
     return test_deferred
 

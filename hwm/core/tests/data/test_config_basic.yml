@@ -2,7 +2,7 @@
 
 # Define required options that don't have default values
 station-name: "Mercury2 Ground Station"
-station-longitude: -125.753765
-station-latitude: 39.031859
-station-altitude: 22
+station-longitude: -83.71264
+station-latitude: 42.29364
+station-altitude: 276
 mercury2-ui-location: "http://localhost/mercury2"

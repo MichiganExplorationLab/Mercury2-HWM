@@ -124,7 +124,7 @@ class Pipeline:
 
     @note Services may define their own interfaces not derived from one of the standard ones but devices won't be able 
           to use them unless they were specifically designed to be able to do so.
-    @note Pipelines may have multiple services of the same type registered to them. During the session setup process, 
+    @note Pipelines may have multiple services of the same type registered to them. During the session startup process, 
           the Pipeline will configure which service should be active for each service type. It is this service that will
           be returned when a device queries for a service of that type. All available services are stored in 
           self.services whereas the active services are stored in self.active_services.
@@ -176,8 +176,6 @@ class Pipeline:
     @note Only one session can be registered to the pipeline at a time. This is because pipelines can only be used by a 
           single session (or reservation) at a time. Because the session coordinator ends old sessions before it creates
           new ones, this shouldn't be a problem for back to back reservations.
-    @note This method should be the first thing called after a session can be considered "active". That is to say, after
-          the pipeline setup commands have been executed but before the session setup commands get executed.
     
     @throw Raises SessionAlreadyRegistered in the event that a session is registered to a pipeline that already has a 
            registered session. Sessions must be deregistered before a new one can be registered.
@@ -215,10 +213,8 @@ class Pipeline:
   def prepare_for_session(self, session):
     """ Prepares the Pipeline and its devices for a new session.
     
-    This method sets up the pipeline and its devices for a new session by calling an overridable method on each device
-    which they can use to locate their required services, setup any services that they may offer, and take any other 
-    steps required to prepare the device before the user can take control of the session. It first registers the session
-    with the pipeline, which also activates the pipeline's active services as specified in the session configuration.
+    This method gives pipelines and devices a chance to perform any setup actions required for a new session before the 
+    user is given control.
     
     @note This step must occur before any pipeline and session setup commands are run so that any devices that the setup 
           commands may be addressed to will be completely setup and ready to receive commands.
@@ -234,7 +230,7 @@ class Pipeline:
     # Call the setup method on each of the pipeline's devices
     for device_id in self.devices:
       try:
-        self.devices[device_id].prepare_for_session()
+        self.devices[device_id].prepare_for_session(self)
       except Exception as e:
         # Session fatal error, return a failed defered
         return defer.fail(e)

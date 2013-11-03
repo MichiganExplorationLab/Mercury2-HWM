@@ -329,7 +329,7 @@ class TestSession(unittest.TestCase):
     """
 
     # Create a mock method that will raise an error
-    def mock_prepare_for_session():
+    def mock_prepare_for_session(session_pipeline):
       raise TestSessionError
 
     # First create a pipeline to run the session on and replace some of its device's methods for testing
@@ -375,7 +375,7 @@ class TestSession(unittest.TestCase):
 
       # Verify that the prepare_for_session() method was called on each of the pipeline's devices
       for device_id in test_pipeline.devices:
-        test_pipeline.devices[device_id].prepare_for_session.assert_called_once_with()
+        test_pipeline.devices[device_id].prepare_for_session.assert_called_once_with(test_pipeline)
 
       # Make sure the session is active
       self.assertTrue(test_session.is_active)
