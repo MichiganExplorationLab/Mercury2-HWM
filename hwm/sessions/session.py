@@ -197,18 +197,30 @@ class Session:
     except pipeline.PipelineInUse:
       return defer.fail(pipeline.PipelineInUse("The pipeline requested for reservation '"+self.id+"' could not be "+
                                                "locked: "+self.active_pipeline.id))
-    
-    # Register the session with its pipeline
-    self.active_pipeline.register_session(self)
 
     # Execute the pipeline setup commands
-    pipeline_setup_deferred = self.active_pipeline.prepare_for_session()
+    pipeline_setup_deferred = self.active_pipeline.prepare_for_session(self)
     pipeline_setup_deferred.addCallback(self.active_pipeline.run_setup_commands)
     pipeline_setup_deferred.addCallback(self._run_setup_commands)
     pipeline_setup_deferred.addCallback(self._activate_session)
     pipeline_setup_deferred.addErrback(self._session_setup_error)
     
     return pipeline_setup_deferred
+
+  def kill_session(self):
+    """ Terminates the session.
+
+    This method is called at the end of the session's reservation window and is responsible for cleaning up any
+    resources being used and letting the pipeline know that the session has ended. This gives it a chance to stop any 
+    services that its devices may be offering and to perform any other cleanup actions required.
+    """
+
+    # Notify the pipeline to cleanup
+    self.active_pipeline.cleanup_after_session()
+
+    # Free the pipeline
+    self.active_pipeline.free_pipeline()
+    self.active_pipeline = None
 
   @property
   def is_active(self):

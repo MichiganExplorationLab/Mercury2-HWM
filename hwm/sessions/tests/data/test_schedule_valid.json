@@ -83,12 +83,27 @@
       "username": "test_admin",
       "time_start": 1360096495,
       "time_end": 1660097495,
-      "description": "An active reservation for a different pipeline than RES.2 and RES.3. Also specifies two active services.",
+      "description": "An active reservation for a different pipeline than RES.2 and RES.3. Also specifies two active services and uses a pipeline with a setup command error.",
       "pipeline_id": "test_pipeline3",
       "active_services": {
         "tracker": "sgp4",
         "logger": "basic"
       },
+      "setup_commands": [
+        {
+          "command": "station_time",
+          "destination": "system"
+        }
+      ]
+    },
+    {
+      "reservation_id": "RES.6",
+      "user_id": "1",
+      "username": "test_admin",
+      "time_start": 1360096495,
+      "time_end": 1660097495,
+      "description": "An active reservation for a different pipeline than RES.2 and RES.3.",
+      "pipeline_id": "test_pipeline5",
       "setup_commands": [
         {
           "command": "station_time",

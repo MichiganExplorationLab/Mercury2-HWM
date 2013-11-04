@@ -142,6 +142,7 @@ class TestPipeline(unittest.TestCase):
       raise TestPipelineError
 
     # Create a test pipeline to work with and replace its device's prepare_for_session() methods with mock methods
+    test_session = MagicMock()
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
     test_pipeline.devices["test_device4"].prepare_for_session = mock_prepare_for_session
@@ -151,7 +152,7 @@ class TestPipeline(unittest.TestCase):
       self.assertTrue(isinstance(setup_error.value, TestPipelineError))
 
     # Call the pipeline's prepare_for_session() method and make sure it calls it on all of its devices
-    test_deferred = test_pipeline.prepare_for_session()
+    test_deferred = test_pipeline.prepare_for_session(test_session)
     test_deferred.addErrback(check_results)
 
     return test_deferred
@@ -162,15 +163,74 @@ class TestPipeline(unittest.TestCase):
     """
 
     # Create a test pipeline to work with and replace its device's prepare_for_session() methods with mock methods
+    test_session = MagicMock()
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
     for device_id in test_pipeline.devices:
       test_pipeline.devices[device_id].prepare_for_session = MagicMock()
 
     # Call the pipeline's prepare_for_session() method and make sure it calls it on all of its devices
-    test_deferred = test_pipeline.prepare_for_session()
+    test_deferred = test_pipeline.prepare_for_session(test_session)
     for device_id in test_pipeline.devices:
       test_pipeline.devices[device_id].prepare_for_session.assert_called_once_with()
+
+    return test_deferred
+
+  def test_session_cleanup(self):
+    """ This test makes sure that the pipeline can correctly clean itself up after the session that is using the 
+    pipeline expires.
+    """
+
+    # Create a pipeline to test with
+    test_session = MagicMock()
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    test_pipeline._set_active_services = MagicMock()
+    for device_id in test_pipeline.devices:
+      test_pipeline.devices[device_id].cleanup_after_session = MagicMock()
+
+    def continue_test(session_prep_results):
+      # Clean up after the session and verify results
+      test_pipeline.cleanup_after_session()
+
+      self.assertEqual(test_pipeline.produce_telemetry, False)
+      self.assertTrue(len(test_pipeline.active_services) == 0)
+      self.assertTrue(test_pipeline.current_session is None)
+      for device_id in test_pipeline.devices:
+        test_pipeline.devices[device_id].cleanup_after_session.assert_called_once_with()
+
+    test_deferred = test_pipeline.prepare_for_session(test_session)
+    test_deferred.addCallback(continue_test)
+
+    return test_deferred
+
+  def test_session_cleanup_error(self):
+    """ This test makes sure that the pipeline can correctly handle errors when attempted to clean up an expired
+    session.
+    """
+
+    # Create a mock cleanup method that throws an error
+    def mock_cleanup_after_session():
+      raise TypeError("Ya blew it.")
+
+    # Create a pipeline to test with
+    test_session = MagicMock()
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    test_pipeline._set_active_services = MagicMock()
+    test_pipeline.devices["test_device"].cleanup_after_session = MagicMock()
+    test_pipeline.devices["test_device4"].cleanup_after_session = MagicMock()
+    test_pipeline.devices["test_device2"].cleanup_after_session = mock_cleanup_after_session
+
+    def continue_test(session_prep_results):
+      # Clean up after the session to make sure the exception was caught and verify the other devices were cleaned up
+      test_pipeline.cleanup_after_session()
+
+      test_pipeline.devices["test_device4"].cleanup_after_session.assert_called_once_with()
+      test_pipeline.devices["test_device"].cleanup_after_session.assert_called_once_with()
+
+    test_deferred = test_pipeline.prepare_for_session(test_session)
+    test_deferred.addCallback(continue_test)
 
     return test_deferred
 

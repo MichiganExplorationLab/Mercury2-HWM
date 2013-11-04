@@ -129,6 +129,25 @@ class Driver(object):
 
     raise StateNotDefined("The '"+self.id+"' device did not specify any device state.")
 
+  def cleanup_after_session(self):
+    """ Allows the driver to cleanup after a session that was using it has ended.
+
+    This method is called during the session cleanup process and provides the driver with an opportunity to cleanup 
+    its resources by, for example:
+    * Stopping any services that it may offer
+    * Stop reading data from the associated device
+    * Stop producing device telemetry 
+
+    @note Drivers that allow for concurrent access may be used by multiple pipelines at a time. If this driver allows 
+          for concurrent access, it is important to check the driver's _use_count attribute before deciding to terminate 
+          services.
+    @note Even though the default driver implementation will not send any data and telemetry to its pipelines if they 
+          are not active, it is good practice to stop collecting the data and telemetry in the first place if the driver
+          isn't being used by any pipelines.
+    """
+
+    return
+
   def prepare_for_session(self):
     """ Allows the driver to prepare for new sessions.
 

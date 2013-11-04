@@ -52,15 +52,15 @@ class SessionCoordinator:
     schedule dictates. This method is called periodically using a LoopingCall which is started during the main
     initialization process.
 
-    @note This method checks for completed sessions before it checks for new ones. Because this method is only run in
-          a single thread, this allows back to back session scheduling.
+    @note This method checks for completed sessions before it checks for new ones. Because this method is run 
+          asynchronously in a single thread, this allows back to back session scheduling of the same pipeline.
     """
     
     # Update the schedule if required
     self._update_schedule()
     
-    # Check for completed sessions:
-    # TODO: Check for completed sessions
+    # Check for completed sessions
+    self._check_for_finished_sessions()
     
     # Check the schedule for newly active reservations
     self._check_for_new_reservations()
@@ -108,10 +108,44 @@ class SessionCoordinator:
     # Locate the user's active sessions
     for active_session_id in self.active_sessions:
       active_session = self.active_sessions[active_session_id]
-      if int(active_session.user_id) == user_id:
+
+      if active_session.user_id == user_id:
         user_sessions.append(active_session)
     
     return user_sessions
+
+  def _check_for_finished_sessions(self):
+    """ Cleans up finished sessions.
+
+    This method cleans up any sessions that have finished (based on the reservation timestamp range) by instructing them
+    to free up their resources, terminate any services that they may offer, and perform any other clean up that they 
+    have to do. 
+    """
+
+    # Loop through the active sessions and check for ones that have finished
+    for active_session_id, active_session in self.active_sessions.items():
+      if self._session_expired(active_session):
+        # Call the session's clean up method and mark it as closed
+        self.closed_sessions.append(active_session_id)
+        del self.active_sessions[active_session_id]
+        active_session.kill_session()
+
+        # Session finished
+        logging.info("The session for the '"+active_session.id+"' reservation has been stopped after expiring.")
+
+  def _session_expired(self, session):
+    """ Determines if the specified session should be dead.
+
+    @param session  The session to check.
+    @return Returns True if the session has expired and False otherwise. 
+    """
+
+    current_time = int(time.time())
+
+    if current_time >= session.configuration["time_end"]:
+      return True
+    else:
+      return False
   
   def _check_for_new_reservations(self):
     """ Sets up new reservations defined in the reservation schedule.
@@ -160,6 +194,9 @@ class SessionCoordinator:
     @param reservation_id           The ID of the reservation that was just started.
     @return Passes on the results of the session setup commands.
     """
+
+    # Session started
+    logging.info("A new session has successfully been started for the reservation: '"+reservation_id+"'.")
 
     # Check for any failed session setup commands
     if session_command_results is not None:

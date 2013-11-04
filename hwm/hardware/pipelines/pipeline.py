@@ -212,21 +212,24 @@ class Pipeline:
 
     return self.devices[device_id]
 
-  def prepare_for_session(self):
+  def prepare_for_session(self, session):
     """ Prepares the Pipeline and its devices for a new session.
     
     This method sets up the pipeline and its devices for a new session by calling an overridable method on each device
     which they can use to locate their required services, setup any services that they may offer, and take any other 
-    steps required to prepare the device before the user can take control of the session.
+    steps required to prepare the device before the user can take control of the session. It first registers the session
+    with the pipeline, which also activates the pipeline's active services as specified in the session configuration.
     
-    @note The pipeline's active services for the new session must have been set up buy this point using
-          Pipeline._set_active_services() so that devices will be able to locate any services that they may need.
     @note This step must occur before any pipeline and session setup commands are run so that any devices that the setup 
           commands may be addressed to will be completely setup and ready to receive commands.
-
+    
+    @param session  The new session that is being set up.
     @return If successful, this will return a deferred pre-fired with "True." If any of the device setup methods throw
             an exception, it will trigger the errback chain on the return deferred.
     """
+
+    # Register the session with this pipeline
+    self.register_session(session)
 
     # Call the setup method on each of the pipeline's devices
     for device_id in self.devices:
@@ -237,6 +240,28 @@ class Pipeline:
         return defer.fail(e)
 
     return defer.succeed(True)
+
+  def cleanup_after_session(self):
+    """ Cleans up the pipeline and its devices after the session using the pipeline has expired.
+
+    This method is called after a session has expired and is responsible for putting the pipeline and its devices back 
+    into an "idle" state in preparation for the next session. If a device cleanup method generates an error, it will be 
+    logged and trapped so that the devices can still attempt to cleanup.
+    """
+
+    # Notify the pipeline's devices
+    for device_id in self.devices:
+      try:
+        self.devices[device_id].cleanup_after_session()
+      except Exception as e:
+        logging.error("There was an error cleaning up the session '"+self.current_session.id+"' on pipeline '"+self.id+
+                      "': \""+str(e)+"\"")
+
+
+    # Update pipeline attributes
+    self.produce_telemetry = False
+    self.active_services = {}
+    self.current_session = None 
 
   def run_setup_commands(self, session_preparation_results):
     """ Runs the pipeline setup commands.

@@ -215,6 +215,30 @@ class TestSession(unittest.TestCase):
 
     return schedule_update_deferred
 
+  def test_kill_session(self):
+    """ Tests that sessions can be killed and that they notify their pipelines that the session has ended (to give them
+    an opportunity to clean up their resources).
+    """
+
+    # First create a pipeline to test with
+    test_pipeline = pipeline.Pipeline(self.config.get('pipelines')[0], self.device_manager, self.command_parser)
+    test_pipeline.cleanup_after_session = MagicMock()
+    test_pipeline.reserve_pipeline()
+    self.assertTrue(test_pipeline.is_active)
+
+    # Create a test session
+    test_reservation_config = {
+      "reservation_id": "TEST_RES",
+      "user_id": "1"
+    }
+    test_session = session.Session(test_reservation_config, test_pipeline, self.command_parser)
+
+    # Kill the session and make sure the session is in the correct state afterwards
+    test_session.kill_session()
+    test_pipeline.cleanup_after_session.assert_called_once_with()
+    self.assertTrue(not test_pipeline.is_active)
+    self.assertTrue(test_session.active_pipeline is None)
+
   def test_session_startup_pipeline_in_use(self):
     """ Makes sure that the Session class responds appropriately when a session's hardware pipeline can't be reserved.
     """
