@@ -147,13 +147,70 @@ class TestCoordinator(unittest.TestCase):
       # Attempt to reserve the pipeline that RES.2 or RES.3 is using (tests that it was correctly locked)
       self.assertRaises(pipeline.PipelineInUse, test_pipelines.pipelines['test_pipeline'].reserve_pipeline)
 
-      # Load test_admin's active sessions (either RES.2 or RES.3)
-      active_sessions = session_coordinator.load_user_sessions(1)
-      self.assertTrue(len(active_sessions)==1)
-      self.assertTrue(active_sessions[0].id=="RES.2" or active_sessions[0].id=="RES.3")
+      # Load test_admin's active sessions (either RES.2 or RES.3 and RES.6)
+      active_sessions = session_coordinator.load_user_sessions("1")
+      self.assertTrue(len(active_sessions)==2)
+      self.assertTrue(active_sessions[0].id=="RES.2" or active_sessions[0].id=="RES.3" or active_sessions[0].id=="RES.6")
+      self.assertTrue(active_sessions[1].id=="RES.2" or active_sessions[1].id=="RES.3" or active_sessions[1].id=="RES.6")
     
     # Update the schedule to load in the reservations
     schedule_update_deferred = test_schedule.update_schedule()
     schedule_update_deferred.addCallback(continue_test)
     
     return schedule_update_deferred
+
+  def test_session_termination(self):
+    """ This test checks that the session coordinator can correctly clean up sessions once they expire (as determined by
+    their reservation timestamp range).
+    """
+    
+    # Load in some valid configuration and set the defaults using validate_configuration()
+    self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
+    self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
+    self.config.validate_configuration()
+    
+    # Setup the pipeline manager
+    test_pipelines = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
+
+    # Create the expected mock services
+    test_tracker_service = MagicMock()
+    test_tracker_service.id = "sgp4"
+    test_tracker_service.type = "tracker"
+    test_pipelines.pipelines['test_pipeline3'].register_service(test_tracker_service)
+    test_logger_service = MagicMock()
+    test_logger_service.id = "basic"
+    test_logger_service.type = "logger"
+    test_pipelines.pipelines['test_pipeline3'].register_service(test_logger_service)
+    
+    # Setup the schedule manager
+    test_schedule = schedule.ScheduleManager(self.source_data_directory+'/sessions/tests/data/test_schedule_valid.json')
+    
+    # Initialize the session coordinator
+    session_coordinator = coordinator.SessionCoordinator(test_schedule,
+                                                         self.device_manager,
+                                                         test_pipelines,
+                                                         self.command_parser)
+    
+    def continue_test(loaded_schedule):
+      # Activate the test reservation
+      session_coordinator._check_for_new_reservations()
+      self.assertTrue('RES.6' in session_coordinator.active_sessions)
+      res6 = session_coordinator.active_sessions['RES.6']
+      res6.kill_session = MagicMock()
+
+      # Change the expiration time on the reservation to make it expire
+      res6.configuration['time_end'] = 1383264000
+
+      # Kill the expired session
+      session_coordinator._check_for_finished_sessions()
+      res6.kill_session.assert_called_once_with()
+      self.assertTrue('RES.6' in session_coordinator.closed_sessions and
+                      'RES.6' not in session_coordinator.active_sessions)
+    
+    # Update the schedule to load in the reservations
+    schedule_update_deferred = test_schedule.update_schedule()
+    schedule_update_deferred.addCallback(continue_test)
+    
+    return schedule_update_deferred
+  
+

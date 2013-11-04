@@ -48,3 +48,9 @@ pipelines:
         destination: "system"
       - command: "nonexistent_command"
         destination: "test_pipeline4.test_device"
+  - id: "test_pipeline5"
+    mode: "receive"
+    description: "A pipeline without any setup commands containing just a webcam."
+    hardware:
+      - device_id: "test_webcam"
+
