@@ -33,12 +33,8 @@ class CommandHandler(object):
     
     This constructor initializes the command handler by setting some common attributes.
 
-    @param command_handler_name  The name of the command handler being initialized. This is used when building command
-                                 metadata so that the user interface will know how to address commands. If the command
-                                 handler is a system level command handler, this will be the key associated with the
-                                 command handler in the dictionary that was passed to the command parser. If it is a 
-                                 device command handler, this will be the device ID as defined in the device
-                                 configuration.
+    @param command_handler_name  The name of the command handler. If the command handler is a system level command 
+                                 handler, this will be the destination for this handler's commands.
     """
 
     # Set the command handler attributes
@@ -49,8 +45,14 @@ class DeviceCommandHandler(CommandHandler):
   
   This class defines the base command handler interface for device command handlers. Device command handlers differ from
   system command handlers in that they provide command response methods for a single physical or virtual device. 
-  Normally, all device command handlers should extend this class as it provides some common commands that many devices
-  will have use of.
   """
 
-  pass
+  def __init__(self, driver):
+    """ Sets up the device command handler.
+
+    @param driver  The Driver instance that offers this command handler.
+    """
+
+    # Set the command handler attributes
+    self.name = driver.id 
+    self.driver = driver

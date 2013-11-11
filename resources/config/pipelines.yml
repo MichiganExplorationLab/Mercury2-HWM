@@ -22,7 +22,7 @@
 # >         pipeline_output: true
 # >     setup_commands:
 # >       - command: "flip_switch"
-# >         destination: "some_switch"
+# >         destination: "some_pipeline.some_switch"
 # 
 # Some things to note:
 # - The device_id refers to a device defined in the device configuration file.

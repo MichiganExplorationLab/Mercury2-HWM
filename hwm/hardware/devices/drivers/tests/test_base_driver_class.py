@@ -55,7 +55,7 @@ class TestBaseDriver(unittest.TestCase):
 
     # Give the device a mock command handler and try to load it
     test_command_handler = MagicMock()
-    test_driver.command_handler = test_command_handler
+    test_driver._command_handler = test_command_handler
     self.assertTrue(test_driver.get_command_handler() is test_command_handler)
 
   def test_writing_device_output(self):

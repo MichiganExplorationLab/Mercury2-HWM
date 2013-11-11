@@ -29,7 +29,7 @@ class Driver(object):
     self.allow_concurrent_use = (False if ('allow_concurrent_use' not in self.settings) else 
                                  self.settings['allow_concurrent_use'])
     self.associated_pipelines = {}
-    self.command_handler = None
+    self._command_handler = None
 
     # Private attributes
     self._use_count = 0
@@ -110,10 +110,10 @@ class Driver(object):
     @return Returns the driver's command handler.
     """
 
-    if self.command_handler is None:
+    if self._command_handler is None:
       raise CommandHandlerNotDefined("The '"+self.id+"' device does not specify a command handler.")
 
-    return self.command_handler
+    return self._command_handler
 
   def get_state(self):
     """ Returns a dictionary containing the current state of the device.
@@ -148,15 +148,14 @@ class Driver(object):
 
     return
 
-  def prepare_for_session(self):
+  def prepare_for_session(self, session_pipeline):
     """ Allows the driver to prepare for new sessions.
 
-    This method gives the driver a chance to perform any setup that it may need to make before a new session starts that
-    uses a pipeline that contains this device. For example, it could use this callback to load its required services 
-    from its active pipeline and set up any services that it may offer.
+    This method gives the driver a chance to perform any needed setup actions before a new session on the specified 
+    pipeline starts. For example, it could use this callback to load its required services from the pipeline and prepare
+    for use any services that it may offer.
     
-    @throw Any exceptions thrown in this method will cause a session-fatal error. The error message will be reported 
-           to the pipeline user via the user interface.
+    @throw Any exceptions thrown in this method will cause a session-fatal error.
 
     @note This method is called during the session setup process because the services offered by the device's active 
           pipeline may change with each session. It also gives the driver a chance to start threads, etc. for its own 
@@ -164,6 +163,9 @@ class Driver(object):
           and session setup commands are executed.
     @note The device shouldn't register its services with its pipelines during this step, that occurs once during the
           pipeline/driver initialization process (via the self._register_services() callback).
+
+    @param session_pipeline  The pipeline being used by the session. This can also be found in 
+                             self.associated_pipelines.
     """
 
     return
