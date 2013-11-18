@@ -21,11 +21,13 @@ class DeviceManager:
   @note All device usage locking is done by the device driver. See the driver base class for more.
   """
   
-  def __init__(self):
+  def __init__(self, command_parser):
     """ Initializes the device manager and all configured devices.
     
     This constructor initializes the device manager and creates the appropriate driver class instances for all
-    configured hardware devices. 
+    configured hardware devices.
+
+    @param command_parser  A reference to the active CommandParser instance.
     
     @note This class relies on configuration loaded into the configuration manager during the startup process.
           Therefore, if this class is initialized before the appropriate configuration files have been read, an 
@@ -40,6 +42,7 @@ class DeviceManager:
     # Initialize class variables
     self.devices = {}          # Stores references to instances of the physical device drivers
     self.virtual_devices = {}  # Stores references to the virtual device driver classes (initialized on the fly)
+    self._command_parser = command_parser
     
     # Initialize 
     self._initialize_devices()
@@ -142,7 +145,7 @@ class DeviceManager:
       else:
         # Physical driver, attempt to initialize
         try:
-          self.devices[device_config['id']] = device_driver_class(device_config)
+          self.devices[device_config['id']] = device_driver_class(device_config, self._command_parser)
         except Exception, driver_exception:
           logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
                         str(driver_exception))

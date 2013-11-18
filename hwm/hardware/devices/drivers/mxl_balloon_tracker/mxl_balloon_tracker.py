@@ -1,6 +1,6 @@
 """ @package hwm.hardware.devices.drivers.mxl_balloon_tracker.mxl_balloon_tracker
 This module contains a virtual driver that provides tracking information for MXL balloon missions using a combination of
-the APRS.fi network and position information directly received from the balloon.
+the APRS.fi network and position information downlinked directly from the balloon.
 """
 
 # Import required modules
@@ -259,8 +259,8 @@ class Direct_Downlink_APRS_Service(service.Service):
     """
 
     # Log the error
-    logging.error("An error occured while running the '"+self._service_id+"' service, the service has been stopped: "+
-                  failure.getErrorMessage())
+    logging.error("An error occured while running the '"+self._service_id+"' service, the service has been stopped: '"+
+                  failure.getErrorMessage()+"'")
     # TODO: Log the error to the event's state dictionary.
 
     # Stop the event loop just incase it's still running

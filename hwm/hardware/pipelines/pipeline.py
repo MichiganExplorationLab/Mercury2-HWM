@@ -224,7 +224,7 @@ class Pipeline:
             an exception, it will trigger the errback chain on the return deferred.
     """
 
-    # Register the session with this pipeline
+    # Register the session with this pipeline before doing anything
     self.register_session(session)
 
     # Call the setup method on each of the pipeline's devices

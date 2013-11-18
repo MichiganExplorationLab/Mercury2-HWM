@@ -50,11 +50,11 @@ def initialize():
   # Initialize the main reservation schedule
   schedule_manager = _setup_schedule_manager()
   
-  # Initialize the device manager
-  device_manager = devices.DeviceManager()
-  
   # Setup the command parser
   command_parser = _setup_command_system()
+
+  # Initialize the device manager
+  device_manager = devices.DeviceManager(command_parser)
   
   # Initialize the pipeline manager
   pipeline_manager = pipelines.PipelineManager(device_manager,
