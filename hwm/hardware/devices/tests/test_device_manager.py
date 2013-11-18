@@ -1,6 +1,7 @@
 # Import required modules
 import logging
 from twisted.trial import unittest
+from mock import MagicMock
 from hwm.core.configuration import *
 from hwm.hardware.devices import manager
 from pkg_resources import Requirement, resource_filename
@@ -34,27 +35,27 @@ class TestDeviceManager(unittest.TestCase):
     """
     
     # Attempt to initialize the device manager without loading any device configuration
-    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager, MagicMock())
     
     # Load an empty device configuration and ensure the correct error is raised
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_empty.yml')
-    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager, MagicMock())
     
     # Try to load a device configuration that contains a formatting error
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_invalid_format.yml')
-    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager, MagicMock())
     
     # Load a device configuration that contains a non-existent driver
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_missing_driver.yml')
-    self.assertRaises(manager.DriverNotFound, manager.DeviceManager)
+    self.assertRaises(manager.DriverNotFound, manager.DeviceManager, MagicMock())
     
     # Load a device configuration that contains duplicate entries
     self._reset_config_entries()
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_duplicate.yml')
-    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager)
+    self.assertRaises(manager.DeviceConfigInvalid, manager.DeviceManager, MagicMock())
   
   def test_device_get(self):
     """ Tests that the device manager correctly returns a driver after being initialized with a valid device
@@ -63,7 +64,7 @@ class TestDeviceManager(unittest.TestCase):
     
     # Initialize the device manager with a valid configuration
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
+    device_manager = manager.DeviceManager(MagicMock())
     
     # Attempt to get an invalid device
     self.assertRaises(manager.DeviceNotFound, device_manager.get_device_driver, "not_real_yo")
@@ -80,7 +81,7 @@ class TestDeviceManager(unittest.TestCase):
 
     # Initialize the device manager with a valid configuration
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
+    device_manager = manager.DeviceManager(MagicMock())
     
     # Load an instance of the virtual device
     test_driver = device_manager.get_device_driver("test_device4")

@@ -71,7 +71,8 @@ class DeviceManager:
     # Check if the device is a virtual device
     if device_id in self.virtual_devices:
       # Create and return a new instance of the virtual device driver
-      return self.virtual_devices[device_id]['driver_class'](self.virtual_devices[device_id]['config'])
+      return self.virtual_devices[device_id]['driver_class'](self.virtual_devices[device_id]['config'], 
+                                                             self._command_parser)
     else:
       # Return the existing physical device driver
       return self.devices[device_id]
@@ -144,13 +145,13 @@ class DeviceManager:
         self.virtual_devices[device_config['id']] = {'driver_class':device_driver_class, 'config': device_config}
       else:
         # Physical driver, attempt to initialize
-        try:
+        #try:
           self.devices[device_config['id']] = device_driver_class(device_config, self._command_parser)
-        except Exception, driver_exception:
-          logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
-                        str(driver_exception))
-          raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
-                                "Received error message: "+str(driver_exception))
+        #except Exception, driver_exception:
+        #  logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
+        #                str(driver_exception))
+        #  raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
+        #                        "Received error message: "+str(driver_exception))
   
   def _validate_devices(self, device_configuration):
     """ Validates the provided device configuration.

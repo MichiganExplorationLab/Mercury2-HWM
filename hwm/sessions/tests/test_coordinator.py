@@ -25,9 +25,9 @@ class TestCoordinator(unittest.TestCase):
     
     # Create a valid command parser and device manager for testing
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    self.device_manager = device_manager.DeviceManager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
+    self.device_manager = device_manager.DeviceManager(self.command_parser)
     self.command_parser.pipeline_manager = MagicMock()
     
     # Disable logging for most events

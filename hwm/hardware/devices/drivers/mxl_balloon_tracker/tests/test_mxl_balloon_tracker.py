@@ -43,7 +43,7 @@ class TestMXLBalloonTrackerDevice(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"})
+    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"}, MagicMock())
     test_device._aprs_service = MagicMock()
     test_device._aprs_service.id = "aprs_test_service"
     test_device._aprs_service.type = "tracker"
@@ -63,7 +63,7 @@ class TestMXLBalloonTrackerDevice(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"})
+    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"}, MagicMock())
     test_device._aprs_service = MagicMock()
 
     # Run the prepare_for_session callback and check results

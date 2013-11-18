@@ -25,9 +25,9 @@ class TestPipelineManager(unittest.TestCase):
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     
     # Create a valid command parser and device manager for testing
-    self._reset_device_manager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
+    self._reset_device_manager(self.command_parser)
     self.command_parser.pipeline_manager = MagicMock()
     self.session_coordinator = MockSessionCoordinator(self.command_parser)
     
@@ -58,7 +58,7 @@ class TestPipelineManager(unittest.TestCase):
     
     # Make sure re-initialization fails
     self._reset_config_entries()
-    self._reset_device_manager()
+    self._reset_device_manager(self.command_parser)
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     new_pipeline_manager = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
     self.assertRaises(pipeline_manager.PipelinesAlreadyInitialized, new_pipeline_manager._initialize_pipelines)
@@ -73,13 +73,13 @@ class TestPipelineManager(unittest.TestCase):
     
     # Load a configuration that contains a pipeline that specifies multiple output devices
     self._reset_config_entries()
-    self._reset_device_manager()
+    self._reset_device_manager(self.command_parser)
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_multiple_output_devices.yml')
     self.assertRaises(pipeline.PipelineConfigInvalid, pipeline_manager.PipelineManager, self.device_manager, self.command_parser)
     
     # Load a configuration that contains a pipeline that references a non-existent device
     self._reset_config_entries()
-    self._reset_device_manager()
+    self._reset_device_manager(self.command_parser)
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_invalid_device.yml')
     self.assertRaises(pipeline.PipelineConfigInvalid, pipeline_manager.PipelineManager, self.device_manager, self.command_parser)
   
@@ -100,14 +100,16 @@ class TestPipelineManager(unittest.TestCase):
     temp_pipeline = temp_pipeline_manager.get_pipeline('test_pipeline2')
     self.assertEquals(temp_pipeline.id, 'test_pipeline2')
   
-  def _reset_device_manager(self):
+  def _reset_device_manager(self, command_parser):
     """ Resets the device manager instance. This is required if multiple pipeline configurations are tested in the same
     test method because the device pipeline registrations don't get reset when the pipeline manager does.
+
+    @param command_parser  The active CommandParser instance.
     """
 
     # Load a valid device configuration and setup the device manager
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    self.device_manager = device_manager.DeviceManager()
+    self.device_manager = device_manager.DeviceManager(command_parser)
 
   def _reset_config_entries(self):
     # Reset the recorded configuration entries

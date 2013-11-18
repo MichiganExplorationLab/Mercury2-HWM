@@ -10,14 +10,15 @@ class Test_Driver(driver.HardwareDriver):
   """ A simple test driver used by unit tests to test the correctness of the device manager and base driver class.
   """
   
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Initialize the dummy driver.
     
     @param device_configuration  A dictionary containing the device configuration settings.
+    @param command_parser        A reference to the active CommandParser.
     """
     
     # Call the default constructor
-    super(Test_Driver,self).__init__(device_configuration)
+    super(Test_Driver,self).__init__(device_configuration, command_parser)
     
     # Set the device name
     self.device_name = device_configuration['id']

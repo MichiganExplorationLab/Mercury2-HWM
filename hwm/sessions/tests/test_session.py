@@ -30,9 +30,9 @@ class TestSession(unittest.TestCase):
     # Create a valid command parser and device manager for testing
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
-    self.device_manager = device_manager.DeviceManager()
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system')], permission_manager)
+    self.device_manager = device_manager.DeviceManager(self.command_parser)
     self.pipeline_manager = MagicMock()
     self.command_parser.pipeline_manager = self.pipeline_manager
     self.session_coordinator = MockSessionCoordinator(self.command_parser)

@@ -297,29 +297,33 @@ class HardwareDriver(Driver):
   drivers for the hardware manager.
   """
 
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Sets up the physical hardware driver.
 
     @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
                                  file).
+    @param command_parser        A reference to the active CommandParser instance. Drivers may use this to execute
+                                 commands at any time during a session.
     """
 
     # Call the base driver constructor
-    super(HardwareDriver,self).__init__(device_configuration)
+    super(HardwareDriver,self).__init__(device_configuration, command_parser)
 
 class VirtualDriver(Driver):
   """ Defines the base driver used for virtual devices.
   """
 
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Sets up the virtual device driver.
 
     @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
                                  file).
+    @param command_parser        A reference to the active CommandParser instance. Drivers may use this to execute
+                                 commands at any time during a session.
     """
 
     # Call the base driver constructor
-    super(VirtualDriver,self).__init__(device_configuration)
+    super(VirtualDriver,self).__init__(device_configuration, command_parser)
 
 # Define custom driver exceptions
 class DriverError(Exception):

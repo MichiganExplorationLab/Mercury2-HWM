@@ -12,14 +12,15 @@ class Test_Virtual_Driver(driver.VirtualDriver):
   @note This test driver does not have a command handler (some tests depend on this).
   """
   
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Initialize the dummy driver.
     
     @param device_configuration  A dictionary containing the device configuration settings.
+    @param command_parser        A reference to the active command parser.
     """
     
     # Call the default constructor
-    super(Test_Virtual_Driver,self).__init__(device_configuration)
+    super(Test_Virtual_Driver,self).__init__(device_configuration, command_parser)
     
     # Set some device attributes to play with
     self.device_name = device_configuration['id']
