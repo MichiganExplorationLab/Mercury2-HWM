@@ -19,6 +19,10 @@ class TestBaseDriver(unittest.TestCase):
     # Set the source data directory
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     
+    # Load a valid device configuration and setup the device manager
+    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
+    self.device_manager = manager.DeviceManager(MagicMock())
+
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
   
@@ -34,9 +38,7 @@ class TestBaseDriver(unittest.TestCase):
     """
 
     # Load a device to test with
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
-    test_driver = device_manager.get_device_driver("test_device")
+    test_driver = self.device_manager.get_device_driver("test_device")
 
     # Try to load state
     self.assertRaises(driver.StateNotDefined, test_driver.get_state)
@@ -46,9 +48,7 @@ class TestBaseDriver(unittest.TestCase):
     """
 
     # Load a device to test with
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
-    test_driver = device_manager.get_device_driver("test_device4")
+    test_driver = self.device_manager.get_device_driver("test_device4")
 
     # Try to load the command handler for a device that doesn't have one
     self.assertRaises(driver.CommandHandlerNotDefined, test_driver.get_command_handler)
@@ -64,9 +64,7 @@ class TestBaseDriver(unittest.TestCase):
     """ 
 
     # Load a device to test with
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
-    test_driver = device_manager.get_device_driver("test_device")
+    test_driver = self.device_manager.get_device_driver("test_device")
 
     # Create some mock pipelines and register them with the device
     test_pipeline = MagicMock()
@@ -102,9 +100,7 @@ class TestBaseDriver(unittest.TestCase):
     """ 
 
     # Load a device to test with
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
-    test_driver = device_manager.get_device_driver("test_device")
+    test_driver = self.device_manager.get_device_driver("test_device")
 
     # Create some mock pipelines and register them with the device
     test_pipeline = MagicMock()
@@ -139,12 +135,8 @@ class TestBaseDriver(unittest.TestCase):
     """ Verifies that the base driver class can correctly register pipelines
     """
 
-    # Load a valid device configuration
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
-
     # Load a driver to test with
-    test_driver = device_manager.get_device_driver("test_device")
+    test_driver = self.device_manager.get_device_driver("test_device")
 
     # Create some mock pipelines to register with the device
     test_pipeline = MagicMock()
@@ -169,12 +161,8 @@ class TestBaseDriver(unittest.TestCase):
     """ Tests the reservation functionality of the base driver class.
     """
     
-    # Load a valid device configuration
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
-    
     # Get a driver to test
-    test_driver = device_manager.get_device_driver("test_device2")
+    test_driver = self.device_manager.get_device_driver("test_device2")
     
     # Reserve the driver
     test_driver.reserve_device()
@@ -203,13 +191,9 @@ class TestBaseDriver(unittest.TestCase):
     """ Tests the reservation functionality of the base driver class when using a device configured for concurrent
     access.
     """
-
-    # Load a valid device configuration
-    self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    device_manager = manager.DeviceManager()
     
     # Load a driver to test with
-    test_driver = device_manager.get_device_driver("test_webcam")
+    test_driver = self.device_manager.get_device_driver("test_webcam")
     
     # Try to reserve the driver twice in a row (should be allowed because the device allows concurrent use)
     test_driver.reserve_device()

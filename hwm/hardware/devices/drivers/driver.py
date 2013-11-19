@@ -14,13 +14,15 @@ class Driver(object):
   specific driver classes should inherit from either the HardwareDriver or VirtualDriver classes, not this class.
   """
   
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Initializes the new device driver.
 
     @note Derived drivers should always call this method using super() as it sets several required attributes.
     
     @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
                                  file).
+    @param command_parser        A reference to the active CommandParser instance. Drivers may use this to execute
+                                 commands at any time during a session.
     """
     
     # Set driver attributes
@@ -30,6 +32,7 @@ class Driver(object):
                                  self.settings['allow_concurrent_use'])
     self.associated_pipelines = {}
     self._command_handler = None
+    self._command_parser = command_parser
 
     # Private attributes
     self._use_count = 0
@@ -72,9 +75,9 @@ class Driver(object):
     This method writes the specified data chunk to every active pipeline registered to the device that specifies the 
     device as it's output device.
 
-    @note It is important to only write device output to active pipelines that specify the current device as it's output
-          device. Otherwise, data may become jumbled and useless. Every device driver should use this method to write 
-          their output stream to the pipeline unless it has a specific reason not to (which is rare).
+    @note It is important to only write device output to active pipelines that specify this device as it's output
+          device. Every device driver should use this method to write their output stream to the pipeline unless it has 
+          a specific reason not to (which is rare).
     """
 
     # Write the data to each active pipeline that specifies this device as its output device
@@ -135,8 +138,8 @@ class Driver(object):
     This method is called during the session cleanup process and provides the driver with an opportunity to cleanup 
     its resources by, for example:
     * Stopping any services that it may offer
-    * Stop reading data from the associated device
-    * Stop producing device telemetry 
+    * Stop reading data from hardware devices
+    * Ceasing to produce device telemetry 
 
     @note Drivers that allow for concurrent access may be used by multiple pipelines at a time. If this driver allows 
           for concurrent access, it is important to check the driver's _use_count attribute before deciding to terminate 
@@ -241,7 +244,7 @@ class Driver(object):
     self._use_count = 0 if (self._use_count-1 < 0) else (self._use_count-1) 
 
   def _register_services(self, pipeline):
-    """ Allows the driver to register any services it may provide with its pipelines.
+    """ Allows the driver to register any services that it may provide with its pipelines.
     
     This callback is called whenever a new pipeline is registered with the driver. The default implementaton of this
     method doesn't do anything, but custom drivers that can offer services should override it to register their services
@@ -250,7 +253,7 @@ class Driver(object):
     @param pipeline  A pipeline that was just registered with the device.
     """
 
-    pass
+    return
 
   @property
   def is_active(self):
@@ -294,29 +297,33 @@ class HardwareDriver(Driver):
   drivers for the hardware manager.
   """
 
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Sets up the physical hardware driver.
 
     @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
                                  file).
+    @param command_parser        A reference to the active CommandParser instance. Drivers may use this to execute
+                                 commands at any time during a session.
     """
 
     # Call the base driver constructor
-    super(HardwareDriver,self).__init__(device_configuration)
+    super(HardwareDriver,self).__init__(device_configuration, command_parser)
 
 class VirtualDriver(Driver):
   """ Defines the base driver used for virtual devices.
   """
 
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Sets up the virtual device driver.
 
     @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
                                  file).
+    @param command_parser        A reference to the active CommandParser instance. Drivers may use this to execute
+                                 commands at any time during a session.
     """
 
     # Call the base driver constructor
-    super(VirtualDriver,self).__init__(device_configuration)
+    super(VirtualDriver,self).__init__(device_configuration, command_parser)
 
 # Define custom driver exceptions
 class DriverError(Exception):

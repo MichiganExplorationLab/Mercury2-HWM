@@ -21,11 +21,13 @@ class DeviceManager:
   @note All device usage locking is done by the device driver. See the driver base class for more.
   """
   
-  def __init__(self):
+  def __init__(self, command_parser):
     """ Initializes the device manager and all configured devices.
     
     This constructor initializes the device manager and creates the appropriate driver class instances for all
-    configured hardware devices. 
+    configured hardware devices.
+
+    @param command_parser  A reference to the active CommandParser instance.
     
     @note This class relies on configuration loaded into the configuration manager during the startup process.
           Therefore, if this class is initialized before the appropriate configuration files have been read, an 
@@ -40,6 +42,7 @@ class DeviceManager:
     # Initialize class variables
     self.devices = {}          # Stores references to instances of the physical device drivers
     self.virtual_devices = {}  # Stores references to the virtual device driver classes (initialized on the fly)
+    self._command_parser = command_parser
     
     # Initialize 
     self._initialize_devices()
@@ -68,7 +71,8 @@ class DeviceManager:
     # Check if the device is a virtual device
     if device_id in self.virtual_devices:
       # Create and return a new instance of the virtual device driver
-      return self.virtual_devices[device_id]['driver_class'](self.virtual_devices[device_id]['config'])
+      return self.virtual_devices[device_id]['driver_class'](self.virtual_devices[device_id]['config'], 
+                                                             self._command_parser)
     else:
       # Return the existing physical device driver
       return self.devices[device_id]
@@ -141,13 +145,13 @@ class DeviceManager:
         self.virtual_devices[device_config['id']] = {'driver_class':device_driver_class, 'config': device_config}
       else:
         # Physical driver, attempt to initialize
-        try:
-          self.devices[device_config['id']] = device_driver_class(device_config)
-        except Exception, driver_exception:
-          logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
-                        str(driver_exception))
-          raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
-                                "Received error message: "+str(driver_exception))
+        #try:
+          self.devices[device_config['id']] = device_driver_class(device_config, self._command_parser)
+        #except Exception, driver_exception:
+        #  logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
+        #                str(driver_exception))
+        #  raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
+        #                        "Received error message: "+str(driver_exception))
   
   def _validate_devices(self, device_configuration):
     """ Validates the provided device configuration.

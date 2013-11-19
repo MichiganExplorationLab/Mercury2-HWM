@@ -9,8 +9,8 @@ from hwm.core.configuration import *
 from hwm.command import command
 from hwm.hardware.devices.drivers.mxl_balloon_tracker import mxl_balloon_tracker
 
-class TestMXLBalloonTrackerDevice(unittest.TestCase):
-  """ This test suite verifies the functionality of the MXL Balloon Tracker virtual device.
+class TestMXLBalloonTrackerDriver(unittest.TestCase):
+  """ This test suite verifies the functionality of the MXL Balloon Tracker virtual driver.
   """
 
   def setUp(self):
@@ -43,7 +43,7 @@ class TestMXLBalloonTrackerDevice(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"})
+    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"}, MagicMock())
     test_device._aprs_service = MagicMock()
     test_device._aprs_service.id = "aprs_test_service"
     test_device._aprs_service.type = "tracker"
@@ -63,7 +63,7 @@ class TestMXLBalloonTrackerDevice(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"})
+    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"}, MagicMock())
     test_device._aprs_service = MagicMock()
 
     # Run the prepare_for_session callback and check results
@@ -517,10 +517,10 @@ class TestAPRSTrackingService(unittest.TestCase):
     self.config.user_options = {}
 
 class MockAPRSHandler(urllib2.HTTPHandler):
-    """ A mock HTTP handler for simulating APRS.fi API queries. """
-    
-    def http_open(self, req):
-      return self.mock_request_builder(req)
+  """ A mock HTTP handler for simulating APRS.fi API queries. """
+
+  def http_open(self, req):
+    return self.mock_request_builder(req)
 
 def mock_aprs_success(request):
   """ A mock urllib2 request handler that returns a simulated successful APRS.fi API response.

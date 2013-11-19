@@ -1,6 +1,6 @@
 """ @package hwm.hardware.devices.drivers.mxl_balloon_tracker.mxl_balloon_tracker
 This module contains a virtual driver that provides tracking information for MXL balloon missions using a combination of
-the APRS.fi network and position information directly received from the balloon.
+the APRS.fi network and position information downlinked directly from the balloon.
 """
 
 # Import required modules
@@ -26,14 +26,15 @@ class MXL_Balloon_Tracker(driver.VirtualDriver):
         one pipeline will ever be using the driver at a time.
   """
 
-  def __init__(self, device_configuration):
+  def __init__(self, device_configuration, command_parser):
     """ Sets up the balloon tracker and initializes its command handler.
 
     @param device_configuration  A dictionary containing the tracker's configuration options.
+    @param command_parser        The active CommandParser instance.
     """
 
     # Call the VirtualDriver constructor
-    super(MXL_Balloon_Tracker,self).__init__(device_configuration)
+    super(MXL_Balloon_Tracker,self).__init__(device_configuration, command_parser)
 
     # Initialize the driver's command handler
     self._command_handler = BalloonHandler(self)
@@ -259,9 +260,9 @@ class Direct_Downlink_APRS_Service(service.Service):
     """
 
     # Log the error
-    logging.error("An error occured while running the '"+self._service_id+"' service, the service has been stopped: "+
-                  failure.getErrorMessage())
-    # TODO: Log the error to the event's state dictionary.
+    logging.error("An error occured while running the '"+self._service_id+"' service, the service has been stopped: '"+
+                  failure.getErrorMessage()+"'")
+    # TODO: Log the error to the driver's state dictionary.
 
     # Stop the event loop just incase it's still running
     if self._tracking_update_loop.running:

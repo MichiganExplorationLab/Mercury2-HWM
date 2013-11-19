@@ -32,10 +32,10 @@ class TestCommandInfrastructure(unittest.TestCase):
     logging.disable(logging.CRITICAL)
   
     # Initialize the command parser and necessary resources
-    self._reset_device_manager()
     self.config.read_configuration(self.source_data_directory+'/hardware/pipelines/tests/data/pipeline_configuration_valid.yml')
     permission_manager = permissions.PermissionManager(self.source_data_directory+'/network/security/tests/data/test_permissions_valid.json', 3600)
     self.command_parser = parser.CommandParser([command_handler.SystemCommandHandler('system'), utilities.TestCommandHandler('test')], permission_manager)
+    self._reset_device_manager(self.command_parser)
     self.pipeline_manager = pipeline_manager.PipelineManager(self.device_manager, self.command_parser)
     self.session_coordinator = MockSessionCoordinator(self.command_parser)
   
@@ -526,10 +526,10 @@ class TestCommandInfrastructure(unittest.TestCase):
     
     return test_deferred
 
-  def _reset_device_manager(self):
+  def _reset_device_manager(self, command_parser):
     """ Resets the device manager instance. This is used to test the command parser with device commands.
     """
 
     # Load a valid device configuration and setup the device manager
     self.config.read_configuration(self.source_data_directory+'/hardware/devices/tests/data/devices_configuration_valid.yml')
-    self.device_manager = device_manager.DeviceManager()
+    self.device_manager = device_manager.DeviceManager(command_parser)

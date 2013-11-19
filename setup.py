@@ -39,7 +39,8 @@ setup(
                       'doxypy>=0.4.2',
                       'jsonschema',
                       'mock',
-                      'txws'],
+                      'txws',
+                      'sgp4'],
   
   # Specify patterns for data files to include (will be copied to a user directory during installation)
   data_files = [
