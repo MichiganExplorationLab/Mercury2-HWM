@@ -3,7 +3,9 @@ This module contains the driver and command handler for the MXL Antenna Controll
 """
 
 # Import required modules
-import logging, time
+import logging, time, json
+import urllib, urllib2
+from twisted.internet import task, defer
 from twisted.internet.defer import inlineCallbacks
 from hwm.hardware.devices.drivers import driver
 from hwm.hardware.pipelines import pipeline
@@ -28,6 +30,8 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
 
     # Set configuration settings
     self.update_period = 2 # Seconds
+    self.antenna_controller_api_endpoint = "http://172.16.1.222/api"
+    self.antenna_controller_api_timeout = 2 # Seconds
 
     # Initialize the driver's command handler
     self._command_handler = AntennaControllerHandler(self)
@@ -42,7 +46,8 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
           target.
 
     @param session_pipeline  The Pipeline associated with the new session.
-    @return Returns a deferred for the state update LoopingCall.
+    @return Returns a deferred for the state update LoopingCall if a 'tracker' service can be loaded and False
+            otherwise.
     """
 
     # Load the pipeline's active tracking service
@@ -51,12 +56,12 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     try:
       self._tracker_service = session_pipeline.load_service("tracker")
     except pipeline.ServiceTypeNotFound as e:
-      # A tracker service isn't available, log the error
-      logging.error("The MXL antenna controller could not load a tracking service from the session's pipeline.")
+      # A tracker service isn't available
+      logging.error("The MXL antenna controller could not load a 'tracker' service from the session's pipeline.")
+      return False
 
     # Register a callback with the tracking service
-    if self._tracker_service is not None:
-      self._tracker_service.register_position_receiver(self.process_new_position)
+    self._tracker_service.register_position_receiver(self.process_new_position)
 
     # Start a looping call to update the tracker's state
     self._state_update_loop = task.LoopingCall(self._update_state)
@@ -79,6 +84,10 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
       'destination': self._session_pipeline.id+"."+self.id
     }
     command_deferred = self._command_parser.parse_command(command_request, user_id = None, kernel_mode = True)
+
+    # Stop the state update LoopingCall
+    if self._state_update_loop.running:
+      self._state_update_loop.stop()
 
     # Reset the device
     self._reset_controller_state()
@@ -149,8 +158,10 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
       self._controller_state['timestamp'] = int(time.time())
       self._controller_state['azimuth'] = result['response']['azimuth']
       self._controller_state['elevation'] = result['response']['elevation']
+
+      defer.returnValue(self.get_state())
     else:
-      return None 
+      defer.returnValue(None)
 
   def _handle_state_update_error(self, failure):
     """ Handles errors that may occur during the state update loop.
@@ -176,6 +187,7 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     """
 
     # Set the driver's attributes
+    self._state_update_loop = None
     self._current_position = None
     self._tracker_service = None
     self._session_pipeline = None
@@ -183,7 +195,7 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
       "timestamp": None,
       "azimuth": 0.0,
       "elevation": 0.0,
-      "state": None
+      "state": "inactive"
     }
 
 class AntennaControllerHandler(handler.DeviceCommandHandler):
@@ -200,15 +212,16 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     """
 
     # Build and send the command request
-    request = self._build_request("W", {'az': command.parameters['azimuth'], 'el': command.parameters['elevation']})
+    request = self._build_request("W", {'az': active_command.parameters['azimuth'],
+                                        'el': active_command.parameters['elevation']})
     response = self._send_commands([request])
 
     # Check the response and return the move_antenna command response
-    if response[0]['status'] == "okay":
+    if response['status'] == "okay":
       self.driver._controller_state['state'] = "active"
       return {'message': "The antenna is being moved."}
     else:
-      raise command.CommandError("An error occured while attempting to move the antenna: '"+response[0]['message']+"'")
+      raise command.CommandError("An error occured while attempting to move the antenna: '"+response['message']+"'")
 
   def settings_move(self):
     """ Provides meta-data for the "move" command.
@@ -239,14 +252,14 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     return build_metadata_dict(command_parameters, 'move', self.name, requires_active_session = True,
                                schedulable = True)
 
-  def command_park(self, command):
+  def command_park(self, active_command):
     """ Parks the antenna.
 
     This command parks the antenna at an azimuth of 270 degrees, and an elevation of 0 degrees.
   
     @throw May throw CommandError if an error occurs while instructing the antenna to park.
 
-    @param command  The currently executing Command.
+    @param active_command  The currently executing Command.
     @return Returns a dictionary containing the results of the park command.
     """
 
@@ -255,11 +268,11 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     response = self._send_commands([request])
 
     # Check the response and return the park command response
-    if response[0]['status'] == "okay":
+    if response['status'] == "okay":
       self.driver._controller_state['state'] = "parking"
       return {'message': "The antenna is being parked."}
     else:
-      raise command.CommandError("An error occured while parking the antenna: '"+response[0]['message']+"'")
+      raise command.CommandError("An error occured while parking the antenna: '"+response['message']+"'")
 
   def settings_park(self):
     """ Provides meta-data for the "park" command.
@@ -269,7 +282,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'park', self.name, requires_active_session = True)
 
-  def command_calibrate(self, command):
+  def command_calibrate(self, active_command):
     """ Completely calibrates the antenna.
 
     This command calibrates the antenna's azimuth and elevation by rotating it until it hits the vertical and horizontal 
@@ -280,7 +293,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     @throw May throw CommandError if an error occurs while starting the calibration.
 
-    @param command  The currently executing command.
+    @param active_command  The currently executing command.
     @return Returns a dictionary containing the results of the calibration.
     """
 
@@ -289,11 +302,11 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     response = self._send_commands([request])
 
     # Check the response and return the calibration results
-    if response[0]['status'] == "okay":
+    if response['status'] == "okay":
       self.driver._controller_state['state'] = "calibrating"
       return {'message': "The antenna is being calibrated."}
     else:
-      raise command.CommandError("An error occured while calibrating the antenna: '"+response[0]['message']+"'")
+      raise command.CommandError("An error occured while calibrating the antenna: '"+response['message']+"'")
 
   def settings_calibrate(self):
     """ Provides meta-data for the "calibrate" command.
@@ -303,7 +316,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'calibrate', self.name, requires_active_session = True)
 
-  def command_calibrate_vert(self, command):
+  def command_calibrate_vert(self, active_command):
     """ Performs a vertical calibration.
 
     This command performs a vertical (El) calibration only. This command exists because the elevation tends to drift off
@@ -314,7 +327,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     @throw May throw CommandError if an error occurs while starting the vertical calibration.
 
-    @param command  The currently executing command.
+    @param active_command  The currently executing command.
     @return Returns a dictionary containing the results of the vertical calibration.
     """
 
@@ -323,11 +336,11 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     response = self._send_commands([request])
 
     # Check the response and return the results
-    if response[0]['status'] == "okay":
+    if response['status'] == "okay":
       self.driver._controller_state['state'] = "calibrating"
       return {'message': "The antenna is being vertically calibrated."}
     else:
-      raise command.CommandError("An error occured while vertically calibrating the antenna: '"+response[0]['message']+"'")
+      raise command.CommandError("An error occured while vertically calibrating the antenna: '"+response['message']+"'")
 
   def settings_calibrate_vert(self):
     """ Provides meta-data for the "calibrate_vert" command.
@@ -335,9 +348,9 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     @return Returns a dictionary containing meta-data about the command.
     """
 
-    return build_metadata_dict([], 'calibrate', self.name, requires_active_session = True)
+    return build_metadata_dict([], 'calibrate_vert', self.name, requires_active_session = True)
 
-  def command_calibrate_and_park(self, command):
+  def command_calibrate_and_park(self, active_command):
     """ Performs a full calibration and parks the antenna.
 
     This command calibrates the azimuth and elevation of the antenna and parks it at its rest position. 
@@ -347,7 +360,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     @throw May throw CommandError if an error occurs while instructing the antenna to calibrate and park.
 
-    @param command  The currently executing command.
+    @param active_command  The currently executing command.
     @return Returns a dictionary containing the results of the calibration and park commands.
     """
 
@@ -357,12 +370,12 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     responses = self._send_commands([request_calibrate, request_park])
 
     # Check the responses
-    if responses[0]['status'] == "okay" and responses[1]['status'] == "okay":
+    if responses['status'] == "okay":
       self.driver._controller_state['state'] = "calibrating"
       return {'message': "The antenna is being fully calibrated and will be parked at an Az/El of 270/0."}
     else:
-      error_message = responses[0]['message'] if responses[0]['status'] == "error" else responses[1]['message']
-      raise command.CommandError("An error occured while attempting to calibrate and park the antenna: '"+error_message+"'")
+      raise command.CommandError("An error occured while attempting to calibrate and park the antenna: '"+
+                                 responses['message']+"'")
 
   def settings_calibrate_and_park(self):
     """ Provides meta-data for the "calibrate_and_park" command.
@@ -372,7 +385,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'calibrate_and_park', self.name, requires_active_session = True)
 
-  def command_get_state(self, command):
+  def command_get_state(self, active_command):
     """ Queries the antenna controller for its current state.
 
     This command loads and returns the controller's current state (i.e. its azimuth and elevation).
@@ -381,7 +394,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     @throw May throw CommandError if an error occurs while fetching the controller's state.
 
-    @param command  The currently executing command.
+    @param active_command  The currently executing command.
     @return Returns a dictionary containing the current azimuth and elevation of the antenna.
     """
 
@@ -390,12 +403,20 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     response = self._send_commands([request])
 
     # Check the response and return the results
-    if response[0]['status'] == "okay":
-      return {'azimuth': response[0]['azimuth'], 'elevation': response[0]['elevation']}
+    if response['status'] == "okay":
+      return {'azimuth': response['responses'][0]['azimuth'], 'elevation': response['responses'][0]['elevation']}
     else:
-      raise command.CommandError("An error occured fetching the antenna controller state: '"+response[0]['message']+"'")
+      raise command.CommandError("An error occured fetching the antenna controller state: '"+response['message']+"'")
 
-  def command_stop(self, command):
+  def settings_get_state(self):
+    """ Provides meta-data for the "get_state" command.
+
+    @return Returns a dictionary containing meta-data about the command.
+    """
+
+    return build_metadata_dict([], 'get_state', self.name, requires_active_session = True)
+
+  def command_stop(self, active_command):
     """ Stops the antenna.
 
     This command instructs the antenna controller to stop executing whatever action it may currently be executing. It
@@ -403,7 +424,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     @throw May throw CommandError if an error occurs while instructing the antenna to park.
 
-    @param command  The currently executing command.
+    @param active_command  The currently executing command.
     @return Returns a dictonary containing the results of the stop command.
     """
 
@@ -412,11 +433,11 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     response = self._send_commands([request])
 
     # Check the response
-    if response[0]['status'] == "okay":
+    if response['status'] == "okay":
       self.driver._controller_state['state'] = "stopped"
-      return {'message': "The antenna has been stopped."}
+      return {'message': "The antenna controller has been stopped."}
     else:
-      raise command.CommandError("An error occured while stopping the antenna: '"+response[0]['message']+"'")
+      raise command.CommandError("An error occured while stopping the antenna: '"+response['message']+"'")
 
   def settings_stop(self):
     """ Provides meta-data for the "stop" command.
@@ -426,7 +447,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'stop', self.name, requires_active_session = True)
 
-  def command_stop_emergency(self, command):
+  def command_stop_emergency(self, active_command):
     """ Stops the antenna in the event of an emergency.
 
     This command simulates a press of the emergency stop button on the antenna controller. An emergency stop differs 
@@ -435,7 +456,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     @throw May throw CommandError if an error occurs while performing an emergency stop.
     
-    @param command  The currently executing command.
+    @param active_command  The currently executing command.
     @param Returns a dictionary containing the results of the emergency stop.
     """
 
@@ -444,12 +465,12 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     response = self._send_commands([request])
 
     # Check the response
-    if response[0]['status'] == "okay":
+    if response['status'] == "okay":
       self.driver._controller_state['state'] = "emergency_stopped"
       return {'message': "The antenna has been stopped and placed in emergency mode. It will not respond to new "+
                          "commands until it receives another emergency stop command."}
     else:
-      raise command.CommandError("An error occured while performing the emergency stop: '"+response[0]['message']+"'")
+      raise command.CommandError("An error occured while performing the emergency stop: '"+response['message']+"'")
 
   def settings_stop_emergency(self):
     """ Provides meta-data for the "stop_emergency" command.
@@ -458,6 +479,62 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     """
 
     return build_metadata_dict([], 'stop_emergency', self.name, requires_active_session = True, dangerous = True)
+
+  def _build_request(self, command, parameters = None):
+    """ Constructs a request dictionary for the antenna controller API.
+    
+    @param command     The command to be executed. This should be a low level antenna controller command, not a Mercury2
+                       command.
+    @param parameters  A dictionary containing parameters that should be passed along with the command.
+    @return Returns a dictionary that represents a request to the antenna controller web API.
+    """
+
+    # Construct the request
+    new_request = {
+      'command': command
+    }
+
+    if parameters is not None:
+      new_request['arguments'] = parameters
+
+    return new_request
+
+  def _send_commands(self, requests):
+    """ Sends commands to the antenna controller API.
+
+    @note This method makes a blocking network call and should be called with deferToThread.
+
+    @param requests  An array containing requests to be sent to the antenna controller command API. Requests will be 
+                     sequentially sent in the order provided.
+    @return Returns an array containing responses for the provided commands in the order they were submitted.
+    """
+
+    # Encode the request
+    request_json = json.dumps(requests)
+    request_encoded = urllib.urlencode({"request": request_json})
+    request_response = {}
+
+    # Submit the request
+    try:
+      ac_request = urllib2.Request(self.driver.antenna_controller_api_endpoint, request_encoded)
+      ac_opener = urllib2.build_opener()
+      ac_response = ac_opener.open(ac_request, None, self.driver.antenna_controller_api_timeout)
+    except Exception as e:
+      # Error downloading the response
+      request_response['status'] = "error"
+      request_response['message'] = "An error occured downloading the response from the antenna controller."
+      return request_response
+    
+    # Parse the APRS response
+    try:
+      parsed_response = json.load(ac_response)
+      request_response = parsed_response
+    except ValueError as e:
+      # Error parsing the response
+      request_response['status'] = "error"
+      request_response['message'] = "An error occured parsing the JSON response from the antenna controller."
+
+    return request_response
 
 class AntennaControllerError(Exception):
   pass

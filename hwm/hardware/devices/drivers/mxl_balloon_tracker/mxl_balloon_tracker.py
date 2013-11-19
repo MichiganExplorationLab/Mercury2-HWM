@@ -262,7 +262,7 @@ class Direct_Downlink_APRS_Service(service.Service):
     # Log the error
     logging.error("An error occured while running the '"+self._service_id+"' service, the service has been stopped: '"+
                   failure.getErrorMessage()+"'")
-    # TODO: Log the error to the event's state dictionary.
+    # TODO: Log the error to the driver's state dictionary.
 
     # Stop the event loop just incase it's still running
     if self._tracking_update_loop.running:
