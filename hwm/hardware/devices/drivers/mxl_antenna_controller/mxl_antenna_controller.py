@@ -119,13 +119,15 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     if 'azimuth' not in target_position or 'elevation' not in target_position:
       raise InvalidTargetPosition("The provided target position is invalid (didn't contain an azimuth or elevation).")
 
+    target_elevation = 0 if target_position['elevation']<0 else int(target_position['elevation'])
+
     # Move the antenna
     command_request = {
       'command': "move",
       'destination': self._session_pipeline.id+"."+self.id,
       'parameters': {
-        'azimuth': target_position['azimuth'],
-        'elevation': target_position['elevation']
+        'azimuth': int(target_position['azimuth']),
+        'elevation': target_elevation
       }
     }
     command_deferred = self._command_parser.parse_command(command_request, 
@@ -193,8 +195,8 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     self._session_pipeline = None
     self._controller_state = {
       "timestamp": None,
-      "azimuth": 0.0,
-      "elevation": 0.0,
+      "azimuth": 0,
+      "elevation": 0,
       "state": "inactive"
     }
 
@@ -212,8 +214,8 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     """
 
     # Build and send the command request
-    request = self._build_request("W", {'az': active_command.parameters['azimuth'],
-                                        'el': active_command.parameters['elevation']})
+    request = self._build_request("W", {'az': int(active_command.parameters['azimuth']),
+                                        'el': int(active_command.parameters['elevation'])})
     response = self._send_commands([request])
 
     # Check the response and return the move_antenna command response
@@ -232,7 +234,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     # Define a schema for parameters
     command_parameters = [
       {
-        "type": "number",
+        "type": "integer",
         "minvalue": 0,
         "maxvalue": 360,
         "required": True,
@@ -240,7 +242,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
         "description": "The desired azimuth."
       },
       {
-        "type": "number",
+        "type": "integer",
         "minvalue": 0,
         "maxvalue": 210,
         "required": True,

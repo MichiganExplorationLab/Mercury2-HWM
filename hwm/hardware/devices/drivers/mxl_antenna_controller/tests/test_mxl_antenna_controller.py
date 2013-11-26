@@ -129,8 +129,8 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     self.assertEqual(test_device._tracker_service, None)
     self.assertEqual(test_device._session_pipeline, None)
     self.assertEqual(test_device._controller_state['timestamp'], None)
-    self.assertEqual(test_device._controller_state['azimuth'], 0.0)
-    self.assertEqual(test_device._controller_state['elevation'], 0.0)
+    self.assertEqual(test_device._controller_state['azimuth'], 0)
+    self.assertEqual(test_device._controller_state['elevation'], 0)
     self.assertEqual(test_device._controller_state['state'], "inactive")
 
   def test_process_new_position(self):
@@ -144,8 +144,8 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     def mock_parse_command(command_request, **keywords):
       self.assertEqual(command_request['command'], "move")
       self.assertEqual(command_request['destination'], test_pipeline.id+".test_device")
-      self.assertEqual(command_request['parameters']['azimuth'], 42.0)
-      self.assertEqual(command_request['parameters']['elevation'], 42.0)
+      self.assertEqual(command_request['parameters']['azimuth'], 42)
+      self.assertEqual(command_request['parameters']['elevation'], 42)
       self.assertEqual(keywords['user_id'], test_pipeline.current_session.user_id)
 
       return defer.succeed(True)
@@ -158,8 +158,8 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
 
     # Create a mock target_position and submit it
     target_position = {
-      "azimuth": 42.0,
-      "elevation": 42.0
+      "azimuth": 42.1,
+      "elevation": 42.1
     }
     command_deferred = test_device.process_new_position(target_position)
 
@@ -174,7 +174,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
 
     # Create an invalid mock target_position and submit it
     target_position = {
-      "azimuth": 42.0
+      "azimuth": 42.1
     }
     self.assertRaises(mxl_antenna_controller.InvalidTargetPosition, test_device.process_new_position, target_position)
 
@@ -196,8 +196,8 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
       test_response = {
         'response': {
           'status': 'okay',
-          'azimuth': 42.0,
-          'elevation': 42.0
+          'azimuth': 42,
+          'elevation': 42
         }
       }
 
@@ -215,8 +215,8 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
 
     # Check results
     self.assertTrue(result['timestamp'] is not None)
-    self.assertEqual(result['azimuth'], 42.0)
-    self.assertEqual(result['elevation'], 42.0)
+    self.assertEqual(result['azimuth'], 42)
+    self.assertEqual(result['elevation'], 42)
 
   @inlineCallbacks
   def test_update_state_command_error(self):
