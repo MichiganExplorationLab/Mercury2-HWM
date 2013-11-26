@@ -86,7 +86,7 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     command_deferred = self._command_parser.parse_command(command_request, user_id = None, kernel_mode = True)
 
     # Stop the state update LoopingCall
-    if self._state_update_loop.running:
+    if self._state_update_loop is not None and self._state_update_loop.running:
       self._state_update_loop.stop()
 
     # Reset the device

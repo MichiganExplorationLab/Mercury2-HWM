@@ -4,7 +4,8 @@ the APRS.fi network and position information downlinked directly from the balloo
 """
 
 # Import required modules
-import time, urllib2, json, logging
+import time, json, logging
+import urllib2
 from math import *
 from twisted.internet import task, defer, reactor, threads
 from hwm.core.configuration import Configuration
@@ -448,7 +449,7 @@ class BalloonHandler(handler.DeviceCommandHandler):
 
     If the service is already started, it will be indicated in the response.
     
-    @param active_command  The executing Command. Contains the command parameters.
+    @param active_command  The executing Command.
     @return Returns a dictionary containing the command response.
     """
 
@@ -473,7 +474,7 @@ class BalloonHandler(handler.DeviceCommandHandler):
     This command will stop the tracking service's event loop without resetting any of the service attributes. This will 
     allow it to easily be restarted by the user.
     
-    @param active_command  The currently executing Command. Contains the command parameters.
+    @param active_command  The currently executing Command.
     @return Returns a dictionary containing the command response.
     """
 

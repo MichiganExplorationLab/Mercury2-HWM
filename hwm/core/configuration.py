@@ -98,7 +98,7 @@ class Config:
   
   def get(self, option_key):
     """ Retrieves the specified configuration option.
-    http://www.bbc.co.uk/http://www.bbc.co.uk/
+    
     This method returns the value of the specified option whether it is a user defined option or an option loaded from 
     a YAML configuration file.
     
@@ -127,7 +127,7 @@ class Config:
     @throws OptionProtected thrown if the user tries to delete a protected option (originally defined in a YAML 
             configuration file).
     @throws OptionNotFound thrown if the requested option can't be located.
-    http://www.bbc.co.uk/
+
     @param option_key  The key of the option to remove.
     @return Returns True if the option was successfully deleted.
     """
