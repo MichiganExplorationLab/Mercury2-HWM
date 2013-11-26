@@ -40,7 +40,7 @@ setup(
                       'jsonschema',
                       'mock',
                       'txws',
-                      'sgp4'],
+                      'pyephem'],
   
   # Specify patterns for data files to include (will be copied to a user directory during installation)
   data_files = [

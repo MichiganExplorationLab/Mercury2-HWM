@@ -14,7 +14,7 @@ class TestMXLBalloonTrackerDriver(unittest.TestCase):
   """
 
   def setUp(self):
-    # Set a local reference to Configuration (how other modules should typically access Config)
+    # Set a local reference to Configuration and load a test config file
     self.config = Configuration
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
@@ -48,7 +48,7 @@ class TestMXLBalloonTrackerDriver(unittest.TestCase):
     test_device._aprs_service.id = "aprs_test_service"
     test_device._aprs_service.type = "tracker"
 
-    # Verify the device can register services and initializes its command handler
+    # Verify the device can register services and initialize its command handler
     test_device.register_pipeline(test_pipeline)
     test_pipeline.register_service.assert_called_once_with(test_device._aprs_service)
     self.assertTrue(isinstance(test_device._command_handler, mxl_balloon_tracker.BalloonHandler))
@@ -80,7 +80,7 @@ class TestBalloonHandler(unittest.TestCase):
   """
 
   def setUp(self):
-    # Set a local reference to Configuration (how other modules should typically access Config)
+    # Set a local reference to Configuration and load a test config file
     self.config = Configuration
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
@@ -153,7 +153,7 @@ class TestBalloonHandler(unittest.TestCase):
     test_handler = mxl_balloon_tracker.BalloonHandler(test_driver)
 
     # Make sure the command fails if no callsign provided
-    self.assertRaises(command.CommandError, test_handler.command_set_callsign, test_driver)
+    self.assertRaises(command.CommandError, test_handler.command_set_callsign, test_command)
 
     # Add a callsign and make sure it updated the service correctly
     test_command.parameters = {'callsign': "test_callsign"}
@@ -171,7 +171,7 @@ class TestAPRSTrackingService(unittest.TestCase):
   """
   
   def setUp(self):
-    # Set a local reference to Configuration (how other modules should typically access Config)
+    # Set a local reference to Configuration and load a test config file
     self.config = Configuration
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
