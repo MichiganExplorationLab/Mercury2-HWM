@@ -19,6 +19,7 @@ class TestSGP4Tracker(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
+    self.standard_device_config = {'id': "test_device", 'propagation_frequency': 2}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -36,7 +37,7 @@ class TestSGP4Tracker(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = sgp4_tracker.SGP4TrackerDriver({'id': "test_device"}, MagicMock())
+    test_device = sgp4_tracker.SGP4TrackerDriver(self.standard_device_config, MagicMock())
     test_device._propagation_service = MagicMock()
     test_device._propagation_service.id = "sgp4_test_service"
     test_device._propagation_service.type = "tracker"
@@ -55,7 +56,7 @@ class TestSGP4Tracker(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = sgp4_tracker.SGP4TrackerDriver({'id': "test_device"}, MagicMock())
+    test_device = sgp4_tracker.SGP4TrackerDriver(self.standard_device_config, MagicMock())
     test_device._reset_tracker_state = MagicMock()
     test_device._propagation_service = MagicMock()
 
@@ -161,6 +162,7 @@ class TestSGP4TrackingService(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
+    self.standard_device_config = {'id': "test_device", 'propagation_frequency': 2}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -177,7 +179,7 @@ class TestSGP4TrackingService(unittest.TestCase):
     """
 
     # Create a service to test with
-    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker')
+    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Verify the service's attributes
     self.assertEqual(test_service._station_longitude, -83.71264)
@@ -198,7 +200,7 @@ class TestSGP4TrackingService(unittest.TestCase):
     time.time = lambda : 1385438844
     
     # Create a service to test with
-    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker')
+    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
     test_service.set_tle("1 37853U 11061D   13328.80218348  .00012426  00000-0  90147-3 0  6532",
                          "2 37853 101.7000 256.9348 0228543 286.4751 136.0421 14.85566785112276")
 
@@ -228,7 +230,7 @@ class TestSGP4TrackingService(unittest.TestCase):
     """ Makes sure the propagation service can start successfully. """
 
     # Create a service to test with
-    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker')
+    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
     test_service.set_tle("1 37853U 11061D   13328.80218348  .00012426  00000-0  90147-3 0  6532",
                          "2 37853 101.7000 256.9348 0228543 286.4751 136.0421 14.85566785112276")
 
@@ -248,7 +250,7 @@ class TestSGP4TrackingService(unittest.TestCase):
     """ Tests that the propagation service can correctly handle errors that may occur while propagating. """
 
     # Create a service to test with
-    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker')
+    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
     test_service.set_tle("1 37853U 11061D   13328.80218348  .00012426  00000-0  90147-3 0  6532",
                          "2 37853 101.7000 256.9348 0228543 286.4751 136.0421 14.85566785112276")
 
@@ -270,7 +272,7 @@ class TestSGP4TrackingService(unittest.TestCase):
     """ Verify that the propagation service can be reset successfully. """
 
     # Create a service to test with
-    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker')
+    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
     test_service.set_tle("1 37853U 11061D   13328.80218348  .00012426  00000-0  90147-3 0  6532",
                          "2 37853 101.7000 256.9348 0228543 286.4751 136.0421 14.85566785112276")
     test_service._reset_propagator_state = MagicMock()

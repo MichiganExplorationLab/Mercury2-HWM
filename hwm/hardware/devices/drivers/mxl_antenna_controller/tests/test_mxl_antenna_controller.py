@@ -21,6 +21,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
+    self.standard_device_configuration = {'id': "test_device", 'update_period': 2, 'controller_api_endpoint': "http://172.16.1.222/api", 'controller_api_timeout': 2}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -39,7 +40,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
 
     # Create a driver instance to test with
     test_pipeline = MagicMock()
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
     test_device._update_state = MagicMock()
 
     # Create a mock 'tracker' service
@@ -67,7 +68,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create driver and pipeline instances to test with
     test_pipeline = MagicMock()
     test_pipeline.load_service = mock_load_service
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
     test_device._update_state = MagicMock()
 
     # Run prepare_for_session and check results
@@ -83,7 +84,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
 
     # Create a driver instance to test with
     test_pipeline = MagicMock()
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
     test_device._update_state = mock_update_state
 
     # Create a mock 'tracker' service
@@ -114,7 +115,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     test_pipeline.id = "test_pipeline"
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Create a mock 'tracker' service
@@ -153,7 +154,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create a test device
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Create a mock target_position and submit it
@@ -170,7 +171,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     """
 
     # Create a driver instance to test with
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
 
     # Create an invalid mock target_position and submit it
     target_position = {
@@ -206,7 +207,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create a test device
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Try updating the state
@@ -244,7 +245,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create a test device
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Try updating the state
@@ -276,7 +277,7 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     self.test_driver = MagicMock()
     self.test_driver._controller_state = {}
     self.test_handler = mxl_antenna_controller.AntennaControllerHandler(self.test_driver)
-    self.test_driver.antenna_controller_api_endpoint = "http://actest.local"
+    self.test_driver.controller_api_endpoint = "http://actest.local"
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)

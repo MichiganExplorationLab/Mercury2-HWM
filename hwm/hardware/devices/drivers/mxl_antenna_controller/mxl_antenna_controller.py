@@ -29,9 +29,9 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     super(MXL_Antenna_Controller,self).__init__(device_configuration, command_parser)
 
     # Set configuration settings
-    self.update_period = 2 # Seconds
-    self.antenna_controller_api_endpoint = "http://172.16.1.222/api"
-    self.antenna_controller_api_timeout = 2 # Seconds
+    self.update_period = device_configuration['update_period']
+    self.controller_api_endpoint = device_configuration['controller_api_endpoint']
+    self.controller_api_timeout = device_configuration['controller_api_timeout']
 
     # Initialize the driver's command handler
     self._command_handler = AntennaControllerHandler(self)
@@ -518,9 +518,9 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     # Submit the request
     try:
-      ac_request = urllib2.Request(self.driver.antenna_controller_api_endpoint, request_encoded)
+      ac_request = urllib2.Request(self.driver.controller_api_endpoint, request_encoded)
       ac_opener = urllib2.build_opener()
-      ac_response = ac_opener.open(ac_request, None, self.driver.antenna_controller_api_timeout)
+      ac_response = ac_opener.open(ac_request, None, self.driver.controller_api_timeout)
     except Exception as e:
       # Error downloading the response
       request_response['status'] = "error"

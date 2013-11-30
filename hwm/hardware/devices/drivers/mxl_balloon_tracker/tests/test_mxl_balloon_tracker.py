@@ -19,6 +19,7 @@ class TestMXLBalloonTrackerDriver(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
+    self.standard_device_config = {'id': "test_device", 'update_interval': 2, 'aprs_fallback_timeout': 10, 'aprs_update_timeout': 4, 'api_key': None} 
 
     # Backup a urllib2 method that gets monkey-patched so that it can be restored between tests
     self.old_build_opener = urllib2.build_opener
@@ -43,7 +44,7 @@ class TestMXLBalloonTrackerDriver(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"}, MagicMock())
+    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker(self.standard_device_config, MagicMock())
     test_device._aprs_service = MagicMock()
     test_device._aprs_service.id = "aprs_test_service"
     test_device._aprs_service.type = "tracker"
@@ -63,7 +64,7 @@ class TestMXLBalloonTrackerDriver(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker({'id': "test_device"}, MagicMock())
+    test_device = mxl_balloon_tracker.MXL_Balloon_Tracker(self.standard_device_config, MagicMock())
     test_device._aprs_service = MagicMock()
 
     # Run the prepare_for_session callback and check results
@@ -174,6 +175,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
+    self.standard_device_config = {'id': "test_device", 'update_interval': 2, 'aprs_fallback_timeout': 10, 'aprs_update_timeout': 4, 'api_key': None} 
 
     # Backup a urllib2 method that gets monkey-patched so that it can be restored between tests
     self.old_build_opener = urllib2.build_opener
@@ -196,7 +198,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Verify the service's attributes
     self.assertEqual(test_service._station_longitude, -83.71264)
@@ -214,7 +216,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Manually set some position data and try again
     test_service._set_balloon_position(1384115919, -84.48387, 42.73698, 12000, 20, 30) 
@@ -236,7 +238,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance and mock some urllib2 methods
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
     test_service._aprs_api_endpoint = "http://aprstest.local"
     self.set_mock_request_builder(mock_aprs_success)
 
@@ -252,7 +254,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance and mock some urllib2 methods
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
     test_service._aprs_api_endpoint = "aprstest.local"
 
     # Test that the service correctly responds to urllib2 errors
@@ -274,7 +276,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Submit some invalid positions
     self.assertEqual(test_service._update_targeting_info(None), None)
@@ -296,7 +298,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Submit some position information and see if the service calculates the targeting info correctly
     position = {
@@ -319,7 +321,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Run the tracking update loop body without a service or APRS callsign
     test_deferred = test_service._track_target()
@@ -342,7 +344,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
     self.receiver_results = None
 
     # Create and register a position receiver with the service
@@ -379,7 +381,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Mock the position service and track the target
     test_time = int(time.time())-1
@@ -412,7 +414,7 @@ class TestAPRSTrackingService(unittest.TestCase):
       raise TypeError
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Mock the position service with a function that will generate an error and check that it reverted to APRS
     test_service._live_craft_position_service = MagicMock()
@@ -460,7 +462,7 @@ class TestAPRSTrackingService(unittest.TestCase):
       raise TypeError
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     # Try starting the tracker with a mock already running event loop
     test_service._tracking_update_loop = MagicMock()
@@ -482,7 +484,7 @@ class TestAPRSTrackingService(unittest.TestCase):
     """
 
     # Create a test service instance
-    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', self.standard_device_config)
 
     def check_results(result, tracking_update_loop):
       # Will be called when the tracker LoopingCall loop is stopped with a reference to the LoopingCall instance

@@ -32,7 +32,7 @@ class SGP4TrackerDriver(driver.VirtualDriver):
     self._command_handler = SGP4Handler(self)
 
     # Initialize the service that will perform the propagation
-    self._propagation_service = SGP4PropagationService('sgp4_propagation_service', 'tracker')
+    self._propagation_service = SGP4PropagationService('sgp4_propagation_service', 'tracker', device_configuration)
 
     self._reset_tracker_state()
 
@@ -81,18 +81,19 @@ class SGP4PropagationService(service.Service):
   session's satellite of interest.
   """
 
-  def __init__(self, service_id, service_type):
+  def __init__(self, service_id, service_type, device_configuration):
     """ Sets up the SGP4 propagation service.
 
-    @param service_id     The unique service ID.
-    @param service_type   The service type. Other drivers, such as the antenna controller driver, will search the active 
-                          pipeline for this when looking for this service.
+    @param service_id            The unique service ID.
+    @param service_type          The service type. Other drivers, such as the antenna controller driver, will search the
+                                 active pipeline for this when looking for this service.
+    @param device_configuration  A dictionary containing the tracker's configuration options.
     """
 
     super(SGP4PropagationService,self).__init__(service_id, service_type)
 
     # Set configuration settings
-    self.propagation_frequency = 2 # Seconds
+    self.propagation_frequency = device_configuration['propagation_frequency']
 
     # Load the ground station's location
     self._global_config = Configuration
