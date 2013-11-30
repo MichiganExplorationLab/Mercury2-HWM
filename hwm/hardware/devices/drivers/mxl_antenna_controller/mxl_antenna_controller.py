@@ -5,7 +5,7 @@ This module contains the driver and command handler for the MXL Antenna Controll
 # Import required modules
 import logging, time, json
 import urllib, urllib2
-from twisted.internet import task, defer
+from twisted.internet import task, defer, threads
 from twisted.internet.defer import inlineCallbacks
 from hwm.hardware.devices.drivers import driver
 from hwm.hardware.pipelines import pipeline
@@ -204,24 +204,25 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
   """ This command handler processes commands for the MXL Antenna Controller.
   """
 
+  @inlineCallbacks
   def command_move(self, active_command):
     """ Moves the antenna to the location specified in the command.
 
-    @throw May throw CommandError if an error occurs while instructing the antenna to move.
-
     @param active_command  The currently executing Command.
-    @return Returns a dictionary containing the results of the move command.
+    @return Returns a deferred that will be fired with a dictionary containing the results of the move command. If the 
+            command fails, the returned deferred will error.
     """
 
     # Build and send the command request
     request = self._build_request("W", {'az': int(active_command.parameters['azimuth']),
                                         'el': int(active_command.parameters['elevation'])})
-    response = self._send_commands([request])
+    command_deferred = self._send_commands([request])
+    response = yield command_deferred
 
     # Check the response and return the move_antenna command response
     if response['status'] == "okay":
       self.driver._controller_state['state'] = "active"
-      return {'message': "The antenna is being moved."}
+      defer.returnValue({'message': "The antenna is being moved."})
     else:
       raise command.CommandError("An error occured while attempting to move the antenna: '"+response['message']+"'")
 
@@ -254,25 +255,26 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     return build_metadata_dict(command_parameters, 'move', self.name, requires_active_session = True,
                                schedulable = True)
 
+  @inlineCallbacks
   def command_park(self, active_command):
     """ Parks the antenna.
 
     This command parks the antenna at an azimuth of 270 degrees, and an elevation of 0 degrees.
-  
-    @throw May throw CommandError if an error occurs while instructing the antenna to park.
 
     @param active_command  The currently executing Command.
-    @return Returns a dictionary containing the results of the park command.
+    @return Returns a deferred that will be fired with a dictionary containing the results of the park command. If the 
+            command fails, the returned deferred will error.
     """
 
     # Build and send the command request
     request = self._build_request("park")
-    response = self._send_commands([request])
+    command_deferred = self._send_commands([request])
+    response = yield command_deferred
 
     # Check the response and return the park command response
     if response['status'] == "okay":
       self.driver._controller_state['state'] = "parking"
-      return {'message': "The antenna is being parked."}
+      defer.returnValue({'message': "The antenna is being parked."})
     else:
       raise command.CommandError("An error occured while parking the antenna: '"+response['message']+"'")
 
@@ -284,6 +286,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'park', self.name, requires_active_session = True)
 
+  @inlineCallbacks
   def command_calibrate(self, active_command):
     """ Completely calibrates the antenna.
 
@@ -293,20 +296,20 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     @note This command can only be interrupted by a "stop" command. Any "move" commands received when the antenna is 
           being calibrated will be ignored.
 
-    @throw May throw CommandError if an error occurs while starting the calibration.
-
     @param active_command  The currently executing command.
-    @return Returns a dictionary containing the results of the calibration.
+    @return Returns a deferred that will be fired with a dictionary containing the results of the calibration. If the 
+            command fails, the returned deferred will error.
     """
 
     # Build and send the command request
     request = self._build_request("cal")
-    response = self._send_commands([request])
+    command_deferred = self._send_commands([request])
+    response = yield command_deferred
 
     # Check the response and return the calibration results
     if response['status'] == "okay":
       self.driver._controller_state['state'] = "calibrating"
-      return {'message': "The antenna is being calibrated."}
+      defer.returnValue({'message': "The antenna is being calibrated."})
     else:
       raise command.CommandError("An error occured while calibrating the antenna: '"+response['message']+"'")
 
@@ -318,6 +321,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'calibrate', self.name, requires_active_session = True)
 
+  @inlineCallbacks
   def command_calibrate_vert(self, active_command):
     """ Performs a vertical calibration.
 
@@ -327,20 +331,20 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     @note This command can only be interrupted by a "stop" command. Any "move" commands received when the antenna is 
           being vertically calibrated will be ignored.
 
-    @throw May throw CommandError if an error occurs while starting the vertical calibration.
-
     @param active_command  The currently executing command.
-    @return Returns a dictionary containing the results of the vertical calibration.
+    @return Returns a deferred that will be fired with a dictionary containing the results of the commands. If one of 
+            the commands fail, the returned deferred will error.
     """
 
     # Build and send the command request
     request = self._build_request("vert_cal")
-    response = self._send_commands([request])
+    command_deferred = self._send_commands([request])
+    response = yield command_deferred
 
     # Check the response and return the results
     if response['status'] == "okay":
       self.driver._controller_state['state'] = "calibrating"
-      return {'message': "The antenna is being vertically calibrated."}
+      defer.returnValue({'message': "The antenna is being vertically calibrated."})
     else:
       raise command.CommandError("An error occured while vertically calibrating the antenna: '"+response['message']+"'")
 
@@ -352,6 +356,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'calibrate_vert', self.name, requires_active_session = True)
 
+  @inlineCallbacks
   def command_calibrate_and_park(self, active_command):
     """ Performs a full calibration and parks the antenna.
 
@@ -360,21 +365,21 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     @note The "calibrate" command can only be interrupted by a "stop" command. Any "move" commands received when the 
           antenna is being calibrated will be ignored.
 
-    @throw May throw CommandError if an error occurs while instructing the antenna to calibrate and park.
-
     @param active_command  The currently executing command.
-    @return Returns a dictionary containing the results of the calibration and park commands.
+    @return Returns a deferred that will be fired with a dictionary containing the results of the commands. If the 
+            commands fail, the returned deferred will error.
     """
 
     # Build and send the command requests
     request_calibrate = self._build_request("cal")
     request_park = self._build_request("park")
-    responses = self._send_commands([request_calibrate, request_park])
+    command_deferred = self._send_commands([request_calibrate, request_park])
+    responses = yield command_deferred
 
     # Check the responses
     if responses['status'] == "okay":
       self.driver._controller_state['state'] = "calibrating"
-      return {'message': "The antenna is being fully calibrated and will be parked at an Az/El of 270/0."}
+      defer.returnValue({'message': "The antenna is being fully calibrated and will be parked at an Az/El of 270/0."})
     else:
       raise command.CommandError("An error occured while attempting to calibrate and park the antenna: '"+
                                  responses['message']+"'")
@@ -387,6 +392,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'calibrate_and_park', self.name, requires_active_session = True)
 
+  @inlineCallbacks
   def command_get_state(self, active_command):
     """ Queries the antenna controller for its current state.
 
@@ -394,19 +400,20 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     
     @note If the antenna controller is out of calibration, this command may not return accurate results.
 
-    @throw May throw CommandError if an error occurs while fetching the controller's state.
-
     @param active_command  The currently executing command.
-    @return Returns a dictionary containing the current azimuth and elevation of the antenna.
+    @return Returns a deferred that will be fired with a dictionary containing the results of the state command. If the 
+            command fails, the returned deferred will error.
     """
 
     # Build and send the command request
     request = self._build_request("C2")
-    response = self._send_commands([request])
+    command_deferred = self._send_commands([request])
+    response = yield command_deferred
 
     # Check the response and return the results
     if response['status'] == "okay":
-      return {'azimuth': response['responses'][0]['azimuth'], 'elevation': response['responses'][0]['elevation']}
+      defer.returnValue({'azimuth': response['responses'][0]['azimuth'], 
+                         'elevation': response['responses'][0]['elevation']})
     else:
       raise command.CommandError("An error occured fetching the antenna controller state: '"+response['message']+"'")
 
@@ -418,26 +425,27 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'get_state', self.name, requires_active_session = True)
 
+  @inlineCallbacks
   def command_stop(self, active_command):
     """ Stops the antenna.
 
     This command instructs the antenna controller to stop executing whatever action it may currently be executing. It
     will not be calibrated or parked after being stopped.
 
-    @throw May throw CommandError if an error occurs while instructing the antenna to park.
-
     @param active_command  The currently executing command.
-    @return Returns a dictonary containing the results of the stop command.
+    @return Returns a deferred that will be fired with a dictionary containing the results of the stop command. If the 
+            command fails, the returned deferred will error.
     """
 
     # Build and send the command request
     request = self._build_request("s")
-    response = self._send_commands([request])
+    command_deferred = self._send_commands([request])
+    response = yield command_deferred
 
     # Check the response
     if response['status'] == "okay":
       self.driver._controller_state['state'] = "stopped"
-      return {'message': "The antenna controller has been stopped."}
+      defer.returnValue({'message': "The antenna controller has been stopped."})
     else:
       raise command.CommandError("An error occured while stopping the antenna: '"+response['message']+"'")
 
@@ -449,28 +457,29 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
 
     return build_metadata_dict([], 'stop', self.name, requires_active_session = True)
 
+  @inlineCallbacks
   def command_stop_emergency(self, active_command):
     """ Stops the antenna in the event of an emergency.
 
     This command simulates a press of the emergency stop button on the antenna controller. An emergency stop differs 
     from a normal stop in that, after stopped, the device will not respond to any commands until the 'S' command is sent 
     again to bring the antenna controller out of emergency stop mode.
-
-    @throw May throw CommandError if an error occurs while performing an emergency stop.
     
     @param active_command  The currently executing command.
-    @param Returns a dictionary containing the results of the emergency stop.
+    @param Returns a deferred that will be fired with a dictionary containing the results of the emergency stop. If the 
+           command fails, the returned deferred will error.
     """
 
     # Build and send the command request
     request = self._build_request("S")
-    response = self._send_commands([request])
+    command_deferred = self._send_commands([request])
+    response = yield command_deferred
 
     # Check the response
     if response['status'] == "okay":
       self.driver._controller_state['state'] = "emergency_stopped"
-      return {'message': "The antenna has been stopped and placed in emergency mode. It will not respond to new "+
-                         "commands until it receives another emergency stop command."}
+      defer.returnValue({'message': "The antenna has been stopped and placed in emergency mode. It will not respond to "+
+                                    "new commands until it receives another emergency stop command."})
     else:
       raise command.CommandError("An error occured while performing the emergency stop: '"+response['message']+"'")
 
@@ -504,37 +513,52 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
   def _send_commands(self, requests):
     """ Sends commands to the antenna controller API.
 
-    @note This method makes a blocking network call and should be called with deferToThread.
-
     @param requests  An array containing requests to be sent to the antenna controller command API. Requests will be 
                      sequentially sent in the order provided.
-    @return Returns an array containing responses for the provided commands in the order they were submitted.
+    @return Returns a deferred that will eventually be fired with the command results (or an error message in the event
+            of a failure).
     """
 
     # Encode the request
     request_json = json.dumps(requests)
     request_encoded = urllib.urlencode({"request": request_json})
-    request_response = {}
 
-    # Submit the request
-    try:
-      ac_request = urllib2.Request(self.driver.controller_api_endpoint, request_encoded)
-      ac_opener = urllib2.build_opener()
-      ac_response = ac_opener.open(ac_request, None, self.driver.controller_api_timeout)
-    except Exception as e:
-      # Error downloading the response
-      request_response['status'] = "error"
-      request_response['message'] = "An error occured downloading the response from the antenna controller."
-      return request_response
-    
-    # Parse the APRS response
-    try:
-      parsed_response = json.load(ac_response)
-      request_response = parsed_response
-    except ValueError as e:
-      # Error parsing the response
-      request_response['status'] = "error"
-      request_response['message'] = "An error occured parsing the JSON response from the antenna controller."
+    # Query the controller
+    command_deferred = self._query_antenna_controller(request_encoded)
+    command_deferred.addErrback(self._handle_query_error)
+
+    return command_deferred
+
+  @inlineCallbacks
+  def _query_antenna_controller(self, encoded_request):
+    """ Asynchronously sends commands to the antenna controller.
+
+    This method is used by _send_commands() to send commands to the antenna controller API in a non-blocking fashion.
+
+    @param encoded_request  The encoded request JSON ready for transmission.
+    @return Returns a deferred that will be fired with the request response.
+    """
+
+    # Query the antenna controller API
+    ac_request = urllib2.Request(self.driver.controller_api_endpoint, encoded_request)
+    ac_opener = urllib2.build_opener()
+    ac_deferred = threads.deferToThread(ac_opener.open, ac_request, None, self.driver.controller_api_timeout)
+    ac_response = yield ac_deferred
+
+    # Parse and return response
+    parsed_response = json.load(ac_response)
+    defer.returnValue(parsed_response)
+
+  def _handle_query_error(self, failure):
+    """ Handles errors that may occur while querying the antenna controller by returning a dictionary containing an
+    error response
+
+    @param failure  The Failure object encapsulating the error.
+    """
+
+    request_response = {}
+    request_response['status'] = "error"
+    request_response['message'] = "An error occured while querying the antenna controller."
 
     return request_response
 

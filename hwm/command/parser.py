@@ -71,7 +71,6 @@ class CommandParser:
           returned Failure like so: Failure.value.results['response']. In the event of a success, these results can be 
           accessed via the 'response' key of the callback parameter. The calling module is responsible for converting 
           this dictionary into an appropriate format.
-    @note The actual command execution occurs in a new thread. *Make sure that command code is thread safe!*
     
     @param raw_command  A raw command containing metadata about the command in an arbitrary format (specific Command
                         classes are responsible for parsing different formats).
@@ -234,7 +233,8 @@ class CommandParser:
                                          {"command": valid_command.command, "destination": full_destination})
 
     # Execute the command in a new thread
-    command_deferred = threads.deferToThread(getattr(command_handler, 'command_'+valid_command.command), valid_command)
+    command_function = getattr(command_handler, 'command_'+valid_command.command)
+    command_deferred = defer.maybeDeferred(command_function, valid_command)
     command_deferred.addCallback(self._command_complete, valid_command)
     
     return command_deferred
