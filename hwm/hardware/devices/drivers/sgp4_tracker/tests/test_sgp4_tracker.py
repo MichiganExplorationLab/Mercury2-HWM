@@ -101,8 +101,7 @@ class TestSGP4Handler(unittest.TestCase):
     test_handler = sgp4_tracker.SGP4Handler(test_driver)
 
     # Run the command with a simulated tracker event loop already running
-    results = test_handler.command_start_tracking(test_command)
-    self.assertTrue("is already running." in results['message'])
+    self.assertRaises(command.CommandError, test_handler.command_start_tracking, test_command)
 
     # Run the command without a simulated tracker running
     test_driver._propagation_service.start_tracker = lambda : True
@@ -127,8 +126,7 @@ class TestSGP4Handler(unittest.TestCase):
 
     # Run the command without a simulated tracker not running
     test_driver._propagation_service._propagation_loop = None
-    results = test_handler.command_stop_tracking(test_command)
-    self.assertTrue("not currently running." in results['message'])
+    self.assertRaises(command.CommandError, test_handler.command_stop_tracking, test_command)
 
   def test_set_target_tle_command(self):
     """ Tests the 'target_tle_command' command and possible errors.

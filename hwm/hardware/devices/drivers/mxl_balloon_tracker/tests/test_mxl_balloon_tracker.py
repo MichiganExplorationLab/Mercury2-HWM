@@ -113,8 +113,7 @@ class TestBalloonHandler(unittest.TestCase):
     test_handler = mxl_balloon_tracker.BalloonHandler(test_driver)
 
     # Run the command with a simulated tracker event loop already running
-    results = test_handler.command_start_tracking(test_command)
-    self.assertTrue("is already running." in results['message'])
+    self.assertRaises(command.CommandError, test_handler.command_start_tracking, test_command)
 
     # Run the command without a simulated tracker running
     test_driver._aprs_service.start_tracker = lambda : True
@@ -139,8 +138,7 @@ class TestBalloonHandler(unittest.TestCase):
 
     # Run the command without a simulated tracker not running
     test_driver._aprs_service._tracking_update_loop = None
-    results = test_handler.command_stop_tracking(test_command)
-    self.assertTrue("not currently running." in results['message'])
+    self.assertRaises(command.CommandError, test_handler.command_stop_tracking, test_command)
 
   def test_set_callsign_command(self):
     """ Tests the 'set_callsign' command and possible errors.
@@ -211,21 +209,16 @@ class TestAPRSTrackingService(unittest.TestCase):
     self.assertEqual(test_service.api_key, None)
     self.assertEqual(test_service._balloon_position['timestamp'], None)
 
-  def test_set_and_get_target_position(self):
-    """ This test verifies that the "get_target_position" method behaves as expected. This is the primary method that 
-    other devices will interact with to use the service. In addition, it also tests that the _set_balloon_position()
-    method correctly updates the recorded position.
+  def test_set_balloon_position(self):
+    """ Tests that the _set_balloon_position() method correctly updates the balloon's position.
     """
 
     # Create a test service instance
     test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
 
-    # Try getting the position before it has been updated
-    self.assertRaises(mxl_balloon_tracker.PositionNotAvailable, test_service.get_target_position)
-
     # Manually set some position data and try again
     test_service._set_balloon_position(1384115919, -84.48387, 42.73698, 12000, 20, 30) 
-    balloon_position = test_service.get_target_position()
+    balloon_position = test_service._balloon_position
     self.assertEqual(balloon_position['timestamp'], 1384115919)
     self.assertEqual(balloon_position['longitude'], -84.48387)
     self.assertEqual(balloon_position['latitude'], 42.73698)
@@ -350,6 +343,12 @@ class TestAPRSTrackingService(unittest.TestCase):
 
     # Create a test service instance
     test_service = mxl_balloon_tracker.Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    self.receiver_results = None
+
+    # Create and register a position receiver with the service
+    def mock_position_receiver(position_data):
+      self.receiver_results = position_data
+    test_service.register_position_receiver(mock_position_receiver)
 
     # Set the APRS callsign, add an existing expired balloon position, and mock the API to return a failed response
     test_service._balloon_position['timestamp'] = 1384119680
@@ -366,6 +365,12 @@ class TestAPRSTrackingService(unittest.TestCase):
     self.assertEqual(result['altitude'], 12000)
     self.assertEqual(result['azimuth'], 210.933)
     self.assertEqual(result['elevation'], 17.353)
+    self.assertEqual(self.receiver_results['timestamp'], 1384119682)
+    self.assertEqual(self.receiver_results['longitude'], -83.944942)
+    self.assertEqual(self.receiver_results['latitude'], 42.003933)
+    self.assertEqual(self.receiver_results['altitude'], 12000)
+    self.assertEqual(self.receiver_results['azimuth'], 210.933)
+    self.assertEqual(self.receiver_results['elevation'], 17.353)
 
   @inlineCallbacks
   def test_track_target_service_success(self):

@@ -260,7 +260,7 @@ class SGP4Handler(handler.DeviceCommandHandler):
     # Try to start the service
     service_response = self.driver._propagation_service.start_tracker()
     if service_response is None:
-      return {'message': "The SGP4 tracking service is already running."}
+      raise command.CommandError("The SGP4 tracking service is already running.")
     else:
       return {'message': "The SGP4 tracking service has been started."}
 
@@ -287,7 +287,7 @@ class SGP4Handler(handler.DeviceCommandHandler):
       self.driver._propagation_service._propagation_loop.stop()
       return {'message': "The SGP4 tracker has been stopped."}
     else:
-      return {'message': "The SGP4 tracker is not currently running."}
+      raise command.CommandError("The SGP4 tracker is not currently running.")
 
   def settings_stop_tracking(self):
     """ Meta-data for the "stop_tracking" command.
