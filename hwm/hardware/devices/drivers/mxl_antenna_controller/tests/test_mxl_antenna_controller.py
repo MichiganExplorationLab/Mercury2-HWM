@@ -21,6 +21,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
+    self.standard_device_configuration = {'id': "test_device", 'update_period': 2, 'controller_api_endpoint': "http://172.16.1.222/api", 'controller_api_timeout': 2}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -39,7 +40,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
 
     # Create a driver instance to test with
     test_pipeline = MagicMock()
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
     test_device._update_state = MagicMock()
 
     # Create a mock 'tracker' service
@@ -67,7 +68,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create driver and pipeline instances to test with
     test_pipeline = MagicMock()
     test_pipeline.load_service = mock_load_service
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
     test_device._update_state = MagicMock()
 
     # Run prepare_for_session and check results
@@ -83,7 +84,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
 
     # Create a driver instance to test with
     test_pipeline = MagicMock()
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
     test_device._update_state = mock_update_state
 
     # Create a mock 'tracker' service
@@ -114,7 +115,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     test_pipeline.id = "test_pipeline"
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Create a mock 'tracker' service
@@ -153,7 +154,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create a test device
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Create a mock target_position and submit it
@@ -170,7 +171,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     """
 
     # Create a driver instance to test with
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, MagicMock())
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, MagicMock())
 
     # Create an invalid mock target_position and submit it
     target_position = {
@@ -206,7 +207,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create a test device
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Try updating the state
@@ -244,7 +245,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     # Create a test device
     test_cp = MagicMock()
     test_cp.parse_command = mock_parse_command
-    test_device = mxl_antenna_controller.MXL_Antenna_Controller({'id': 'test_device'}, test_cp)
+    test_device = mxl_antenna_controller.MXL_Antenna_Controller(self.standard_device_configuration, test_cp)
     test_device._session_pipeline = test_pipeline
 
     # Try updating the state
@@ -276,7 +277,7 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     self.test_driver = MagicMock()
     self.test_driver._controller_state = {}
     self.test_handler = mxl_antenna_controller.AntennaControllerHandler(self.test_driver)
-    self.test_driver.antenna_controller_api_endpoint = "http://actest.local"
+    self.test_driver.controller_api_endpoint = "http://actest.local"
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -305,6 +306,7 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     self.assertEqual(test_request['command'], "TC")
     self.assertTrue("arguments" not in test_request)
 
+  @inlineCallbacks
   def test_send_commands(self):
     """ Tests that the _send_commands method, which is responsible for sending commands to the antenna controller API,
     correctly packages commands and returns the response. """
@@ -328,15 +330,17 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     self._set_mock_request_builder(mock_request_handler)
     test_req_1 = self.test_handler._build_request("TC", {'param1': "waffles"})
     test_req_2 = self.test_handler._build_request("TC2")
-    results = self.test_handler._send_commands([test_req_1, test_req_2])
+    command_deferred = self.test_handler._send_commands([test_req_1, test_req_2])
+    results = yield command_deferred
 
     # Verify the results
     self.assertEqual(results['status'], "okay")
     self.assertEqual(results['responses'][0]['timestamp'], 1384814185)
     self.assertEqual(results['responses'][0]['command'], "move")
 
+  @inlineCallbacks
   def test_send_commands_errors(self):
-    """ Tests that the _send_commands method can correctly handle connection errors if they arise. """
+    """ Tests that the _send_commands() method can correctly handle connection errors if they arise. """
 
     def mock_request_handler(request):
       raise TypeError("Test error yo.")
@@ -344,14 +348,16 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Build and submit some mock commands
     self._set_mock_request_builder(mock_request_handler)
     test_req_1 = self.test_handler._build_request("TC", {'param1': "waffles"})
-    results = self.test_handler._send_commands([test_req_1])
+    command_deferred = self.test_handler._send_commands([test_req_1])
+    results = yield command_deferred
 
     # Check results
     self.assertEqual(results['status'], "error")
-    self.assertEqual(results['message'], "An error occured downloading the response from the antenna controller.")
+    self.assertEqual(results['message'], "An error occured while querying the antenna controller.")
 
+  @inlineCallbacks
   def test_send_commands_malformed_response(self):
-    """ Tests that the _send_commands method can correctly handle malformed responses. """
+    """ Tests that the _send_commands() method can correctly handle malformed responses. """
 
     def mock_request_handler(request):
       response = urllib2.addinfourl(StringIO("{\"invalid_json\":True}"), "mock headers", request.get_full_url())
@@ -363,12 +369,14 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Build and submit some mock commands
     self._set_mock_request_builder(mock_request_handler)
     test_req_1 = self.test_handler._build_request("TC", {'param1': "waffles"})
-    results = self.test_handler._send_commands([test_req_1])
+    command_deferred = self.test_handler._send_commands([test_req_1])
+    results = yield command_deferred
 
     # Check results
     self.assertEqual(results['status'], "error")
-    self.assertEqual(results['message'], "An error occured parsing the JSON response from the antenna controller.")
+    self.assertEqual(results['message'], "An error occured while querying the antenna controller.")
 
+  @inlineCallbacks
   def test_move_command(self):
     """ Verifies the functionality of the 'move' command. """
 
@@ -376,7 +384,8 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     self._set_mock_request_builder(mock_ac_success)
     test_command = MagicMock()
     test_command.parameters = {'azimuth': 42.0, 'elevation': 42.0}
-    results = self.test_handler.command_move(test_command)
+    command_deferred = self.test_handler.command_move(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(self.test_driver._controller_state['state'], "active")
@@ -384,15 +393,18 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
 
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure)
-    self.assertRaises(command.CommandError, self.test_handler.command_move, test_command)
+    command_deferred_error = self.test_handler.command_move(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
+  @inlineCallbacks
   def test_park_command(self):
     """ Verifies the functionality of the 'park' command. """
 
     # Submit a mock command
     self._set_mock_request_builder(mock_ac_success)
     test_command = MagicMock()
-    results = self.test_handler.command_park(test_command)
+    command_deferred = self.test_handler.command_park(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(self.test_driver._controller_state['state'], "parking")
@@ -401,15 +413,18 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure)
     test_command = MagicMock()
-    self.assertRaises(command.CommandError, self.test_handler.command_park, test_command)
+    command_deferred_error = self.test_handler.command_park(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
+  @inlineCallbacks
   def test_calibrate_command(self):
     """ Verifies the functionality of the 'calibrate' command. """
 
     # Submit a mock command
     self._set_mock_request_builder(mock_ac_success)
     test_command = MagicMock()
-    results = self.test_handler.command_calibrate(test_command)
+    command_deferred = self.test_handler.command_calibrate(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(self.test_driver._controller_state['state'], "calibrating")
@@ -418,15 +433,18 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure)
     test_command = MagicMock()
-    self.assertRaises(command.CommandError, self.test_handler.command_calibrate, test_command)
+    command_deferred_error = self.test_handler.command_calibrate(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
+  @inlineCallbacks
   def test_calibrate_vert_command(self):
     """ Verifies the functionality of the 'calibrate_vert' command. """
 
     # Submit a mock command
     self._set_mock_request_builder(mock_ac_success)
     test_command = MagicMock()
-    results = self.test_handler.command_calibrate_vert(test_command)
+    command_deferred = self.test_handler.command_calibrate_vert(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(self.test_driver._controller_state['state'], "calibrating")
@@ -435,15 +453,18 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure)
     test_command = MagicMock()
-    self.assertRaises(command.CommandError, self.test_handler.command_calibrate_vert, test_command)
+    command_deferred_error = self.test_handler.command_calibrate_vert(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
+  @inlineCallbacks
   def test_calibrate_and_park_command(self):
     """ Verifies the functionality of the 'calibrate_and_park' command. """
 
     # Submit a mock command
     self._set_mock_request_builder(mock_ac_success_multiple)
     test_command = MagicMock()
-    results = self.test_handler.command_calibrate_and_park(test_command)
+    command_deferred = self.test_handler.command_calibrate_and_park(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(self.test_driver._controller_state['state'], "calibrating")
@@ -452,15 +473,18 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure_multiple)
     test_command = MagicMock()
-    self.assertRaises(command.CommandError, self.test_handler.command_calibrate_and_park, test_command)
+    command_deferred_error = self.test_handler.command_calibrate_and_park(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
+  @inlineCallbacks
   def test_get_state_command(self):
     """ Verifies the functionality of the 'get_state' command. """
 
     # Submit a mock command
     self._set_mock_request_builder(mock_ac_state)
     test_command = MagicMock()
-    results = self.test_handler.command_get_state(test_command)
+    command_deferred = self.test_handler.command_get_state(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(results['azimuth'], 42.0)
@@ -469,15 +493,18 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure)
     test_command = MagicMock()
-    self.assertRaises(command.CommandError, self.test_handler.command_get_state, test_command)
+    command_deferred_error = self.test_handler.command_get_state(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
+  @inlineCallbacks
   def test_stop_command(self):
     """ Verifies the functionality of the 'stop' command. """
 
     # Submit a mock command
     self._set_mock_request_builder(mock_ac_success)
     test_command = MagicMock()
-    results = self.test_handler.command_stop(test_command)
+    command_deferred = self.test_handler.command_stop(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(self.test_driver._controller_state['state'], "stopped")
@@ -486,15 +513,18 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure)
     test_command = MagicMock()
-    self.assertRaises(command.CommandError, self.test_handler.command_stop, test_command)
+    command_deferred_error = self.test_handler.command_stop(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
+  @inlineCallbacks
   def test_stop_emergency_command(self):
     """ Verifies the functionality of the 'stop_emergency' command. """
 
     # Submit a mock command
     self._set_mock_request_builder(mock_ac_success)
     test_command = MagicMock()
-    results = self.test_handler.command_stop_emergency(test_command)
+    command_deferred = self.test_handler.command_stop_emergency(test_command)
+    results = yield command_deferred
 
     # Validate results
     self.assertEqual(self.test_driver._controller_state['state'], "emergency_stopped")
@@ -503,7 +533,8 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
     # Now submit a mock failed command
     self._set_mock_request_builder(mock_ac_failure)
     test_command = MagicMock()
-    self.assertRaises(command.CommandError, self.test_handler.command_stop_emergency, test_command)
+    command_deferred_error = self.test_handler.command_stop_emergency(test_command)
+    yield self.assertFailure(command_deferred_error, command.CommandError)
 
   def _reset_config_entries(self):
     # Reset the recorded configuration entries

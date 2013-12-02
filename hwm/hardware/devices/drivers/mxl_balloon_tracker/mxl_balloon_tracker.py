@@ -41,7 +41,7 @@ class MXL_Balloon_Tracker(driver.VirtualDriver):
     self._command_handler = BalloonHandler(self)
 
     # Create the Direct Downlink APRS tracking service
-    self._aprs_service = Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker')
+    self._aprs_service = Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', device_configuration)
 
     # Setup tracker attributes
     self.last_known_location = None
@@ -94,22 +94,23 @@ class Direct_Downlink_APRS_Service(service.Service):
   re-established.
   """
 
-  def __init__(self, service_id, service_type):
+  def __init__(self, service_id, service_type, device_configuration):
     """ Sets up the tracking service.
 
     @param service_id     The unique service ID.
     @param service_type   The service type. Other drivers, such as the antenna controller driver, will search for this 
                           when looking for this service.
+    @param device_configuration  A dictionary containing the tracker's configuration options.
     """
 
     # Call the Service constructor
     super(Direct_Downlink_APRS_Service,self).__init__(service_id, service_type)
 
     # Configuration settings
-    self.update_interval = 2 # Seconds
-    self.aprs_fallback_timeout = 10 # Seconds
-    self.aprs_update_timeout = 4 # Seconds
-    self.api_key = None
+    self.update_interval = device_configuration['update_interval']
+    self.aprs_fallback_timeout = device_configuration['aprs_fallback_timeout']
+    self.aprs_update_timeout = device_configuration['aprs_update_timeout']
+    self.api_key = device_configuration['api_key']
 
     # Load the ground station's location
     self._global_config = Configuration
@@ -151,11 +152,11 @@ class Direct_Downlink_APRS_Service(service.Service):
       self._tracking_update_loop.stop()
     self._reset_tracker_state()
 
-  def get_target_position(self):
-    """ Returns the target's current position.
-    
-    This method returns the target's most recent position and tracking information in a dictionary with the following
-    attributes:
+  def register_position_receiver(self, callback):
+    """ Registers the callback with the service.
+
+    The APRS balloon tracking service will call all registered callbacks everytime new position information is 
+    available. Callbacks will be passed a dictionary containing the following elements:
     * timestamp
     * longitude 
     * latitude 
@@ -163,17 +164,12 @@ class Direct_Downlink_APRS_Service(service.Service):
     * azimuth
     * elevation
 
-    @throw May throw PositionNotAvailable errors if the balloon's position isn't available yet. If any position
-           information is available it will be returned regardless of how old it is.
-
-    @return Returns a dictionary containing the elements specified above.
+    @param callback  A method that will be called with the satellite's position every time new position information is 
+                     available.
     """
 
-    # Make sure some position data has been collected
-    if self._balloon_position['timestamp'] is None:
-      raise PositionNotAvailable("No position data is currently available for the target balloon.")
-
-    return self._balloon_position
+    # Register the handler
+    self._registered_handlers.append(callback)
 
   def _track_target(self):
     """ This method is responsible for coordinating the balloon tracker by checking for new position information and, if
@@ -214,6 +210,20 @@ class Direct_Downlink_APRS_Service(service.Service):
       return tracking_update_deferred
     else:
       return defer.succeed(None)
+  
+  def _notify_handlers(self):
+    """ Notifies all registered handlers that new position information is available.
+    
+    This method sends the saved position information to all registered handlers.
+    """
+
+    # Notify all handlers 
+    for handler_callback in self._registered_handlers:
+      try:
+        handler_callback(self._balloon_position)
+      except Exception as e:
+        # A receiver failed, catch and move on
+        pass
 
   def _query_aprs_api(self):
     """ Queries the APRS.fi API for the target's last known location.
@@ -419,6 +429,9 @@ class Direct_Downlink_APRS_Service(service.Service):
       'elevation': round(elevation, 3)
     }
 
+    # Notify the registered position receivers
+    self._notify_handlers()
+
     return self._balloon_position
 
   def _reset_tracker_state(self):
@@ -431,6 +444,7 @@ class Direct_Downlink_APRS_Service(service.Service):
     self._tracking_update_loop = None
     self._active_session_pipeline = None
     self._aprs_api_endpoint = None
+    self._registered_handlers = []
     self._balloon_position = {
       'timestamp': None,
       'longitude': None,
@@ -456,7 +470,7 @@ class BalloonHandler(handler.DeviceCommandHandler):
     # Try to start the service
     service_response = self.driver._aprs_service.start_tracker()
     if service_response is None:
-      return {'message': "The balloon tracking service is already running."}
+      raise command.CommandError("The balloon tracking service is already running.")
     else:
       return {'message': "The balloon tracking service has been started."}
 
@@ -483,7 +497,7 @@ class BalloonHandler(handler.DeviceCommandHandler):
       self.driver._aprs_service._tracking_update_loop.stop()
       return {'message': "The balloon tracker has been stopped."}
     else:
-      return {'message': "The balloon tracker is not currently running."}
+      raise command.CommandError("The balloon tracker is not currently running.")
 
   def settings_stop_tracking(self):
     """ Meta-data for the "stop_tracking" command.

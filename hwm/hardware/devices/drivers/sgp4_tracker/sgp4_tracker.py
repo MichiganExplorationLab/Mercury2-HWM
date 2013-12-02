@@ -32,7 +32,7 @@ class SGP4TrackerDriver(driver.VirtualDriver):
     self._command_handler = SGP4Handler(self)
 
     # Initialize the service that will perform the propagation
-    self._propagation_service = SGP4PropagationService('sgp4_propagation_service', 'tracker')
+    self._propagation_service = SGP4PropagationService('sgp4_propagation_service', 'tracker', device_configuration)
 
     self._reset_tracker_state()
 
@@ -81,18 +81,19 @@ class SGP4PropagationService(service.Service):
   session's satellite of interest.
   """
 
-  def __init__(self, service_id, service_type):
+  def __init__(self, service_id, service_type, device_configuration):
     """ Sets up the SGP4 propagation service.
 
-    @param service_id     The unique service ID.
-    @param service_type   The service type. Other drivers, such as the antenna controller driver, will search the active 
-                          pipeline for this when looking for this service.
+    @param service_id            The unique service ID.
+    @param service_type          The service type. Other drivers, such as the antenna controller driver, will search the
+                                 active pipeline for this when looking for this service.
+    @param device_configuration  A dictionary containing the tracker's configuration options.
     """
 
     super(SGP4PropagationService,self).__init__(service_id, service_type)
 
     # Set configuration settings
-    self.propagation_frequency = 2 # Seconds
+    self.propagation_frequency = device_configuration['propagation_frequency']
 
     # Load the ground station's location
     self._global_config = Configuration
@@ -178,6 +179,11 @@ class SGP4PropagationService(service.Service):
       ground_station.pressure = 0
       self._satellite.compute(ground_station)
 
+      # Calculate the doppler correction factor
+      range_velocity = self._satellite.range_velocity/1000 # km/s
+      c = 299792.458 # km/s
+      doppler_correction = (c/(c + range_velocity))
+
       # Store the results
       self._target_position = {
         'timestamp': propagation_time,
@@ -185,7 +191,8 @@ class SGP4PropagationService(service.Service):
         'latitude': math.degrees(self._satellite.sublat),
         'altitude': self._satellite.elevation,
         'azimuth': math.degrees(self._satellite.az),
-        'elevation': math.degrees(self._satellite.alt)
+        'elevation': math.degrees(self._satellite.alt),
+        'doppler_multiplier': doppler_correction
       }
 
       # Notify the handlers
@@ -260,7 +267,7 @@ class SGP4Handler(handler.DeviceCommandHandler):
     # Try to start the service
     service_response = self.driver._propagation_service.start_tracker()
     if service_response is None:
-      return {'message': "The SGP4 tracking service is already running."}
+      raise command.CommandError("The SGP4 tracking service is already running.")
     else:
       return {'message': "The SGP4 tracking service has been started."}
 
@@ -287,7 +294,7 @@ class SGP4Handler(handler.DeviceCommandHandler):
       self.driver._propagation_service._propagation_loop.stop()
       return {'message': "The SGP4 tracker has been stopped."}
     else:
-      return {'message': "The SGP4 tracker is not currently running."}
+      raise command.CommandError("The SGP4 tracker is not currently running.")
 
   def settings_stop_tracking(self):
     """ Meta-data for the "stop_tracking" command.
