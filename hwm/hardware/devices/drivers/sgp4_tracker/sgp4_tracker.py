@@ -179,6 +179,11 @@ class SGP4PropagationService(service.Service):
       ground_station.pressure = 0
       self._satellite.compute(ground_station)
 
+      # Calculate the doppler correction factor
+      range_velocity = self._satellite.range_velocity/1000 # km/s
+      c = 299792.458 # km/s
+      doppler_correction = (c/(c + range_velocity))
+
       # Store the results
       self._target_position = {
         'timestamp': propagation_time,
@@ -186,7 +191,8 @@ class SGP4PropagationService(service.Service):
         'latitude': math.degrees(self._satellite.sublat),
         'altitude': self._satellite.elevation,
         'azimuth': math.degrees(self._satellite.az),
-        'elevation': math.degrees(self._satellite.alt)
+        'elevation': math.degrees(self._satellite.alt),
+        'doppler_multiplier': doppler_correction
       }
 
       # Notify the handlers
