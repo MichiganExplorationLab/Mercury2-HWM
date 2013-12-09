@@ -97,6 +97,7 @@ class ICOM_910(driver.HardwareDriver):
 
     # Reset the device
     self._command_handler.radio_rig.close()
+    self._command_handler.radio_rig = None
     self._reset_driver_state()
 
     return
@@ -125,17 +126,21 @@ class ICOM_910(driver.HardwareDriver):
 
     @param target_position  A dictionary containing details about the target's position, including its doppler 
                             correction.
-    @return Returns True after updating both the uplink and download frequencies or false if one of the commands fails.
+    @return Returns True after updating both the uplink and download frequencies or False if an error occurs.
     """
 
     # Verify the the target position
     if 'doppler_multiplier' not in target_position:
-      raise InvalidTargetPosition("The provided target position is invalid (didn't contain a doppler correction multiplier.")
+      logging.error("The target position provided to the '"+self.id+"' driver did not contain a doppler correction multiplier.")
+      yield defer.returnValue(False)
 
     # Make sure it's been long enough since the last update
     if (int(time.time()) - self._last_doppler_update) > self.doppler_update_frequency:
+      downlink_freq_set = False
+      uplink_freq_set = False
+
       # Send the command to update the downlink frequency
-      new_downlink_freq = target_position['doppler_multiplier'] * self._radio_state['set_downlink_freq']
+      new_downlink_freq = target_position['doppler_multiplier'] * self._radio_state['set_rx_freq']
       command_request = {
         'command': "set_rx_freq",
         'destination': self._session_pipeline.id+"."+self.id,
@@ -149,8 +154,8 @@ class ICOM_910(driver.HardwareDriver):
 
       # Send the command to update the uplink frequency
       if results['response']['status'] is not 'error':
-        downlink_freq_set = True 
-      new_uplink_freq = target_position['doppler_multiplier'] * self._radio_state['set_uplink_freq']
+        downlink_freq_set = True
+      new_uplink_freq = target_position['doppler_multiplier'] * self._radio_state['set_tx_freq']
       command_request = {
         'command': "set_tx_freq",
         'destination': self._session_pipeline.id+"."+self.id,
@@ -166,16 +171,13 @@ class ICOM_910(driver.HardwareDriver):
       if results['response']['status'] is not 'error':
         uplink_freq_set = True
 
-      self._last_doppler_update = time.time()
-
       if uplink_freq_set and downlink_freq_set:
-        print "Yield True"
-        yield True 
+        self._last_doppler_update = time.time()
+        yield defer.returnValue(True)
       else:
-        print "Yield False"
-        yield False
-
-    yield False
+        logging.error("The '"+self.id+"' driver did not update its doppler correction because one or both of the "+
+                      "'set_rx_freq' and 'set_tx_freq' commands failed.")
+        yield defer.returnValue(False)
 
   def _reset_driver_state(self):
     """ Resets the radio driver's state.
@@ -187,10 +189,10 @@ class ICOM_910(driver.HardwareDriver):
     self._session_pipeline = None
     self._last_doppler_update = 0
     self._radio_state = {
-      "set_tx_frequency": 0.0,
-      "set_rx_frequency": 0.0,
-      "shifted_tx_frequency": 0.0,
-      "shifted_rx_frequency": 0.0,
+      "set_tx_freq": 0.0,
+      "set_rx_freq": 0.0,
+      "shifted_tx_freq": 0.0,
+      "shifted_rx_freq": 0.0,
       "mode": None
     }
 
@@ -236,7 +238,7 @@ class ICOM910Handler(handler.DeviceCommandHandler):
           raise command.CommandError("An error occured setting the radio's mode.")
 
         # Get the mode and update the driver state
-        (mode, width) = self.radio_rig.get_mode()
+        mode, width = self.radio_rig.get_mode()
         self.driver._radio_state['mode'] = Hamlib.rig_strrmode(mode)
 
         return {'message': "The radio mode has been set.", 'mode': new_mode}
@@ -291,8 +293,8 @@ class ICOM910Handler(handler.DeviceCommandHandler):
         if self.driver._radio_state['set_rx_freq'] == 0:
           self.driver._radio_state['set_rx_freq'] = radio_freq
         else:
-          self.driver._radio_state['shifted_rx_frequency'] = radio_freq
-        return {'message': "The radio's RX frequency has been set.", 'frequency': radio_freq}
+          self.driver._radio_state['shifted_rx_freq'] = radio_freq
+        return {'message': "The radio's RX frequency has been set.", 'frequency': (radio_freq/1000000)}
       else:
         raise command.CommandError("No RX frequency specified for the 'rx_freq' command.")
     else:
@@ -335,11 +337,12 @@ class ICOM910Handler(handler.DeviceCommandHandler):
       if 'tx_freq' in active_command.parameters:
         # Make sure the TNC isn't transmitting
         if self.driver._tnc_state_service is not None:
-          tnc_last_transmitted = self.driver._tnc_state_service.get_state['last_transmitted']
-          tnc_buffer_len = self.driver._tnc_state_service.get_state['output_buffer_size_bytes']
+          tnc_state = self.driver._tnc_state_service.get_state()
+          tnc_last_transmitted = tnc_state['last_transmitted']
+          tnc_buffer_len = tnc_state['output_buffer_size_bytes']
           if (int(time.time()) - tnc_last_transmitted) < self.driver.doppler_update_inactive_tx_delay or tnc_buffer_len > 0:
-            raise comma.CommandError("The pipeline's TNC has recently transmitted data or has pending data in its "+
-                                     "output buffer and is not ready to have its uplink frequency changed.")
+            raise command.CommandError("The pipeline's TNC has recently transmitted data or has pending data in its "+
+                                       "output buffer and is not ready to have its uplink frequency changed.")
 
         response = self.radio_rig.set_split_freq(Hamlib.RIG_VFO_MAIN, int(active_command.parameters['tx_freq']*1000000))
 
@@ -351,8 +354,8 @@ class ICOM910Handler(handler.DeviceCommandHandler):
         if self.driver._radio_state['set_tx_freq'] == 0.0:
           self.driver._radio_state['set_tx_freq'] = radio_freq
         else:
-          self.driver._radio_state['shifted_tx_frequency'] = radio_freq
-        return {'message': "The radio's TX frequency has been set using a split.", 'frequency': radio_freq}
+          self.driver._radio_state['shifted_tx_freq'] = radio_freq
+        return {'message': "The radio's TX frequency has been set using a split.", 'frequency': radio_freq/1000000}
       else:
         raise command.CommandError("No RX frequency specified for the 'rx_freq' command.")
     else:

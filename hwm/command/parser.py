@@ -291,7 +291,7 @@ class CommandParser:
     else:
       logging.error("A command has failed for the following reason: "+str(failure.value))
 
-    # Raise a CommandError describing the error
+    # Raise a CommandFailed describing the error
     raise CommandFailed(error_message['error_message'], error_response)
 
 # High level command system exceptions
