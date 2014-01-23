@@ -41,7 +41,8 @@ class MXL_Balloon_Tracker(driver.VirtualDriver):
     self._command_handler = BalloonHandler(self)
 
     # Create the Direct Downlink APRS tracking service
-    self._aprs_service = Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker', device_configuration)
+    self._aprs_service = Direct_Downlink_APRS_Service('direct_downlink_aprs_service', 'tracker',
+                                                      device_configuration['settings'])
 
     # Setup tracker attributes
     self.last_known_location = None
@@ -94,23 +95,23 @@ class Direct_Downlink_APRS_Service(service.Service):
   re-established.
   """
 
-  def __init__(self, service_id, service_type, device_configuration):
+  def __init__(self, service_id, service_type, settings):
     """ Sets up the tracking service.
 
     @param service_id     The unique service ID.
     @param service_type   The service type. Other drivers, such as the antenna controller driver, will search for this 
                           when looking for this service.
-    @param device_configuration  A dictionary containing the tracker's configuration options.
+    @param settings       A dictionary containing the tracker's configuration options.
     """
 
     # Call the Service constructor
     super(Direct_Downlink_APRS_Service,self).__init__(service_id, service_type)
 
     # Configuration settings
-    self.update_interval = device_configuration['update_interval']
-    self.aprs_fallback_timeout = device_configuration['aprs_fallback_timeout']
-    self.aprs_update_timeout = device_configuration['aprs_update_timeout']
-    self.api_key = device_configuration['api_key']
+    self.update_interval = settings['update_interval']
+    self.aprs_fallback_timeout = settings['aprs_fallback_timeout']
+    self.aprs_update_timeout = settings['aprs_update_timeout']
+    self.api_key = settings['api_key']
 
     # Load the ground station's location
     self._global_config = Configuration

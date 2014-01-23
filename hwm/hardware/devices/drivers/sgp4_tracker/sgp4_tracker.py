@@ -13,7 +13,7 @@ from hwm.hardware.devices.drivers import driver, service
 from hwm.command import command
 from hwm.command.handlers import handler
 
-class SGP4TrackerDriver(driver.VirtualDriver):
+class SGP4_Tracker(driver.VirtualDriver):
   """ A virtual driver that provides a SGP4 tracking service.
 
   This virtual driver provides a 'tracker' service based on the SGP4 satellite propagation model.
@@ -26,13 +26,14 @@ class SGP4TrackerDriver(driver.VirtualDriver):
     @param command_parser        A reference to the active CommandParser instance.
     """
 
-    super(SGP4TrackerDriver,self).__init__(device_configuration, command_parser)
+    super(SGP4_Tracker,self).__init__(device_configuration, command_parser)
 
     # Initialize the driver's command handler
     self._command_handler = SGP4Handler(self)
 
     # Initialize the service that will perform the propagation
-    self._propagation_service = SGP4PropagationService('sgp4_propagation_service', 'tracker', device_configuration)
+    self._propagation_service = SGP4PropagationService('sgp4_propagation_service', 'tracker',
+                                                       device_configuration['settings'])
 
     self._reset_tracker_state()
 
@@ -81,19 +82,19 @@ class SGP4PropagationService(service.Service):
   session's satellite of interest.
   """
 
-  def __init__(self, service_id, service_type, device_configuration):
+  def __init__(self, service_id, service_type, settings):
     """ Sets up the SGP4 propagation service.
 
-    @param service_id            The unique service ID.
-    @param service_type          The service type. Other drivers, such as the antenna controller driver, will search the
-                                 active pipeline for this when looking for this service.
-    @param device_configuration  A dictionary containing the tracker's configuration options.
+    @param service_id    The unique service ID.
+    @param service_type  The service type. Other drivers, such as the antenna controller driver, will search the
+                         active pipeline for this when looking for this service.
+    @param settings      A dictionary containing the tracker's configuration options.
     """
 
     super(SGP4PropagationService,self).__init__(service_id, service_type)
 
     # Set configuration settings
-    self.propagation_frequency = device_configuration['propagation_frequency']
+    self.propagation_frequency = settings['propagation_frequency']
 
     # Load the ground station's location
     self._global_config = Configuration

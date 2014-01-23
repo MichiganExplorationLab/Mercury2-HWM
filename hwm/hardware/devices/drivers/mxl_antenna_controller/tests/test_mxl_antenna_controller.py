@@ -21,7 +21,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
-    self.standard_device_configuration = {'id': "test_device", 'update_period': 2, 'controller_api_endpoint': "http://172.16.1.222/api", 'controller_api_timeout': 2}
+    self.standard_device_configuration = {'id': "test_device", 'settings': {'update_period': 2, 'controller_api_endpoint': "http://172.16.1.222/api", 'controller_api_timeout': 2}}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)

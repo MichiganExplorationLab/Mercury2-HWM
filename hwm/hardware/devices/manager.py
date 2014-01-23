@@ -134,7 +134,7 @@ class DeviceManager:
       # Attempt to load the driver
       if not hasattr(driver_module, device_config['driver']):
         logging.error("The driver class '"+device_config['driver']+"' could not be located in the '"+
-                      driver_module+"' module.")
+                      str(driver_module)+"' module.")
         raise DriverNotFound("The driver class '"+device_config['driver']+"' could not be located for the '"+
                              device_config['id']+"' device.")
       device_driver_class = getattr(driver_module, device_config['driver'])
@@ -149,9 +149,9 @@ class DeviceManager:
           self.devices[device_config['id']] = device_driver_class(device_config, self._command_parser)
         except Exception, driver_exception:
           logging.error("An error occured initializing the driver for device '"+device_config['id']+"': "+
-                        str(driver_exception))
+                        type(driver_exception).__name__+" "+str(driver_exception))
           raise DriverInitError("Failed to initialize the driver for the '"+device_config['id']+"' device. "+
-                                "Received error message: "+str(driver_exception))
+                                "Received error message: "+type(driver_exception).__name__+" "+str(driver_exception))
   
   def _validate_devices(self, device_configuration):
     """ Validates the provided device configuration.

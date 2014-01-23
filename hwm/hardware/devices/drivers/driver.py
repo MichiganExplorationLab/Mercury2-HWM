@@ -26,10 +26,11 @@ class Driver(object):
     """
     
     # Set driver attributes
-    self.settings = device_configuration
-    self.id = self.settings['id']
-    self.allow_concurrent_use = (False if ('allow_concurrent_use' not in self.settings) else 
-                                 self.settings['allow_concurrent_use'])
+    self.settings = {} if 'settings' not in device_configuration else device_configuration['settings']
+    self.configuration = device_configuration
+    self.id = self.configuration['id']
+    self.allow_concurrent_use = (False if ('allow_concurrent_use' not in self.configuration) else 
+                                 self.configuration['allow_concurrent_use'])
     self.associated_pipelines = {}
     self._command_handler = None
     self._command_parser = command_parser

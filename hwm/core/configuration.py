@@ -69,10 +69,7 @@ class Config:
     self.options = dict(self.options.items() + config.items())
     
     # Log & announce the configuration file load 
-    if self.verbose_startup:
-      print "- Read in configuration file: '"+configuration_file+"'."
-    
-    logging.info("Configuration: Read configuration file: '"+configuration_file+"'.")
+    logging.info("Loaded configuration file: '"+configuration_file+"'.")
   
   def set(self, option_key, option_value):
     """ Sets the indicated configuration option to the provided value.
@@ -232,7 +229,7 @@ class Config:
         },
         "schedule-location-local": {
           "type": "string",
-          "default": self.config_directory + "schedules/offline_schedule.json"
+          "default": self.data_directory + "schedules/offline_schedule.json"
         },
         "schedule-location-network": {
           "type": "string",
@@ -251,7 +248,7 @@ class Config:
         },
         "permissions-location-local": {
           "type": "string",
-          "default": self.config_directory + "permissions/offline_permissions.json"
+          "default": self.data_directory + "permissions/offline_permissions.json"
         },
         "permissions-location-network": {
           "type": "string",
@@ -265,13 +262,12 @@ class Config:
     try:
       configuration_validator.validate(self.options)
 
-      if self.verbose_startup:
-        print "- Basic configuration options validated. The device and pipeline configurations will be validated later."
-      logging.info("The loaded basic configuration settings were successfully validated.")
+      logging.info("Validated the main configuration file. The pipeline and device configuration files will be "+
+                   "validated later.")
     except jsonschema.ValidationError as config_error:
       # The loaded configuration did not conform to the schema
-      logging.error("The loaded configuration files did not conform to the configuration schema: "+str(config_error))
-      raise ConfigInvalid("The loaded configuration was invalid (did not conform to the configuration schema): "+
+      logging.error("The core configuration file did not conform to the configuration schema: "+str(config_error))
+      raise ConfigInvalid("The core configuration file was invalid (did not conform to the configuration schema): "+
                           str(config_error))
 
     # Copy over the required default values

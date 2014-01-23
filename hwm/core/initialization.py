@@ -75,8 +75,8 @@ def initialize():
   
   # Start the reactor
   if Configuration.verbose_startup:
-    print "- Started the event reactor."
-  logging.info("Startup: Started the event reactor.")
+    print "- The Mercury2 Hardware Manager is now running!"
+  logging.info("Startup: Mercury2 Hardware Manager now running.")
   reactor.run()
   
   # Exit the program
@@ -191,16 +191,22 @@ def _setup_network_listeners(command_parser, session_coordinator):
   reactor.listenSSL(Configuration.get('command-port'),
                     command_factory,
                     tls_context_factory)
+  logging.info("Startup: Command service listening on port: "+Configuration.get('command-port'))
 
   # Setup the pipeline data & telemetry stream listeners
   pipeline_data_factory = data.PipelineDataFactory(session_coordinator)
   reactor.listenSSL(Configuration.get('pipeline-data-port'),
                     pipeline_data_factory,
                     tls_context_factory)
+  logging.info("Startup: Pipeline data service listening on port: "+Configuration.get('pipeline-data-port'))
+
   pipeline_telemetry_factory = telemetry.PipelineTelemetryFactory(session_coordinator)
   reactor.listenSSL(Configuration.get('pipeline-telemetry-port'),
                     WebSocketFactory(pipeline_telemetry_factory), 
                     tls_context_factory)
+  logging.info("Startup: Pipeline telemetry service listening on port: "+Configuration.get('pipeline-telemetry-port'))
+
+  print "- Setup the command, pipeline telemetry, and pipeline data network listeners."
 
 def _setup_configuration():
   """ Sets up the HWM configuration class.
@@ -219,6 +225,9 @@ def _setup_configuration():
   
   # Verify that all required configuration options are set
   Configuration.validate_configuration()
+
+  logging.info("Startup: Loaded core configuration files.")
+  print "- Loaded core configuration files."
 
 def _setup_logs():
   """Sets up the logger."""

@@ -19,7 +19,7 @@ class TestSGP4Tracker(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
-    self.standard_device_config = {'id': "test_device", 'propagation_frequency': 2}
+    self.standard_device_config = {'id': "test_device", 'settings': {'propagation_frequency': 2}}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -37,7 +37,7 @@ class TestSGP4Tracker(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = sgp4_tracker.SGP4TrackerDriver(self.standard_device_config, MagicMock())
+    test_device = sgp4_tracker.SGP4_Tracker(self.standard_device_config, MagicMock())
     test_device._propagation_service = MagicMock()
     test_device._propagation_service.id = "sgp4_test_service"
     test_device._propagation_service.type = "tracker"
@@ -56,7 +56,7 @@ class TestSGP4Tracker(unittest.TestCase):
 
     # Initialize the device
     test_pipeline = MagicMock()
-    test_device = sgp4_tracker.SGP4TrackerDriver(self.standard_device_config, MagicMock())
+    test_device = sgp4_tracker.SGP4_Tracker(self.standard_device_config, MagicMock())
     test_device._reset_tracker_state = MagicMock()
     test_device._propagation_service = MagicMock()
 

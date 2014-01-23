@@ -29,9 +29,9 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     super(MXL_Antenna_Controller,self).__init__(device_configuration, command_parser)
 
     # Set configuration settings
-    self.update_period = device_configuration['update_period']
-    self.controller_api_endpoint = device_configuration['controller_api_endpoint']
-    self.controller_api_timeout = device_configuration['controller_api_timeout']
+    self.update_period = self.settings['update_period']
+    self.controller_api_endpoint = self.settings['controller_api_endpoint']
+    self.controller_api_timeout = self.settings['controller_api_timeout']
 
     # Initialize the driver's command handler
     self._command_handler = AntennaControllerHandler(self)

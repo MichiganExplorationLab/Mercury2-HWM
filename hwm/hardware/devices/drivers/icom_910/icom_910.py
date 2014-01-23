@@ -40,9 +40,9 @@ class ICOM_910(driver.HardwareDriver):
     super(ICOM_910,self).__init__(device_configuration, command_parser)
 
     # Set configuration settings
-    self.icom_device_path = device_configuration['icom_device_path']
-    self.doppler_update_frequency = device_configuration['doppler_update_frequency'] # s
-    self.doppler_update_inactive_tx_delay = device_configuration['doppler_update_inactive_tx_delay'] # s
+    self.icom_device_path = self.settings['icom_device_path']
+    self.doppler_update_frequency = self.settings['doppler_update_frequency'] # s
+    self.doppler_update_inactive_tx_delay = self.settings['doppler_update_inactive_tx_delay'] # s
 
     # Initialize the driver's command handler
     self._command_handler = ICOM910Handler(self)

@@ -64,8 +64,6 @@ class SessionCoordinator:
     
     # Check the schedule for newly active reservations
     self._check_for_new_reservations()
-    
-    print 'COORDINATE'
 
   def load_reservation_session(self, reservation_id):
     """ Returns the Session instance for the requested reservation.
@@ -195,14 +193,11 @@ class SessionCoordinator:
     @return Passes on the results of the session setup commands.
     """
 
-    # Session started
-    logging.info("A new session has successfully been started for the reservation: '"+reservation_id+"'.")
-
     # Check for any failed session setup commands
     if session_command_results is not None:
       for (command_status, command_results) in session_command_results:
         if not command_status:
-          logging.error("An non-fatal error occured executing a session setup command for the reservation: "+
+          logging.error("An non-fatal error occured while executing a session setup command for the reservation: "+
                         reservation_id)
 
           # TODO: Log the error event in the state manager
@@ -221,12 +216,12 @@ class SessionCoordinator:
     @return Returns True after the error has been dealt with.
     """
 
+    logging.error("Reservation '"+reservation_id+"' could not be started.")
+
     # Mark the session as closed and remove it from active_sessions so it won't be immediately re-run
     self.closed_sessions.append(reservation_id)
     self.active_sessions.pop(reservation_id, None)
 
-    # Log the session failure
-    logging.error("A fatal error occured while starting the session '"+reservation_id+"'.")
     # TODO: Log the error event in the state manager
 
     return True

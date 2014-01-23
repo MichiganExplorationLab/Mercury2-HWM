@@ -274,6 +274,8 @@ class Session:
     @return Passes along the unmodified setup command results originally passed to this callback.
     """
 
+    logging.info("Reservation '"+self.id+"'' is ready for use on pipeline: "+self.active_pipeline.id)
+
     # Activate the session
     self._active = True
 

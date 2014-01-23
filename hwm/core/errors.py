@@ -29,10 +29,10 @@ def uncaught_exception(type, value, tb):
   line_number = extracted_tb[-1][1]
   
   # Log the exception
-  logging.error("Uncaught exception in '%s' line %d: %s, %s", file_name, line_number, type.__name__, value)
+  logging.error("Unhandled exception in '%s' line %d: %s, %s", file_name, line_number, type.__name__, value)
   
   # Output the exception to sterr
-  print "\n[ERROR] Fatal error in '{}' line {}: {}, {}".format(file_name, line_number, type.__name__, value)
+  print "\n[ERROR] Unhandled fatal error in '{}' line {}: {}, {}".format(file_name, line_number, type.__name__, value)
   
   # Exit the program with an error code
   sys.exit(1)

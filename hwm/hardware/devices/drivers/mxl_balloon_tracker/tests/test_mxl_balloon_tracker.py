@@ -19,7 +19,7 @@ class TestMXLBalloonTrackerDriver(unittest.TestCase):
     self.config.verbose_startup = False
     self.source_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"hwm")
     self.config.read_configuration(self.source_data_directory+'/core/tests/data/test_config_basic.yml')
-    self.standard_device_config = {'id': "test_device", 'update_interval': 2, 'aprs_fallback_timeout': 10, 'aprs_update_timeout': 4, 'api_key': None} 
+    self.standard_device_config = {'id': "test_device", 'settings': {'update_interval': 2, 'aprs_fallback_timeout': 10, 'aprs_update_timeout': 4, 'api_key': None}} 
 
     # Backup a urllib2 method that gets monkey-patched so that it can be restored between tests
     self.old_build_opener = urllib2.build_opener

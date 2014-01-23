@@ -18,7 +18,7 @@ class TestKantronicsTNC(unittest.TestCase):
     # Set a local reference to Configuration and load a test config file
     self.config = Configuration
     self.config.verbose_startup = False
-    self.standard_tnc_config = {'id': "kantronics_tnc", 'tnc_device': "ttySO", 'tnc_port': 2, 'callsign': "TSTCS"}
+    self.standard_tnc_config = {'id': "kantronics_tnc", 'settings': {'tnc_device': "ttySO", 'tnc_port': 2, 'callsign': "TSTCS"}}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
@@ -40,9 +40,9 @@ class TestKantronicsTNC(unittest.TestCase):
     test_device = kantronics_tnc.Kantronics_TNC(self.standard_tnc_config, test_cp)
 
     # Make sure the constructor set the correct attributes
-    self.assertEqual(test_device.tnc_device, self.standard_tnc_config['tnc_device'])
-    self.assertEqual(test_device.tnc_port, self.standard_tnc_config['tnc_port'])
-    self.assertEqual(test_device.callsign, self.standard_tnc_config['callsign'])
+    self.assertEqual(test_device.tnc_device, self.standard_tnc_config['settings']['tnc_device'])
+    self.assertEqual(test_device.tnc_port, self.standard_tnc_config['settings']['tnc_port'])
+    self.assertEqual(test_device.callsign, self.standard_tnc_config['settings']['callsign'])
     self.assertEqual(test_device.get_state()['last_transmitted'], None)
     self.assertEqual(test_device.get_state()['output_buffer_size_bytes'], 0)
 
@@ -63,8 +63,10 @@ class TestKantronicsTNC(unittest.TestCase):
     test_device.prepare_for_session(test_pipeline)
     test_device._tnc_protocol.setLineMode.assert_called_once_with()
     test_device._tnc_protocol.sendLine.assert_has_calls([mock.call("txdelay 30/100"), mock.call("intface terminal"),
-                                                         mock.call("xmitlvl 100/20"), mock.call("port "+str(self.standard_tnc_config['tnc_port'])),
-                                                         mock.call("abaud 38400"), mock.call("intface kiss"), mock.call("reset")])
+                                                         mock.call("xmitlvl 100/20"),
+                                                         mock.call("port "+str(self.standard_tnc_config['settings']['tnc_port'])),
+                                                         mock.call("abaud 38400"), mock.call("intface kiss"),
+                                                         mock.call("reset")])
     test_device._tnc_protocol.setRawMode.assert_called_once_with()
 
   @patch("twisted.internet.serialport.SerialPort")
@@ -127,7 +129,7 @@ class TestKantronicsTNCStateService(unittest.TestCase):
     # Set a local reference to Configuration and load a test config file
     self.config = Configuration
     self.config.verbose_startup = False
-    self.standard_tnc_config = {'id': "kantronics_tnc", 'tnc_device': "ttySO", 'tnc_port': 2, 'callsign': "TSTCS"}
+    self.standard_tnc_config = {'id': "kantronics_tnc", 'settings': {'tnc_device': "ttySO", 'tnc_port': 2, 'callsign': "TSTCS"}}
     
     # Disable logging for most events
     logging.disable(logging.CRITICAL)

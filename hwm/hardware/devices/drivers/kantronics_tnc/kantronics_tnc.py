@@ -32,9 +32,9 @@ class Kantronics_TNC(driver.HardwareDriver):
     super(Kantronics_TNC,self).__init__(device_configuration, command_parser)
 
     # Set configuration settings
-    self.tnc_device = device_configuration['tnc_device']
-    self.tnc_port = device_configuration['tnc_port']
-    self.callsign = device_configuration['callsign']
+    self.tnc_device = self.settings['tnc_device']
+    self.tnc_port = self.settings['tnc_port']
+    self.callsign = self.settings['callsign']
 
     # Initialize the 'tnc_state' service that can report the state of the TNC
     self._tnc_state_service = TNCStateService('sgp4_propagation_service', 'tnc_state', self)

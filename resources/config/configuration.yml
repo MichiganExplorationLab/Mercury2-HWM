@@ -49,10 +49,18 @@ station-altitude: 276
 #
 #offline-mode: false
 
-# network-command-port: What port the station command socket should operate on. All commands from the network should be
-#                       sent to this port.
+# command-port: What port the station command socket should operate on. All commands from the network should be sent to 
+#               this port.
 #
-#network-command-port: 8080
+#command-port: 45500
+
+# pipeline-data-port: The port that clients should connect to to send or receive data to and from a pipeline.
+#
+#pipeline-data-port: 45501
+
+# pipeline-telemetry-port: A WebSockets port that outputs various pipeline telemetry parameters for the user interface.
+# 
+#pipeline-telemetry-port: 45502
 
 # mercury2-ui-location: The location of the Mercury2 User Interface. If the station is being operated in online mode,
 #                       it will fetch its schedule and user permissions from this UI installation. This should just be

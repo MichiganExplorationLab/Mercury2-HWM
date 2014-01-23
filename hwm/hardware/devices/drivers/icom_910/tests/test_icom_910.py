@@ -22,7 +22,7 @@ class TestIcom910(unittest.TestCase):
     # Set a local reference to Configuration and load a test config file
     self.config = Configuration
     self.config.verbose_startup = False
-    self.standard_icom_config = {'id': "icom_910", 'icom_device_path': "/dev/ttySO", 'doppler_update_frequency': 5, 'doppler_update_inactive_tx_delay': 1}
+    self.standard_icom_config = {'id': "icom_910", 'settings': {'icom_device_path': "/dev/ttySO", 'doppler_update_frequency': 5, 'doppler_update_inactive_tx_delay': 1}}
     
     # Mock the Hamlib.rig_set_debug function
     self.old_rig_set_debug = Hamlib.rig_set_debug
@@ -50,9 +50,9 @@ class TestIcom910(unittest.TestCase):
     test_device = icom_910.ICOM_910(self.standard_icom_config, test_cp)
 
     # Verify that the device was set up correctly
-    self.assertEqual(test_device.icom_device_path, self.standard_icom_config['icom_device_path'])
-    self.assertEqual(test_device.doppler_update_frequency, self.standard_icom_config['doppler_update_frequency'])
-    self.assertEqual(test_device.doppler_update_inactive_tx_delay, self.standard_icom_config['doppler_update_inactive_tx_delay'])
+    self.assertEqual(test_device.icom_device_path, self.standard_icom_config['settings']['icom_device_path'])
+    self.assertEqual(test_device.doppler_update_frequency, self.standard_icom_config['settings']['doppler_update_frequency'])
+    self.assertEqual(test_device.doppler_update_inactive_tx_delay, self.standard_icom_config['settings']['doppler_update_inactive_tx_delay'])
     self.assertEqual(test_device._tracker_service, None)
     self.assertEqual(test_device._tnc_state_service, None)
     self.assertTrue(len(test_device._radio_state) > 0)
@@ -84,7 +84,7 @@ class TestIcom910(unittest.TestCase):
     self.assertEqual(test_device._tnc_state_service, mock_tnc_state_service)
     test_device._tracker_service.register_position_receiver.assert_called_once_with(test_device.process_new_doppler_correction)
     self.assertEqual(Hamlib.rig_set_debug.call_count, 1)
-    mocked_Hamlib().set_conf.assert_has_calls([mock.call("rig_pathname", self.standard_icom_config['icom_device_path']),
+    mocked_Hamlib().set_conf.assert_has_calls([mock.call("rig_pathname", self.standard_icom_config['settings']['icom_device_path']),
                                                mock.call("retry", "5")])
     mocked_Hamlib().open.assert_called_once_with()
 
@@ -108,7 +108,7 @@ class TestIcom910(unittest.TestCase):
 
     # Make sure the radio was still setup (shouldn't depend on services)
     self.assertEqual(Hamlib.rig_set_debug.call_count, 1)
-    mocked_Hamlib().set_conf.assert_has_calls([mock.call("rig_pathname", self.standard_icom_config['icom_device_path']),
+    mocked_Hamlib().set_conf.assert_has_calls([mock.call("rig_pathname", self.standard_icom_config['settings']['icom_device_path']),
                                                mock.call("retry", "5")])
     mocked_Hamlib().open.assert_called_once_with()
 
