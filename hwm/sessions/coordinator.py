@@ -234,6 +234,8 @@ class SessionCoordinator:
     
     @return Returns the schedule update deferred from the schedule manager.
     """
+
+    schedule_update_deferred = None
     
     # Check if the schedule needs to be updated
     if (time.time()-self.schedule.last_updated) > self.config.get('schedule-update-period'):
