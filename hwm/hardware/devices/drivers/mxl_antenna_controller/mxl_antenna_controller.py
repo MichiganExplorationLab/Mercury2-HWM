@@ -57,7 +57,7 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
       self._tracker_service = session_pipeline.load_service("tracker")
     except pipeline.ServiceTypeNotFound as e:
       # A tracker service isn't available
-      logging.error("The MXL antenna controller could not load a 'tracker' service from the session's pipeline.")
+      logging.warning("The MXL antenna controller could not load a 'tracker' service from the session's pipeline.")
       return False
 
     # Register a callback with the tracking service

@@ -191,20 +191,20 @@ def _setup_network_listeners(command_parser, session_coordinator):
   reactor.listenSSL(Configuration.get('command-port'),
                     command_factory,
                     tls_context_factory)
-  logging.info("Startup: Command service listening on port: "+Configuration.get('command-port'))
+  logging.info("Startup: Command service listening on port: "+str(Configuration.get('command-port')))
 
   # Setup the pipeline data & telemetry stream listeners
   pipeline_data_factory = data.PipelineDataFactory(session_coordinator)
   reactor.listenSSL(Configuration.get('pipeline-data-port'),
                     pipeline_data_factory,
                     tls_context_factory)
-  logging.info("Startup: Pipeline data service listening on port: "+Configuration.get('pipeline-data-port'))
+  logging.info("Startup: Pipeline data service listening on port: "+str(Configuration.get('pipeline-data-port')))
 
   pipeline_telemetry_factory = telemetry.PipelineTelemetryFactory(session_coordinator)
   reactor.listenSSL(Configuration.get('pipeline-telemetry-port'),
                     WebSocketFactory(pipeline_telemetry_factory), 
                     tls_context_factory)
-  logging.info("Startup: Pipeline telemetry service listening on port: "+Configuration.get('pipeline-telemetry-port'))
+  logging.info("Startup: Pipeline telemetry service listening on port: "+str(Configuration.get('pipeline-telemetry-port')))
 
   print "- Setup the command, pipeline telemetry, and pipeline data network listeners."
 

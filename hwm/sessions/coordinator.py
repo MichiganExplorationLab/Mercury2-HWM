@@ -216,7 +216,7 @@ class SessionCoordinator:
     @return Returns True after the error has been dealt with.
     """
 
-    logging.error("Reservation '"+reservation_id+"' could not be started.")
+    logging.error("Reservation '"+reservation_id+"' could not be started: "+type(failure.value).__name__+" "+str(failure.value))
 
     # Mark the session as closed and remove it from active_sessions so it won't be immediately re-run
     self.closed_sessions.append(reservation_id)
