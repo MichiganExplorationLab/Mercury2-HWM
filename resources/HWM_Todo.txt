@@ -1,0 +1,38 @@
+- Add state methods to the SGP4 propagator and balloon tracker
+- Design pipeline data stream consumer & producer setup
+  - Limit memory usage
+  - Log all data passing through the pipeline and automatically purge old data
+- Make driver state available to rest of pipeline (query-ably by device type) instead of state services (TNC)
+- Add Strato GPS stream service for USRP
+- Write high level documentation
+  - Installation instructions, virtual env, etc.
+- Handle possible prepare_for_session and cleanup_after_session deferreds (can't wait for LoopingCalls)?
+- Update command parameter meta-data to use JSON schema
+  - Validate parameters on command submit
+- Write state collection unit tests
+- Write state collection class/methods
+  - Update devices to log errors to device state
+  - Add state collecting LoopingCall to pipelines (for collecting automatic pipeline telemetry)
+  - Add state reporting methods to the session coordinator
+  - Register events from various sources
+    - Failed session cleanup, driver errors, etc.
+  - Device state reported live via telemetry stream during session and every few minutes via post to server (for admin forms, gs overview, etc.).
+- Use SSL encryption/authentication for all HWM-UI interactions
+  - Schedule and permission connections
+- Move test drivers to more appropriate location
+- Move device output checks to pipeline from driver
+- Fix unit test data file paths when not in develop mode
+
+Other:
+- Research circular dependency issues
+- Add more error checks for commands, event sequences, and function calls that break state
+- Separate session and reservation concepts to allow for non-reservation based sessions
+  - Separate "reservation" concept from the session coordinator
+- Convert some device, pipeline, and session class attributes to "private"
+- Update _init_.py files to clean up import paths
+  - http://stackoverflow.com/questions/5831148/why-would-i-put-python-code-in-init-py-files
+- Update Pipeline._set_active_services to not interact with session attributes directly
+- Pipeline data stream 'filters' or 'hooks'
+  - E.g. extract GPS coordinates from data stream and offer to the pipeline via a service
+  - Allows drivers to be extended without modifying driver file, keeps drivers and data processing separate, reduces driver dependencies 
+- Isolate frequently used configuration options
