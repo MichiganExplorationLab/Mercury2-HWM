@@ -88,7 +88,7 @@ class CommandParser:
     
     # Create the new command (currently there is only one command type to worry about)
     new_command = command.Command(time_command_received, raw_command, user_id=user_id, kernel_mode=kernel_mode)
-    
+
     # Validate the command (format and schema)
     command_deferred = new_command.validate_command()
     

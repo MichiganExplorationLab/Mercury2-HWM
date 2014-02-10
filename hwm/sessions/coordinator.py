@@ -129,7 +129,7 @@ class SessionCoordinator:
         active_session.kill_session()
 
         # Session finished
-        logging.info("The session for the '"+active_session.id+"' reservation has been stopped after expiring.")
+        logging.info("Reservation '"+active_session.id+"' has been stopped after expiring.")
 
   def _session_expired(self, session):
     """ Determines if the specified session should be dead.
@@ -197,8 +197,10 @@ class SessionCoordinator:
     if session_command_results is not None:
       for (command_status, command_results) in session_command_results:
         if not command_status:
-          logging.error("An non-fatal error occured while executing a session setup command for the reservation: "+
-                        reservation_id)
+          print "++ "+str(command_results)
+
+          logging.warning("An non-fatal error occured while setting up reservation '"+reservation_id+"': "+
+                        str(command_results.value))
 
           # TODO: Log the error event in the state manager
   

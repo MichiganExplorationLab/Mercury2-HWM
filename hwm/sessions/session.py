@@ -190,6 +190,8 @@ class Session:
     @return Returns a deferred that will be fired with the results of session setup commands (an array containing the 
             results for each setup command).
     """
+
+    logging.info("Starting session '"+self.id+"' on pipeline '"+self.active_pipeline.id+"'")
     
     # Lock the pipeline and pipeline hardware
     try:
@@ -274,7 +276,7 @@ class Session:
     @return Passes along the unmodified setup command results originally passed to this callback.
     """
 
-    logging.info("Reservation '"+self.id+"'' is ready for use on pipeline: "+self.active_pipeline.id)
+    logging.info("Reservation '"+self.id+"' is started on pipeline: "+self.active_pipeline.id)
 
     # Activate the session
     self._active = True
