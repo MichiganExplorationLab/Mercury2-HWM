@@ -145,9 +145,9 @@ class Driver(object):
     @note Drivers that allow for concurrent access may be used by multiple pipelines at a time. If this driver allows 
           for concurrent access, it is important to check the driver's _use_count attribute before deciding to terminate 
           services.
-    @note Even though the default driver implementation will not send any data and telemetry to its pipelines if they 
-          are not active, it is good practice to stop collecting the data and telemetry in the first place if the driver
-          isn't being used by any pipelines.
+    @note If the driver cleanup process involves any asynchronous action (such as a command) the deferred should be 
+          returned so that the session coordinator can log the results. For returning multiple deferreds see 
+          DeferredList.
     """
 
     return

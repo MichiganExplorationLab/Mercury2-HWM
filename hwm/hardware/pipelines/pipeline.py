@@ -242,22 +242,26 @@ class Pipeline:
 
     This method is called after a session has expired and is responsible for putting the pipeline and its devices back 
     into an "idle" state in preparation for the next session. If a device cleanup method generates an error, it will be 
-    logged and trapped so that the devices can still attempt to cleanup.
+    returned in a DeferredList.
+
+    @return Returns a deferred fired with a DeferredList containing the results of the device cleanup methods. The 
+            results of each cleanup command will be wrapped in a deferred (if it's not already) using maybeDeferred.
     """
+
+    running_cleanup_commands = []
 
     # Notify the pipeline's devices
     for device_id in self.devices:
-      try:
-        self.devices[device_id].cleanup_after_session()
-      except Exception as e:
-        logging.error("There was an error cleaning up the session '"+self.current_session.id+"' on pipeline '"+self.id+
-                      "': \""+str(e)+"\"")
-
+      temp_cleanup_deferred = defer.maybeDeferred(self.devices[device_id].cleanup_after_session)
+      running_cleanup_commands.append(temp_cleanup_deferred)
 
     # Update pipeline attributes
     self.produce_telemetry = False
     self.active_services = {}
-    self.current_session = None 
+    self.current_session = None
+
+    # Aggregate the cleanup deferreds into a single DeferredList
+    return defer.succeed(defer.gatherResults(running_cleanup_commands, consumeErrors = True))
 
   def run_setup_commands(self, session_preparation_results):
     """ Runs the pipeline setup commands.

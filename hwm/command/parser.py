@@ -276,7 +276,7 @@ class CommandParser:
     }
     
     # Check if there are any extra error parameters
-    if hasattr(failure.value, 'error_parameters'):
+    if hasattr(failure.value, 'error_parameters') and failure.value.error_parameters is not None:
       # Merge the parameter dictionaries
       error_results = dict(failure.value.error_parameters.items() + error_message.items())
     else:
