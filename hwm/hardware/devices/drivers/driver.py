@@ -1,6 +1,6 @@
 """ @package hwm.hardware.devices.drivers.driver
 This module defines the base driver classes available to Mercury2. Namely, the HardwareDriver and VirtualDriver classes
-which are for are used to represent physical and virtual devices.
+which are used to represent physical and virtual devices.
 """
 
 # Import required modules
