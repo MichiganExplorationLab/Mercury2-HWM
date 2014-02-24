@@ -1,12 +1,18 @@
+- Antenna controller updates
+  - Test automatic state update (fix C2 command)
+  - Handle flip passes
+  - Reduce connection error log spam
+- Flatten /var/local/ folder structure
+- Update logging:
+  - Log all commands and arguments, client connections, permission & schedule file updates
+- Design less verbose command permission system
 - Add state methods to the SGP4 propagator and balloon tracker
 - Design pipeline data stream consumer & producer setup
   - Limit memory usage
   - Log all data passing through the pipeline and automatically purge old data
 - Make driver state available to rest of pipeline (query-ably by device type) instead of state services (TNC)
-- Add Strato GPS stream service for USRP
 - Write high level documentation
   - Installation instructions, virtual env, etc.
-- Handle possible prepare_for_session and cleanup_after_session deferreds (can't wait for LoopingCalls)?
 - Update command parameter meta-data to use JSON schema
   - Validate parameters on command submit
 - Write state collection unit tests
