@@ -57,17 +57,18 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
       self._tracker_service = session_pipeline.load_service("tracker")
     except pipeline.ServiceTypeNotFound as e:
       # A tracker service isn't available
-      logging.warning("The MXL antenna controller could not load a 'tracker' service from the session's pipeline.")
+      logging.warning("The '"+self.id+"' device could not load a 'tracker' service from the session's pipeline.")
       return False
 
     # Register a callback with the tracking service
     self._tracker_service.register_position_receiver(self.process_new_position)
 
     # Start a looping call to update the tracker's state
-    self._state_update_loop = task.LoopingCall(self._update_state)
-    update_loop_deferred = self._state_update_loop.start(self.update_period)
-    update_loop_deferred.addErrback(self._handle_state_update_error)
-    return update_loop_deferred
+    #self._state_update_loop = task.LoopingCall(self._update_state)
+    #update_loop_deferred = self._state_update_loop.start(self.update_period)
+    #update_loop_deferred.addErrback(self._handle_state_update_error)
+    #return update_loop_deferred
+    return False
 
   def cleanup_after_session(self):
     """ Resets the antenna controller to its idle state after the session using it has ended.
@@ -84,6 +85,7 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
       'destination': self._session_pipeline.id+"."+self.id
     }
     command_deferred = self._command_parser.parse_command(command_request, user_id = None, kernel_mode = True)
+    command_deferred.addErrback(self._command_error)
 
     # Stop the state update LoopingCall
     if self._state_update_loop is not None and self._state_update_loop.running:
@@ -115,6 +117,8 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     @return Returns the deferred for the "move" command.
     """
 
+    #print target_position
+
     # Verify the target's position
     if 'azimuth' not in target_position or 'elevation' not in target_position:
       raise InvalidTargetPosition("The provided target position is invalid (didn't contain an azimuth or elevation).")
@@ -132,8 +136,17 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     }
     command_deferred = self._command_parser.parse_command(command_request, 
                                                           user_id = self._session_pipeline.current_session.user_id)
+    command_deferred.addErrback(self._command_error)
 
     return command_deferred
+
+  def _command_error(self, failure):
+    """ Handles errors that may occur when executing an antenna controller command. 
+
+    @param failure  A Failure instance containing details about the error. 
+    """
+
+    logging.error(failure.value.message)
 
   @inlineCallbacks
   def _update_state(self):
@@ -175,7 +188,8 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     """
 
     # Log the error
-    logging.error("An error occured while updating '"+self.id+"' device state: '"+failure.getErrorMessage()+"'")
+    logging.error("An error occured while updating the '"+self.id+"' device state: '"+failure.getErrorMessage()+"'")
+    
     # TODO: Log the error to the driver's state dictionary
 
     # Stop the event loop just incase it's still running
@@ -213,11 +227,9 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
             command fails, the returned deferred will error.
     """
 
-
-
     # Build and send the command request
-    request = self._build_request("W", {'az': int(active_command.parameters['azimuth']),
-                                        'el': int(active_command.parameters['elevation'])})
+    request = self._build_request("W", {'azimuth': int(active_command.parameters['azimuth']),
+                                        'elevation': int(active_command.parameters['elevation'])})
     command_deferred = self._send_commands([request])
     response = yield command_deferred
 
@@ -226,7 +238,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       self.driver._controller_state['state'] = "active"
       defer.returnValue({'message': "The antenna is being moved."})
     else:
-      raise command.CommandError("An error occured while attempting to move the antenna: "+response['message'])
+      raise command.CommandError("An error occured while attempting to move '"+self.name+"': "+response['message'])
 
   def settings_move(self):
     """ Provides meta-data for the "move" command.
@@ -278,7 +290,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       self.driver._controller_state['state'] = "parking"
       defer.returnValue({'message': "The antenna is being parked."})
     else:
-      raise command.CommandError("An error occured while parking the antenna: "+response['message'])
+      raise command.CommandError("An error occured while parking '"+self.name+"': "+response['message'])
 
   def settings_park(self):
     """ Provides meta-data for the "park" command.
@@ -313,7 +325,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       self.driver._controller_state['state'] = "calibrating"
       defer.returnValue({'message': "The antenna is being calibrated."})
     else:
-      raise command.CommandError("An error occured while calibrating the antenna: "+response['message'])
+      raise command.CommandError("An error occured while calibrating '"+self.name+"': "+response['message'])
 
   def settings_calibrate(self):
     """ Provides meta-data for the "calibrate" command.
@@ -348,7 +360,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       self.driver._controller_state['state'] = "calibrating"
       defer.returnValue({'message': "The antenna is being vertically calibrated."})
     else:
-      raise command.CommandError("An error occured while vertically calibrating the antenna: "+response['message'])
+      raise command.CommandError("An error occured while vertically calibrating '"+self.name+"': "+response['message'])
 
   def settings_calibrate_vert(self):
     """ Provides meta-data for the "calibrate_vert" command.
@@ -383,7 +395,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       self.driver._controller_state['state'] = "calibrating"
       defer.returnValue({'message': "The antenna is being fully calibrated and will be parked at an Az/El of 270/0."})
     else:
-      raise command.CommandError("An error occured while attempting to calibrate and park the antenna: "+
+      raise command.CommandError("An error occured while attempting to calibrate and park '"+self.name+"': "+
                                  responses['message'])
 
   def settings_calibrate_and_park(self):
@@ -417,7 +429,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       defer.returnValue({'azimuth': response['responses'][0]['azimuth'], 
                          'elevation': response['responses'][0]['elevation']})
     else:
-      raise command.CommandError("An error occured fetching the antenna controller state: "+response['message'])
+      raise command.CommandError("An error occured fetching the antenna controller state from '"+self.name+"': "+response['message'])
 
   def settings_get_state(self):
     """ Provides meta-data for the "get_state" command.
@@ -449,7 +461,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       self.driver._controller_state['state'] = "stopped"
       defer.returnValue({'message': "The antenna controller has been stopped."})
     else:
-      raise command.CommandError("An error occured while stopping the antenna: "+response['message'])
+      raise command.CommandError("An error occured while stopping '"+self.name+"': "+response['message'])
 
   def settings_stop(self):
     """ Provides meta-data for the "stop" command.
@@ -483,7 +495,7 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
       defer.returnValue({'message': "The antenna has been stopped and placed in emergency mode. It will not respond to "+
                                     "new commands until it receives another emergency stop command."})
     else:
-      raise command.CommandError("An error occured while performing the emergency stop: "+response['message'])
+      raise command.CommandError("An error occured while performing an emergency stop on '"+self.name+"': "+response['message'])
 
   def settings_stop_emergency(self):
     """ Provides meta-data for the "stop_emergency" command.

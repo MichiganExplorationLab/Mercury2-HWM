@@ -197,8 +197,7 @@ class Session:
     try:
       self.active_pipeline.reserve_pipeline()
     except pipeline.PipelineInUse:
-      return defer.fail(pipeline.PipelineInUse("Reservation '"+self.id+"': Requested pipeline could not be locked: "+
-                                               self.active_pipeline.id+"."))
+      return defer.fail(pipeline.PipelineInUse("The requested pipeline '"+self.active_pipeline.id+"' could not be locked"))
 
     # Execute the pipeline setup commands
     pipeline_setup_deferred = self.active_pipeline.prepare_for_session(self)

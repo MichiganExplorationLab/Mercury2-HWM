@@ -142,10 +142,10 @@ class SessionCoordinator:
 
     # Check for any failed device cleanup commands
     if cleanup_results is not None:
-      for (command_status, command_results) in cleanup_results:
-        if not command_status:
+      for (method_status, method_results) in cleanup_results:
+        if not method_status:
           logging.warning("Reservation '"+reservation_id+"': An error occured while cleaning up a device: "+
-                          str(command_results.value))
+                          str(method_results.value))
 
           # TODO: Log the error event in the state manager
 
@@ -227,8 +227,7 @@ class SessionCoordinator:
     @return Returns True after the error has been dealt with.
     """
 
-    logging.error("Reservation '"+reservation_id+"': Could not start: "+type(failure.value).__name__+" "+
-                  str(failure.value))
+    logging.error("Reservation '"+reservation_id+"': Could not start, "+str(failure.value)+" ("+type(failure.value).__name__+")")
 
     # Mark the session as closed and remove it from active_sessions so it won't be immediately re-run
     self.closed_sessions.append(reservation_id)

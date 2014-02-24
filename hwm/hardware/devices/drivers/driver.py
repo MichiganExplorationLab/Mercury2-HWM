@@ -137,17 +137,15 @@ class Driver(object):
     """ Allows the driver to cleanup after a session that was using it has ended.
 
     This method is called during the session cleanup process and provides the driver with an opportunity to cleanup 
-    its resources by, for example:
+    after a session by, for example:
     * Stopping any services that it may offer
-    * Stop reading data from hardware devices
-    * Ceasing to produce device telemetry 
+    * Stopping device telemetry and data streams
 
     @note Drivers that allow for concurrent access may be used by multiple pipelines at a time. If this driver allows 
           for concurrent access, it is important to check the driver's _use_count attribute before deciding to terminate 
           services.
-    @note If the driver cleanup process involves any asynchronous action (such as a command) the deferred should be 
-          returned so that the session coordinator can log the results. For returning multiple deferreds see 
-          DeferredList.
+    @note If the driver cleanup process involves any asynchronous action (such as a command) a deferred should be 
+          returned so that the session coordinator can log the results.
     """
 
     return

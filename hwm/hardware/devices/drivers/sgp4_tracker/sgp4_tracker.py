@@ -185,6 +185,9 @@ class SGP4PropagationService(service.Service):
       c = 299792.458 # km/s
       doppler_correction = (c/(c + range_velocity))
 
+      # Make sure the elevation isn't negative
+      elevation = 0 if math.degrees(self._satellite.alt) < 0 else math.degrees(self._satellite.alt)
+
       # Store the results
       self._target_position = {
         'timestamp': propagation_time,
@@ -192,7 +195,7 @@ class SGP4PropagationService(service.Service):
         'latitude': math.degrees(self._satellite.sublat),
         'altitude': self._satellite.elevation,
         'azimuth': math.degrees(self._satellite.az),
-        'elevation': math.degrees(self._satellite.alt),
+        'elevation': elevation,
         'doppler_multiplier': doppler_correction
       }
 

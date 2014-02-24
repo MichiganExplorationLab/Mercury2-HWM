@@ -353,7 +353,7 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
 
     # Check results
     self.assertEqual(results['status'], "error")
-    self.assertEqual(results['message'], "An error occured while querying the antenna controller.")
+    self.assertEqual(results['message'], "Test error yo.")
 
   @inlineCallbacks
   def test_send_commands_malformed_response(self):
@@ -374,7 +374,7 @@ class TestMXLAntennaControllerHandler(unittest.TestCase):
 
     # Check results
     self.assertEqual(results['status'], "error")
-    self.assertEqual(results['message'], "An error occured while querying the antenna controller.")
+    self.assertEqual(results['message'], "No JSON object could be decoded")
 
   @inlineCallbacks
   def test_move_command(self):
