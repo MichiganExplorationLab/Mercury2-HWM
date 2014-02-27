@@ -116,9 +116,7 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
                             elevation.
     @return Returns the deferred for the "move" command.
     """
-
-    #print target_position
-
+    
     # Verify the target's position
     if 'azimuth' not in target_position or 'elevation' not in target_position:
       raise InvalidTargetPosition("The provided target position is invalid (didn't contain an azimuth or elevation).")

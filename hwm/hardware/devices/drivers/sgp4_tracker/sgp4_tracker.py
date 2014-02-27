@@ -169,14 +169,11 @@ class SGP4PropagationService(service.Service):
 
     # Make sure the TLE is available
     if self._satellite is not None:
-      propagation_time = int(time.time())
-
       # Determine the current position of the satellite
       ground_station = ephem.Observer()
-      ground_station.lon = self._station_longitude
-      ground_station.lat = self._station_latitude
+      ground_station.lon = math.radians(self._station_longitude)
+      ground_station.lat = math.radians(self._station_latitude)
       ground_station.elevation = self._station_altitude
-      ground_station.date = time.strftime("%Y/%m/%d %H:%M:%S", time.gmtime(propagation_time))
       ground_station.pressure = 0
       self._satellite.compute(ground_station)
 
@@ -190,7 +187,7 @@ class SGP4PropagationService(service.Service):
 
       # Store the results
       self._target_position = {
-        'timestamp': propagation_time,
+        'timestamp': int(time.time()),
         'longitude': math.degrees(self._satellite.sublong),
         'latitude': math.degrees(self._satellite.sublat),
         'altitude': self._satellite.elevation,
