@@ -69,8 +69,8 @@ for temp_pass in api_results['passes']:
   temp_pass = temp_pass['pass']
 
   temp_reservation = {}
-  temp_reservation['reservation_id'] = temp_pass['orbit_number']
-  temp_reservation['user_id'] = 1
+  temp_reservation['reservation_id'] = str(temp_pass['orbit_number'])
+  temp_reservation['user_id'] = "1"
   temp_reservation['username'] = "dev_user"
   temp_reservation['time_start'] = temp_pass['aos']
   temp_reservation['time_end'] = temp_pass['los']
@@ -81,7 +81,7 @@ for temp_pass in api_results['passes']:
   temp_reservation['setup_commands'] = []
   set_tle_command = {
     "command": "set_target_tle",
-    "destination": "dev_pipeline.SGP4_tracker",
+    "destination": pipeline+".SGP4_tracker",
     "parameters": {
       "line_1": tle_line_1,
       "line_2": tle_line_2
