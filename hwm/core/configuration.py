@@ -261,12 +261,10 @@ class Config:
     configuration_validator = jsonschema.Draft3Validator(configuration_schema)
     try:
       configuration_validator.validate(self.options)
-
-      logging.info("Validated the main configuration file. The pipeline and device configuration files will be "+
-                   "validated later.")
     except jsonschema.ValidationError as config_error:
       # The loaded configuration did not conform to the schema
-      logging.error("The core configuration file did not conform to the configuration schema: "+str(config_error))
+      logging.error("Startup: The core configuration file did not conform to the configuration schema: "+
+                    str(config_error))
       raise ConfigInvalid("The core configuration file was invalid (did not conform to the configuration schema): "+
                           str(config_error))
 

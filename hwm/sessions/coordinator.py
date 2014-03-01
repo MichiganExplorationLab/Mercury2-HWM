@@ -126,10 +126,28 @@ class SessionCoordinator:
         # Call the session's clean up method and mark it as closed
         self.closed_sessions.append(active_session_id)
         del self.active_sessions[active_session_id]
-        active_session.kill_session()
+        session_cleanup_deferred = active_session.kill_session()
+        session_cleanup_deferred.addCallback(self._session_cleanup_complete, active_session_id)
 
         # Session finished
-        logging.info("The session for the '"+active_session.id+"' reservation has been stopped after expiring.")
+        logging.info("Reservation '"+active_session.id+"': Stopped after expiring.")
+
+  def _session_cleanup_complete(self, cleanup_results, reservation_id):
+    """ Called after a session has been cleaned up.
+    
+    @param cleanup_results  An array containing the results of the session cleanup method for each device in the 
+                            pipeline.
+    @param reservation_id   The ID of the reservation that was cleaned up.
+    """
+
+    # Check for any failed device cleanup commands
+    if cleanup_results is not None:
+      for (method_status, method_results) in cleanup_results:
+        if not method_status:
+          logging.warning("Reservation '"+reservation_id+"': An error occured while cleaning up a device: "+
+                          str(method_results.value))
+
+          # TODO: Log the error event in the state manager
 
   def _session_expired(self, session):
     """ Determines if the specified session should be dead.
@@ -184,21 +202,17 @@ class SessionCoordinator:
   def _session_init_complete(self, session_command_results, reservation_id):
     """ Called once a new session is up and running.
     
-    This callback is called after the associated session is up and running. It registers that the session is running
-    and notes any failed session setup commands (which will be indicated in session_command_results).
-    
     @param session_command_results  An array containing the results of each session setup command. If the reservation
                                     didn't specify any setup commands, this will just be None.
     @param reservation_id           The ID of the reservation that was just started.
-    @return Passes on the results of the session setup commands.
     """
 
     # Check for any failed session setup commands
     if session_command_results is not None:
       for (command_status, command_results) in session_command_results:
         if not command_status:
-          logging.error("An non-fatal error occured while executing a session setup command for the reservation: "+
-                        reservation_id)
+          logging.warning("Reservation '"+reservation_id+"': An non-fatal error occured while running a session setup "+
+                          "command: "+str(command_results.value))
 
           # TODO: Log the error event in the state manager
   
@@ -206,17 +220,14 @@ class SessionCoordinator:
     """ Handles fatal session initialization errors.
     
     This callback is responsible for handling fatal session errors such as failed pipeline setup commands and hardware
-    locking errors by registering the failure and saving the reservation ID so it won't be re-run by coordinate().
-    
-    @note This callback (and those that follow it) does not need to worry about cleaning up after the session or 
-          resetting the pipeline state. The session will do that automatically when it fails to setup the pipeline.
+    locking errors.
     
     @param failure         A Failure object encapsulating the session fatal error.
     @param reservation_id  The ID of the reservation that could not be started.
     @return Returns True after the error has been dealt with.
     """
 
-    logging.error("Reservation '"+reservation_id+"' could not be started: "+type(failure.value).__name__+" "+str(failure.value))
+    logging.error("Reservation '"+reservation_id+"': Could not start, "+str(failure.value)+" ("+type(failure.value).__name__+")")
 
     # Mark the session as closed and remove it from active_sessions so it won't be immediately re-run
     self.closed_sessions.append(reservation_id)

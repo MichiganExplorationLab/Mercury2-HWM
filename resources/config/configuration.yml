@@ -72,18 +72,18 @@ mercury2-ui-location: "http://localhost/mercury2"
 # tls-private-key-location: The local location of the TLS private key that was generated for this HWM instance by the 
 #                           user interface.
 #
-#tls-private-key-location: "{HWM Configuration Directory}/ssl/mercury2_hwm-key.pem"
+#tls-private-key-location: "{HWM Configuration Directory}/ssl/hwm.key"
 
 # tls-public-cert-location: The local location of the TLS public certificate that was generated for this HWM instance by
 #                           the user interface.
 #
-#tls-public-cert-location: "{HWM Configuration Directory}/ssl/mercury2_hwm-cert.pem"
+#tls-public-cert-location: "{HWM Configuration Directory}/ssl/hwm.pem"
 
 # tls-ca-cert-location: The local location of the TLS certificate authority certificate provided by the user interface. 
 #                       This file is used to verify that incomming command and telemetry connections are from a user 
 #                       known to the user interface.
 #
-#tls-ca-cert-location: "{HWM Configuration Directory}/ssl/ca-cert.pem"
+#tls-ca-cert-location: "{HWM Configuration Directory}/ssl/mercury2_ca.pem"
 
 # schedule-update-period: Defines how frequently (in seconds) the reservation schedule should be updated.
 #

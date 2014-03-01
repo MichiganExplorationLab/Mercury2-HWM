@@ -172,9 +172,6 @@ class PipelineManager:
     config_validator = jsonschema.Draft3Validator(pipeline_schema)
     try:
       config_validator.validate(pipeline_configuration)
-
-      if self.config.verbose_startup:
-        print "- Pipeline configuration validated."
     except jsonschema.ValidationError as pipeline_validation_error:
       # Invalid pipeline configuration
       logging.error("Failed to initialize the pipeline manager because the pipeline configuration was invalid: "+

@@ -88,7 +88,7 @@ class CommandParser:
     
     # Create the new command (currently there is only one command type to worry about)
     new_command = command.Command(time_command_received, raw_command, user_id=user_id, kernel_mode=kernel_mode)
-    
+
     # Validate the command (format and schema)
     command_deferred = new_command.validate_command()
     
@@ -264,7 +264,7 @@ class CommandParser:
     exception and re-raised. If the incoming failure is wrapping an exception of type CommandError then it may contain a 
     dictionary with additional information about the error.
 
-    @throw Raises a CommandFailed exception which contains additional information about the failure.
+    @throw Raises a CommandFailed exception which contains information about the failure.
     
     @param failure         The Failure object representing the error.
     @param failed_command  The Command object of the failed command.
@@ -276,7 +276,7 @@ class CommandParser:
     }
     
     # Check if there are any extra error parameters
-    if hasattr(failure.value, 'error_parameters'):
+    if hasattr(failure.value, 'error_parameters') and failure.value.error_parameters is not None:
       # Merge the parameter dictionaries
       error_results = dict(failure.value.error_parameters.items() + error_message.items())
     else:
@@ -284,12 +284,6 @@ class CommandParser:
 
     # Build the response dictionary
     error_response = failed_command.build_command_response(False, error_results)
-
-    # Log the error
-    if failed_command.command:
-      logging.error("A command ("+failed_command.command+") failed for the following reason: "+str(failure.value))
-    else:
-      logging.error("A command has failed for the following reason: "+str(failure.value))
 
     # Raise a CommandFailed describing the error
     raise CommandFailed(error_message['error_message'], error_response)

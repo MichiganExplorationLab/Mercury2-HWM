@@ -74,8 +74,6 @@ def initialize():
   coordination_loop.start(1)
   
   # Start the reactor
-  if Configuration.verbose_startup:
-    print "- The Mercury2 Hardware Manager is now running!"
   logging.info("Startup: Mercury2 Hardware Manager now running.")
   reactor.run()
   
@@ -97,13 +95,12 @@ def initial_setup():
   if not os.path.exists(Configuration.config_directory):
     default_data_directory = resource_filename(Requirement.parse("Mercury2HWM"),"resources/config")
     shutil.copytree(default_data_directory, Configuration.config_directory)
-    if Configuration.verbose_startup:
-      print ("- An existing Mercury2 HWM configuration directory was not found, copied defaults to: "+
-             Configuration.config_directory)
+    
+    print ("- An existing Mercury2 HWM configuration directory was not found, copied defaults to: "+
+           Configuration.config_directory)
   else:
-    if Configuration.verbose_startup:
-      print ("- Default configuration files not copied, an existing Mercury2 HWM configuration directory was found "+
-             "at: "+Configuration.config_directory)
+    print ("- Default configuration files not copied, an existing Mercury2 HWM configuration directory was found "+
+           "at: "+Configuration.config_directory)
 
   # Setup the data directory
   if not os.path.exists(Configuration.data_directory):
@@ -111,14 +108,14 @@ def initial_setup():
     os.makedirs(Configuration.data_directory+"permissions")
     os.makedirs(Configuration.data_directory+"schedules")
     os.makedirs(Configuration.data_directory+"stream_dumps")
-    if Configuration.verbose_startup:
-      print "- Existing Mercury2 HWM data directory not found, created at: "+Configuration.data_directory
+
+    print "- Existing Mercury2 HWM data directory not found, created at: "+Configuration.data_directory
 
   # Setup the log directory
   if not os.path.exists(Configuration.log_directory):
     os.makedirs(Configuration.log_directory)
-    if Configuration.verbose_startup:
-      print "- Existing Mercury2 HWM log directory not found, created at: "+Configuration.log_directory
+    
+    print "- Existing Mercury2 HWM log directory not found, created at: "+Configuration.log_directory
 
 def _announce_start():
   """Announces the application start to the console and application logs."""
@@ -130,7 +127,7 @@ def _announce_start():
   print "| Developed by the Michigan Exploration Laboratory  |"
   print "| http://exploration.engin.umich.edu/blog/          |"
   print "|___________________________________________________|\n"
-  print "Version: "+Configuration.version+"\n"
+  print "Version: "+Configuration.version+"\n\n"
 
 def _setup_schedule_manager():
   """ Initializes the schedule manager.
@@ -206,8 +203,6 @@ def _setup_network_listeners(command_parser, session_coordinator):
                     tls_context_factory)
   logging.info("Startup: Pipeline telemetry service listening on port: "+str(Configuration.get('pipeline-telemetry-port')))
 
-  print "- Setup the command, pipeline telemetry, and pipeline data network listeners."
-
 def _setup_configuration():
   """ Sets up the HWM configuration class.
   
@@ -227,20 +222,25 @@ def _setup_configuration():
   Configuration.validate_configuration()
 
   logging.info("Startup: Loaded core configuration files.")
-  print "- Loaded core configuration files."
 
 def _setup_logs():
-  """Sets up the logger."""
+  """ Sets up the logger.
   
+  @note All log messages >= INFO are sent to the console, as well as the log file.
+  """
+
   # Configure the logger
   logging.basicConfig(filename=Configuration.log_directory+'hardware_manager.log',
-                      format='%(asctime)s - %(levelname)s - %(message)s',
+                      format='%(asctime)s %(name)s - %(levelname)s - %(message)s',
                       datefmt='%m/%d/%Y %H:%M:%S',
                       level=logging.DEBUG)
-  
-  # Announce the logging system setup
-  if Configuration.verbose_startup:
-    print "- Setting up the logging system."
+
+  # Setup console output
+  console = logging.StreamHandler()
+  console.setLevel(logging.INFO)
+  console_formatter = logging.Formatter('%(asctime)s: %(levelname)-8s - %(message)s')
+  console.setFormatter(console_formatter)
+  logging.getLogger('').addHandler(console)
   
   # Log the program start
   logging.info("Startup: Starting the hardware manager.")

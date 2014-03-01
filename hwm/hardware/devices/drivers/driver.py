@@ -1,6 +1,6 @@
 """ @package hwm.hardware.devices.drivers.driver
 This module defines the base driver classes available to Mercury2. Namely, the HardwareDriver and VirtualDriver classes
-which are for are used to represent physical and virtual devices.
+which are used to represent physical and virtual devices.
 """
 
 # Import required modules
@@ -9,9 +9,10 @@ import logging, threading, time
 class Driver(object):
   """ Provides the base driver class interface.
   
-  This class provides the interface that all Mercury2 device drivers must be derived from. If defines several functions
-  common to both virtual and physical devices as well as abstract methods that derived drivers must implement. Note that
-  specific driver classes should inherit from either the HardwareDriver or VirtualDriver classes, not this class.
+  This class provides the interface that all Mercury2 device drivers must use. It defines several functions common to 
+  both virtual and physical devices as well as abstract methods that derived drivers must implement.
+
+  @note Individual driver classes should inherit from either HardwareDriver or VirtualDriver, not this class.
   """
   
   def __init__(self, device_configuration, command_parser):
@@ -22,7 +23,7 @@ class Driver(object):
     @param device_configuration  A dictionary containing the device configuration (from the devices.yml configuration
                                  file).
     @param command_parser        A reference to the active CommandParser instance. Drivers may use this to execute
-                                 commands at any time during a session.
+                                 commands during a session.
     """
     
     # Set driver attributes
@@ -73,12 +74,12 @@ class Driver(object):
   def write_output(self, output_data):
     """ Writes device output to the device's pipelines.
     
-    This method writes the specified data chunk to every active pipeline registered to the device that specifies the 
-    device as it's output device.
+    This method writes the specified data chunk to every active pipeline registered to this device that specifies it
+    as it's output device.
 
     @note It is important to only write device output to active pipelines that specify this device as it's output
           device. Every device driver should use this method to write their output stream to the pipeline unless it has 
-          a specific reason not to (which is rare).
+          a specific reason not to.
     """
 
     # Write the data to each active pipeline that specifies this device as its output device
@@ -91,8 +92,8 @@ class Driver(object):
     """ Writes the specified data chunk to the device.
 
     This method receives device input data from the pipeline. The default implementation of this method simply discards
-    the data. Device drivers that can handle an input data stream (such as a radio) would pass this data to the device 
-    via its connection to the computer running the hardware manager instance.
+    the data. Device drivers that can handle an input data stream (such as a radio) should pass this data to its
+    associated device.
 
     @param input_data  A data chunk of arbitrary size containing data that should be fed to the device.
     """
@@ -107,10 +108,6 @@ class Driver(object):
 
     @throw Raises CommandHandlerNotDefined if the device driver does not specify a command handler.
     
-    @note Although not required, every device should probably implement a command handler. Even if it doesn't define any
-          custom commands, the default command handler abstract class defines some useful common commands such as 
-          datastream toggling.
-    
     @return Returns the driver's command handler.
     """
 
@@ -123,7 +120,7 @@ class Driver(object):
     """ Returns a dictionary containing the current state of the device.
 
     This method should return a dictionary containing all available/important state for this device. Any Pipeline using
-    the device will use this to assemble a real time stream of the pipeline state.
+    the device will use this to assemble a real time stream of pipeline telemetry.
 
     @throw Throws StateNotDefined if no state is available for a given device. This can happen if you forget to override
            this method or if the device genuinely doesn't have any state.
@@ -137,17 +134,15 @@ class Driver(object):
     """ Allows the driver to cleanup after a session that was using it has ended.
 
     This method is called during the session cleanup process and provides the driver with an opportunity to cleanup 
-    its resources by, for example:
+    after a session by, for example:
     * Stopping any services that it may offer
-    * Stop reading data from hardware devices
-    * Ceasing to produce device telemetry 
+    * Stopping device telemetry and data streams
 
     @note Drivers that allow for concurrent access may be used by multiple pipelines at a time. If this driver allows 
           for concurrent access, it is important to check the driver's _use_count attribute before deciding to terminate 
           services.
-    @note Even though the default driver implementation will not send any data and telemetry to its pipelines if they 
-          are not active, it is good practice to stop collecting the data and telemetry in the first place if the driver
-          isn't being used by any pipelines.
+    @note If the driver cleanup process involves any asynchronous action (such as a command) a deferred should be 
+          returned so that the session coordinator can log the results.
     """
 
     return
@@ -162,10 +157,9 @@ class Driver(object):
     @throw Any exceptions thrown in this method will cause a session-fatal error.
 
     @note This method is called during the session setup process because the services offered by the device's active 
-          pipeline may change with each session. It also gives the driver a chance to start threads, etc. for its own 
-          services. It is called after the pipeline sets its active services for the new session but before the pipeline
-          and session setup commands are executed.
-    @note The device shouldn't register its services with its pipelines during this step, that occurs once during the
+          pipeline may change with each session. It is called after the pipeline sets its active services for the new 
+          session but before the pipeline and session setup commands are executed.
+    @note The device shouldn't register its services with the pipeline during this step, that occurs once during the
           pipeline/driver initialization process (via the self._register_services() callback).
 
     @param session_pipeline  The pipeline being used by the session. This can also be found in 
@@ -184,8 +178,8 @@ class Driver(object):
           several pipelines at a time. In addition, some devices (such as webcams) allow for concurrent use by multiple 
           pipelines.
     @note Device registration occurs automatically during the initial pipeline setup process and only occurs once.
-    @note This method calls another method, self._register_services(), that provides custom drivers with the opportunity
-          to register their services with the new pipeline. 
+    @note This method calls another method, self._register_services(), that provides drivers with the opportunity to
+          register their services with the new pipeline. 
     
     @throws Raises PipelineAlreadyRegistered in the event that the user tries to register the same pipeline twice with
             the device.
@@ -247,9 +241,8 @@ class Driver(object):
   def _register_services(self, pipeline):
     """ Allows the driver to register any services that it may provide with its pipelines.
     
-    This callback is called whenever a new pipeline is registered with the driver. The default implementaton of this
-    method doesn't do anything, but custom drivers that can offer services should override it to register their services
-    with any new pipelines that get registered.
+    This callback is called whenever a new pipeline is registered with the driver and gives the driver an opportunity to 
+    register any services that it may offer with the pipeline.
 
     @param pipeline  A pipeline that was just registered with the device.
     """

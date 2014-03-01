@@ -190,13 +190,14 @@ class Session:
     @return Returns a deferred that will be fired with the results of session setup commands (an array containing the 
             results for each setup command).
     """
+
+    logging.info("Reservation '"+self.id+"': Starting on pipeline '"+self.active_pipeline.id+"'.")
     
     # Lock the pipeline and pipeline hardware
     try:
       self.active_pipeline.reserve_pipeline()
     except pipeline.PipelineInUse:
-      return defer.fail(pipeline.PipelineInUse("The pipeline requested for reservation '"+self.id+"' could not be "+
-                                               "locked: "+self.active_pipeline.id))
+      return defer.fail(pipeline.PipelineInUse("The requested pipeline '"+self.active_pipeline.id+"' could not be locked"))
 
     # Execute the pipeline setup commands
     pipeline_setup_deferred = self.active_pipeline.prepare_for_session(self)
@@ -210,17 +211,20 @@ class Session:
   def kill_session(self):
     """ Terminates the session.
 
-    This method is called at the end of the session's reservation window and is responsible for cleaning up any
-    resources being used and letting the pipeline know that the session has ended. This gives it a chance to stop any 
-    services that its devices may be offering and to perform any other cleanup actions required.
+    This method is called at the end of the session's reservation window and is responsible for freeing up any resources
+    being used by notifying the pipeline that the session has ended.
+
+    @return Returns a DeferredList containing the results of the device cleanup methods.
     """
 
     # Notify the pipeline to cleanup
-    self.active_pipeline.cleanup_after_session()
+    cleanup_results = self.active_pipeline.cleanup_after_session()
 
     # Free the pipeline
     self.active_pipeline.free_pipeline()
     self.active_pipeline = None
+
+    return cleanup_results
 
   @property
   def is_active(self):
@@ -256,6 +260,12 @@ class Session:
     # Run the session setup commands
     if self.setup_commands is not None:
       for temp_command in self.setup_commands:
+        if 'command' in temp_command and 'destination' in temp_command:
+          logging.info("Reservation '"+self.id+"': Running setup command '"+temp_command['command']+"' on device '"+
+                       temp_command['destination']+"'.")
+        else:
+          logging.info("Reservation '"+self.id+"': Running unspecified setup command.")
+
         temp_command_deferred = self.command_parser.parse_command(temp_command, user_id = self.user_id)
         running_setup_commands.append(temp_command_deferred)
 
@@ -274,7 +284,7 @@ class Session:
     @return Passes along the unmodified setup command results originally passed to this callback.
     """
 
-    logging.info("Reservation '"+self.id+"'' is ready for use on pipeline: "+self.active_pipeline.id)
+    logging.info("Reservation '"+self.id+"': Active on pipeline '"+self.active_pipeline.id+"'.")
 
     # Activate the session
     self._active = True
