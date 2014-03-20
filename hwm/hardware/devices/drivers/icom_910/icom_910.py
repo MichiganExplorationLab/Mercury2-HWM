@@ -85,9 +85,17 @@ class ICOM_910(driver.HardwareDriver):
     # Create a Hamlib rig for the radio
     Hamlib.rig_set_debug(Hamlib.RIG_DEBUG_NONE)
     self._command_handler.radio_rig = Hamlib.Rig(Hamlib.RIG_MODEL_IC910)
-    self._command_handler.radio_rig.set_conf("rig_pathname",self.icom_device_path)
-    self._command_handler.radio_rig.set_conf("retry","5")
+    self._command_handler.radio_rig.set_conf("rig_pathname", self.icom_device_path)
+    self._command_handler.radio_rig.set_conf("retry", "5")
     self._command_handler.radio_rig.open()
+
+    # Set the active VFO and enable the frequency split
+    self._command_handler.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
+    self._command_handler.radio_rig.set_split_vfo(Hamlib.RIG_VFO_A, Hamlib.RIG_SPLIT_ON, Hamlib.RIG_VFO_B)
+
+    if self._command_handler.radio_rig. != 0:
+          raise ICOM910Error("An error occured while initializing the radio for a new session, "+
+                             Hamlib.rigerror(self._command_handler.radio_rig.error_status))
 
     return True
 
@@ -112,15 +120,13 @@ class ICOM_910(driver.HardwareDriver):
 
   @inlineCallbacks
   def process_new_doppler_correction(self, target_position):
-    """ Notifies the radio driver that new doppler correction information is available.
+    """ Updates the radio's frequencies when new doppler shift information is available.
 
-    This inline callback receives new target position information (including the doppler correction) from a 'tracker' 
+    This inline callback receives new target position information (including a doppler correction) from a 'tracker' 
     service. The driver will use this information to periodically (as defined in the configuration) update the uplink 
     and downlink frequencies on the radio.
 
-    @note If the active tracker service doesn't provide a doppler correction, this method will not update the radio's
-          frequency.
-    @note Because this method uses the set_uplink_freq command, it will only update the uplink frequency if the radio is
+    @note Because this method uses the set_rx_freq command, it will only update the uplink frequency if the radio is
           not currently transmitting (as determined by the pipeline's tnc_state service). If the TNC is receiving data 
           when the command is received, it will be ignored.
 
@@ -145,7 +151,7 @@ class ICOM_910(driver.HardwareDriver):
         'command': "set_rx_freq",
         'destination': self._session_pipeline.id+"."+self.id,
         'parameters': {
-          'frequency': new_downlink_freq
+          'rx_freq': new_downlink_freq
         }
       }
       command_deferred = self._command_parser.parse_command(command_request, 
@@ -160,7 +166,7 @@ class ICOM_910(driver.HardwareDriver):
         'command': "set_tx_freq",
         'destination': self._session_pipeline.id+"."+self.id,
         'parameters': {
-          'frequency': new_uplink_freq
+          'tx_freq': new_uplink_freq
         }
       }
       command_deferred = self._command_parser.parse_command(command_request, 
@@ -231,19 +237,23 @@ class ICOM910Handler(handler.DeviceCommandHandler):
         if new_mode == "FM":
           response = self.radio_rig.set_mode(Hamlib.RIG_MODE_FM)
         else:
-          raise command.CommandError("An unrecognized mode was specified.")
+          raise command.CommandError("An unrecognized mode was specified: "+new_mode)
 
-        # Check for errors
-        if response is not Hamlib.RIG_OK:
-          raise command.CommandError("An error occured setting the radio's mode.")
+        if self.radio_rig.error_status != 0:
+          raise command.CommandError("An error occured while setting the radio's mode, "+
+                                     Hamlib.rigerror(self.radio_rig.error_status))
 
         # Get the mode and update the driver state
         mode, width = self.radio_rig.get_mode()
+
+        if self.radio_rig.error_status != 0:
+          raise command.CommandError("An error occured while reading the radio's mode, "+
+                                     Hamlib.rigerror(self.radio_rig.error_status))
         self.driver._radio_state['mode'] = Hamlib.rig_strrmode(mode)
 
-        return {'message': "The radio mode has been set.", 'mode': new_mode}
+        return {'message': "The radio's mode has been set.", 'mode': new_mode}
       else:
-        raise command.CommandError("No mode specified for the 'set_mode' command.")
+        raise command.CommandError("The mode was not specified in the command parameters.")
     else:
       raise command.CommandError("The "+self.driver.id+" command handler does not have an initialized Hamlib rig.")
 
@@ -261,7 +271,7 @@ class ICOM910Handler(handler.DeviceCommandHandler):
         "description": "The Icom 910's mode.",
         "multiselect": False,
         "options": [
-          ['FM', 'FM']
+          ['FM']
         ]
       }
     ]
@@ -271,8 +281,8 @@ class ICOM910Handler(handler.DeviceCommandHandler):
   def command_set_rx_freq(self, active_command):
     """ Sets the downlink frequency of the radio.
 
-    @note This driver works in half-duplex mode with the RX frequency set on the main VFO and the TX frequency set via 
-          a split mode.
+    @note This driver works in half-duplex mode with the RX frequency set on VFO A and the TX frequency set via 
+          a split frequency on VFO B.
 
     @throws Raises CommandError if the command fails for some reason.
     
@@ -282,21 +292,28 @@ class ICOM910Handler(handler.DeviceCommandHandler):
 
     if self.radio_rig is not None:
       if 'rx_freq' in active_command.parameters:
-        # Set the rx frequency as the main VFO frequency
-        response = self.radio_rig.set_freq(int(active_command.parameters['rx_freq']*1000000), Hamlib.RIG_VFO_MAIN)
+        # Set the rx frequency on VFO A
+        response = self.radio_rig.set_freq(float(active_command.parameters['rx_freq'])*1000000), Hamlib.RIG_VFO_A)
 
-        if response is not Hamlib.RIG_OK:
-          raise command.CommandError("An error occured while setting the radio's RX frequency on the main VFO.")
+        if self.radio_rig.error_status != 0:
+          raise command.CommandError("An error occured while setting the radio's RX frequency on VFO A, "+
+                                     Hamlib.rigerror(self.radio_rig.error_status))
 
-        # Get the main VFO frequency and update the driver state
-        radio_freq = self.radio_rig.get_freq()
-        if self.driver._radio_state['set_rx_freq'] == 0:
+        # Get the VFO A frequency
+        radio_freq = self.radio_rig.get_freq(Hamlib.RIG_VFO_A)
+
+        if self.radio_rig.error_status != 0:
+          raise command.CommandError("Couldn't read the radio's RX frequency from VFO A on the main band, "+
+                                     Hamlib.rigerror(self.radio_rig.error_status))
+
+        if not self.driver._radio_state['set_rx_freq']:
           self.driver._radio_state['set_rx_freq'] = radio_freq
         else:
           self.driver._radio_state['shifted_rx_freq'] = radio_freq
-        return {'message': "The radio's RX frequency has been set.", 'frequency': (radio_freq/1000000)}
+        return {'message': "The radio's main band RX frequency has been set on VFO A.",
+                'frequency': (radio_freq/1000000)}
       else:
-        raise command.CommandError("No RX frequency specified for the 'rx_freq' command.")
+        raise command.CommandError("The RX was not frequency specified in the command parameters.")
     else:
       raise command.CommandError("The "+self.driver.id+" command handler does not have an initialized Hamlib rig.")
 
@@ -310,8 +327,8 @@ class ICOM910Handler(handler.DeviceCommandHandler):
       {
         "type": "number",
         "required": True,
-        "title": "rx_frequency",
-        "description": "The Icom 910's downlink frequency (in Mhz).",
+        "title": "set_rx_freq",
+        "description": "The Icom 910's downlink frequency (in Mhz). Must be in 430(440) band.",
         "integer": False
       }
     ]
@@ -321,8 +338,8 @@ class ICOM910Handler(handler.DeviceCommandHandler):
   def command_set_tx_freq(self, active_command):
     """ Sets the uplink frequency for the radio.
 
-    @note This driver works in half-duplex mode and sets the TX frequency via a split.
-    @note If someone attempts to change the TX frequency while transmitting (as determined by the 
+    @note The TX frequency is set in VFO B on the main band via a split.
+    @note If the user attempts to change the TX frequency while transmitting (as determined by the 
           'doppler_update_inactive_tx_delay' configuration setting), this command will fail. If the driver doesn't have 
           any tnc_state service set, this protection will not take place.
 
@@ -341,23 +358,30 @@ class ICOM910Handler(handler.DeviceCommandHandler):
           tnc_last_transmitted = tnc_state['last_transmitted']
           tnc_buffer_len = tnc_state['output_buffer_size_bytes']
           if (int(time.time()) - tnc_last_transmitted) < self.driver.doppler_update_inactive_tx_delay or tnc_buffer_len > 0:
-            raise command.CommandError("The pipeline's TNC has recently transmitted data or has pending data in its "+
+            raise command.CommandError("The pipeline's TNC has recently transmitted data or has data pending in its "+
                                        "output buffer and is not ready to have its uplink frequency changed.")
 
-        response = self.radio_rig.set_split_freq(Hamlib.RIG_VFO_MAIN, int(active_command.parameters['tx_freq']*1000000))
+        # Set the main band TX frequency on VFO B
+        response = self.radio_rig.set_split_freq(Hamlib.RIG_VFO_B, float(active_command.parameters['tx_freq'])*1000000))
 
-        if response is not Hamlib.RIG_OK:
-          raise command.CommandError("An error occured while setting the radio's split TX frequency.")
+        if self.radio_rig.error_status != 0:
+          raise command.CommandError("An error occured while setting the radio's TX frequency on VFO B, "+
+                                     Hamlib.rigerror(self.radio_rig.error_status))
 
         # Get the main VFO frequency and update the driver state
-        radio_freq = self.radio_rig.get_split_freq()
-        if self.driver._radio_state['set_tx_freq'] == 0.0:
+        radio_freq = self.radio_rig.get_split_freq(Hamlib.RIG_VFO_B)
+
+        if self.radio_rig.error_status != 0:
+          raise command.CommandError("Couldn't read the radio's TX frequency from VFO B on the main band, "+
+                                     Hamlib.rigerror(self.radio_rig.error_status))
+
+        if not self.driver._radio_state['set_tx_freq']:
           self.driver._radio_state['set_tx_freq'] = radio_freq
         else:
           self.driver._radio_state['shifted_tx_freq'] = radio_freq
-        return {'message': "The radio's TX frequency has been set using a split.", 'frequency': radio_freq/1000000}
+        return {'message': "The radio's main band TX frequency has been set VFO B.", 'frequency': radio_freq/1000000}
       else:
-        raise command.CommandError("No RX frequency specified for the 'rx_freq' command.")
+        raise command.CommandError("The TX frequency was not specified in the command parameters.")
     else:
       raise command.CommandError("The "+self.driver.id+" command handler does not have an initialized Hamlib rig.")
 
@@ -371,8 +395,8 @@ class ICOM910Handler(handler.DeviceCommandHandler):
       {
         "type": "number",
         "required": True,
-        "title": "tx_frequency",
-        "description": "The Icom 910's uplink frequency (in Mhz).",
+        "title": "set_tx_freq",
+        "description": "The Icom 910's uplink frequency (in Mhz). Must be in the 144 band.",
         "integer": False
       }
     ]
