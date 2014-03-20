@@ -89,13 +89,12 @@ class ICOM_910(driver.HardwareDriver):
     self._command_handler.radio_rig.set_conf("retry", "5")
     self._command_handler.radio_rig.open()
 
-    # Set the active VFO and enable the frequency split
-    self._command_handler.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
+    # Enable frequency split on the MAIN band
     self._command_handler.radio_rig.set_split_vfo(Hamlib.RIG_VFO_A, Hamlib.RIG_SPLIT_ON, Hamlib.RIG_VFO_B)
 
-    if self._command_handler.radio_rig. != 0:
-          raise ICOM910Error("An error occured while initializing the radio for a new session, "+
-                             Hamlib.rigerror(self._command_handler.radio_rig.error_status))
+    if self._command_handler.radio_rig.error_status != 0:
+      raise ICOM910Error("An error occured while initializing the radio for a new session, "+
+                         Hamlib.rigerror(self._command_handler.radio_rig.error_status))
 
     return True
 
@@ -151,7 +150,7 @@ class ICOM_910(driver.HardwareDriver):
         'command': "set_rx_freq",
         'destination': self._session_pipeline.id+"."+self.id,
         'parameters': {
-          'rx_freq': new_downlink_freq
+          'rx_freq': new_downlink_freq/1000000
         }
       }
       command_deferred = self._command_parser.parse_command(command_request, 
@@ -166,7 +165,7 @@ class ICOM_910(driver.HardwareDriver):
         'command': "set_tx_freq",
         'destination': self._session_pipeline.id+"."+self.id,
         'parameters': {
-          'tx_freq': new_uplink_freq
+          'tx_freq': new_uplink_freq/1000000
         }
       }
       command_deferred = self._command_parser.parse_command(command_request, 
@@ -293,7 +292,8 @@ class ICOM910Handler(handler.DeviceCommandHandler):
     if self.radio_rig is not None:
       if 'rx_freq' in active_command.parameters:
         # Set the rx frequency on VFO A
-        response = self.radio_rig.set_freq(float(active_command.parameters['rx_freq'])*1000000), Hamlib.RIG_VFO_A)
+        self.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
+        response = self.radio_rig.set_freq(float(active_command.parameters['rx_freq'])*1000000)
 
         if self.radio_rig.error_status != 0:
           raise command.CommandError("An error occured while setting the radio's RX frequency on VFO A, "+
@@ -349,6 +349,23 @@ class ICOM910Handler(handler.DeviceCommandHandler):
     @return Returns a dictionary containing the command response.
     """
 
+    #self.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
+    #self.radio_rig.set_freq(439000000.0)
+    #print "STATUS (set_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
+    #radio_freq = self.radio_rig.get_freq(Hamlib.RIG_VFO_A)
+    #print "STATUS (get_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
+    #print "Frequency VFO A: "+str(radio_freq)
+    
+    #self.radio_rig.set_vfo(Hamlib.RIG_VFO_B)
+    #self.radio_rig.set_freq(437000000.0)
+    #print "STATUS (set_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
+    #radio_freq = self.radio_rig.get_freq(Hamlib.RIG_VFO_B)
+    #print "STATUS (get_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
+    #print "Frequency VFO B: "+str(radio_freq)
+    #self.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
+
+    #return
+
     # Stop the service if it is running
     if self.radio_rig is not None:
       if 'tx_freq' in active_command.parameters:
@@ -361,15 +378,17 @@ class ICOM910Handler(handler.DeviceCommandHandler):
             raise command.CommandError("The pipeline's TNC has recently transmitted data or has data pending in its "+
                                        "output buffer and is not ready to have its uplink frequency changed.")
 
-        # Set the main band TX frequency on VFO B
-        response = self.radio_rig.set_split_freq(Hamlib.RIG_VFO_B, float(active_command.parameters['tx_freq'])*1000000))
+        # Set the TX frequency on VFO B of the main band
+        self.radio_rig.set_vfo(Hamlib.RIG_VFO_B)
+        self.radio_rig.set_freq(float(active_command.parameters['tx_freq'])*1000000)      
 
         if self.radio_rig.error_status != 0:
           raise command.CommandError("An error occured while setting the radio's TX frequency on VFO B, "+
                                      Hamlib.rigerror(self.radio_rig.error_status))
 
-        # Get the main VFO frequency and update the driver state
-        radio_freq = self.radio_rig.get_split_freq(Hamlib.RIG_VFO_B)
+        # Get the main VFO frequency and switch back to VFO A (so that transmit will be on VFO B)
+        radio_freq = self.radio_rig.get_freq(Hamlib.RIG_VFO_B)
+        self.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
 
         if self.radio_rig.error_status != 0:
           raise command.CommandError("Couldn't read the radio's TX frequency from VFO B on the main band, "+
