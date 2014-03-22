@@ -59,6 +59,8 @@ class Kantronics_TNC(driver.HardwareDriver):
 
     # Write the configuration settings to the TNC using the command protocol
     self._tnc_protocol.setLineMode()
+    self._tnc_protocol.sendLine("*")
+    time.sleep(2)
     self._tnc_protocol.sendLine(self.callsign)
     self._tnc_protocol.sendLine("txdelay 30/100")
     self._tnc_protocol.sendLine("intface terminal")
@@ -68,6 +70,8 @@ class Kantronics_TNC(driver.HardwareDriver):
     self._tnc_protocol.sendLine("intface kiss")
     self._tnc_protocol.sendLine("reset")
     self._tnc_protocol.setRawMode()
+
+    print "+ TNC setup?"
   
   def cleanup_after_session(self):
     """ Resets the TNC to its idle state after the session using it has ended.
@@ -153,6 +157,8 @@ class KantronicsTNCProtocol(LineReceiver):
   """ A protocol that is used to relay command and pipeline data streams to and from the TNC.
   """
 
+  
+
   def __init__(self, tnc_driver):
     """ Sets up the protocol.
 
@@ -166,6 +172,8 @@ class KantronicsTNCProtocol(LineReceiver):
 
     @param data  A data chunk of arbitrary size from the TNC.
     """
+
+    print data
 
     # Pass the data up the pipeline
     self.tnc_driver.write_output(data)
