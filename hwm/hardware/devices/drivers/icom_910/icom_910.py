@@ -18,15 +18,15 @@ class ICOM_910(driver.HardwareDriver):
 
   This class provides a hardware driver for the ICOM 910 series of radios. It is primarily responsible for controlling 
   the radio and automatically correcting its frequency for doppler shifts. In addition, it provides a command handler 
-  capable of controlling the ICOM 910.
+  capable of controlling some features of the ICOM 910.
 
   @note This driver requires that Hamlib2 be installed and configured, including the Python bindings.
   @note This driver is not currently capable of sending or receiving data to or from the radio directly. It is designed 
         for pipelines that also contain a TNC, which will serve as the pipeline's input and output device.
   @note This driver is currently setup to operate in half-duplex mode. In half-duplex mode, only the MAIN VFO is set and
-        the uplink frequency is specified via a split frequency.
+        the uplink frequency is specified via a split frequency on VFO B.
   @note The ICOM 910 driver will work with the TNC driver to make sure that it doesn't change its frequency when the 
-        TNC is receiving data. This will prevent the ICOM from entering an undefined state.
+        TNC is sending data to the radio. This will prevent the ICOM from entering an undefined state.
   """
 
   def __init__(self, device_configuration, command_parser):
@@ -122,12 +122,11 @@ class ICOM_910(driver.HardwareDriver):
     """ Updates the radio's frequencies when new doppler shift information is available.
 
     This inline callback receives new target position information (including a doppler correction) from a 'tracker' 
-    service. The driver will use this information to periodically (as defined in the configuration) update the uplink 
-    and downlink frequencies on the radio.
+    service. The driver will use this information to periodically (as defined by doppler_update_frequency) update 
+    the uplink and downlink frequencies on the radio.
 
-    @note Because this method uses the set_rx_freq command, it will only update the uplink frequency if the radio is
-          not currently transmitting (as determined by the pipeline's tnc_state service). If the TNC is receiving data 
-          when the command is received, it will be ignored.
+    @note Because this method uses the set_tx_freq command, it will only update the uplink frequency if the radio has
+          not recently transmitted. See the set_tx_freq command method for more information.
 
     @param target_position  A dictionary containing details about the target's position, including its doppler 
                             correction.
@@ -141,9 +140,6 @@ class ICOM_910(driver.HardwareDriver):
 
     # Make sure it's been long enough since the last update
     if (int(time.time()) - self._last_doppler_update) > self.doppler_update_frequency:
-      downlink_freq_set = False
-      uplink_freq_set = False
-
       # Send the command to update the downlink frequency
       new_downlink_freq = target_position['doppler_multiplier'] * self._radio_state['set_rx_freq']
       command_request = {
@@ -155,11 +151,13 @@ class ICOM_910(driver.HardwareDriver):
       }
       command_deferred = self._command_parser.parse_command(command_request, 
                                                             user_id = self._session_pipeline.current_session.user_id)
-      results = yield command_deferred
+      try:
+        results = yield command_deferred
+        downlink_freq_set = True
+      except Exception as command_error:
+        downlink_freq_set = False
 
       # Send the command to update the uplink frequency
-      if results['response']['status'] is not 'error':
-        downlink_freq_set = True
       new_uplink_freq = target_position['doppler_multiplier'] * self._radio_state['set_tx_freq']
       command_request = {
         'command': "set_tx_freq",
@@ -170,18 +168,23 @@ class ICOM_910(driver.HardwareDriver):
       }
       command_deferred = self._command_parser.parse_command(command_request, 
                                                             user_id = self._session_pipeline.current_session.user_id)
-      results = yield command_deferred
+      try:      
+        results = yield command_deferred
+        uplink_freq_set = True
+      except Exception as command_error:
+        uplink_freq_set = False
 
       # Verify the results
-      if results['response']['status'] is not 'error':
-        uplink_freq_set = True
-
       if uplink_freq_set and downlink_freq_set:
         self._last_doppler_update = time.time()
         yield defer.returnValue(True)
       else:
-        logging.error("The '"+self.id+"' driver did not update its doppler correction because one or both of the "+
-                      "'set_rx_freq' and 'set_tx_freq' commands failed.")
+        if not uplink_freq_set:
+          logging.error("An error occured while applying a doppler correction to "+self.id+"'s TX frequency.")
+        
+        if not downlink_freq_set:
+          logging.error("An error occured while applying a doppler correction to "+self.id+"'s RX frequency.")
+        
         yield defer.returnValue(False)
 
   def _reset_driver_state(self):
@@ -339,32 +342,15 @@ class ICOM910Handler(handler.DeviceCommandHandler):
     """ Sets the uplink frequency for the radio.
 
     @note The TX frequency is set in VFO B on the main band via a split.
-    @note If the user attempts to change the TX frequency while transmitting (as determined by the 
-          'doppler_update_inactive_tx_delay' configuration setting), this command will fail. If the driver doesn't have 
-          any tnc_state service set, this protection will not take place.
+    @note If the user or driver attempts to change the TX frequency while transmitting (as determined by the 
+          'tnc_state' service and 'doppler_update_inactive_tx_delay' configuration setting), this command will fail.
+          If the driver failed to load a 'tnc_state' service from the pipeline, this protection will not take place.
 
     @throws Raises CommandError if the command fails for some reason.
     
     @param active_command  The currently executing Command.
     @return Returns a dictionary containing the command response.
     """
-
-    #self.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
-    #self.radio_rig.set_freq(439000000.0)
-    #print "STATUS (set_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
-    #radio_freq = self.radio_rig.get_freq(Hamlib.RIG_VFO_A)
-    #print "STATUS (get_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
-    #print "Frequency VFO A: "+str(radio_freq)
-    
-    #self.radio_rig.set_vfo(Hamlib.RIG_VFO_B)
-    #self.radio_rig.set_freq(437000000.0)
-    #print "STATUS (set_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
-    #radio_freq = self.radio_rig.get_freq(Hamlib.RIG_VFO_B)
-    #print "STATUS (get_freq): "+Hamlib.rigerror(self.radio_rig.error_status)
-    #print "Frequency VFO B: "+str(radio_freq)
-    #self.radio_rig.set_vfo(Hamlib.RIG_VFO_A)
-
-    #return
 
     # Stop the service if it is running
     if self.radio_rig is not None:
@@ -373,10 +359,9 @@ class ICOM910Handler(handler.DeviceCommandHandler):
         if self.driver._tnc_state_service is not None:
           tnc_state = self.driver._tnc_state_service.get_state()
           tnc_last_transmitted = tnc_state['last_transmitted']
-          tnc_buffer_len = tnc_state['output_buffer_size_bytes']
-          if (int(time.time()) - tnc_last_transmitted) < self.driver.doppler_update_inactive_tx_delay or tnc_buffer_len > 0:
-            raise command.CommandError("The pipeline's TNC has recently transmitted data or has data pending in its "+
-                                       "output buffer and is not ready to have its uplink frequency changed.")
+          if (int(time.time()) - tnc_last_transmitted) < self.driver.doppler_update_inactive_tx_delay:
+            raise command.CommandError("The pipeline's TNC has recently transmitted data and is not ready to have "+
+                                       "its uplink frequency changed.")
 
         # Set the TX frequency on VFO B of the main band
         self.radio_rig.set_vfo(Hamlib.RIG_VFO_B)
