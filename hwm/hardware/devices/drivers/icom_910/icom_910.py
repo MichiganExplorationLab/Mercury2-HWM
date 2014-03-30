@@ -126,10 +126,10 @@ class ICOM_910(driver.HardwareDriver):
     service. The driver will use this information to periodically (as defined in the configuration) update the uplink 
     and downlink frequencies on the radio.
 
-    @note Because this method uses the set_rx_freq command, it will only update the uplink frequency if the radio is
-          not currently transmitting (as determined by the pipeline's tnc_state service). If the TNC is receiving data 
-          when the command is received, it will be ignored.
-
+    @note Because this method uses the set_tx_freq command, it will only update the uplink frequency if the radio is
+          not currently transmitting (as determined by the pipeline's tnc_state service). If the TNC is transmitting
+          (or has recently transmitted) any data, the command will have no effect. 
+          
     @param target_position  A dictionary containing details about the target's position, including its doppler 
                             correction.
     @return Returns True after updating both the uplink and download frequencies or False if an error occurs.

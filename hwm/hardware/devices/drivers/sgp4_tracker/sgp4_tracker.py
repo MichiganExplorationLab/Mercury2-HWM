@@ -6,7 +6,7 @@ This module contains a virtual driver and command handler for a standard SGP4 tr
 import logging, time
 import ephem
 import math
-from datetime import datetime
+from datetime import datetime, date
 from twisted.internet import task, defer
 from hwm.core.configuration import *
 from hwm.hardware.devices.drivers import driver, service
@@ -78,8 +78,13 @@ class SGP4_Tracker(driver.VirtualDriver):
 class SGP4PropagationService(service.Service):
   """ This service provides access to a SGP4 propagator.
 
-  The SGP4 Propagation Service can be used by an antenna controller or similar device to determine the location of the 
+  The SGP4 Propagation Service can be used by an antenna controller or other devices to determine the location of the 
   session's satellite of interest.
+
+  @note This service returns an azimuth in the range [0, 360] and an elevation in the range [0, 180]. If your antenna 
+        controller requires an azimuth in the range [-180, 180], you will need to manually convert it in your antenna 
+        controller driver. If your antenna controller can't cover the full elevation range, you will need to disable 
+        flip pass support using the 'flip_pass_support' configuration setting.
   """
 
   def __init__(self, service_id, service_type, settings):
@@ -95,6 +100,7 @@ class SGP4PropagationService(service.Service):
 
     # Set configuration settings
     self.propagation_frequency = settings['propagation_frequency']
+    self.flip_pass_support = settings['flip_pass_support']
 
     # Load the ground station's location
     self._global_config = Configuration
@@ -196,12 +202,52 @@ class SGP4PropagationService(service.Service):
         'doppler_multiplier': doppler_correction
       }
 
+      # Correct for flip passes
+      if self._is_flip_pass():
+        self._target_position['azimuth'] = (self._target_position['azimuth'] + 180) % 360
+        self._target_position['elevation'] = 180 - self._target_position['elevation']
+
       # Notify the handlers
       self._notify_handlers()
 
       return self._target_position
 
     return None
+
+  def _is_flip_pass(self):
+    """ Detects if the current pass is a flip pass (i.e. a pass that goes through 0 azimuth). 
+
+    @return Returns True if the current pass is a flip pass and if the propagator supports flip passes. Returns False 
+            otherwise.
+    """
+
+    flip_pass = False
+
+    if not self.flip_pass_support:
+      return flip_pass
+
+    try:
+      # Check if the target is above the horizon (i.e. the reservation started after the pass)
+      if self._target_position['elevation'] > 0;
+        ground_station.previous_rising(self._satellite)
+      else:
+        ground_station.next_rising(self._satellite)
+
+      rising_az = math.degrees(self._satellite.az)
+      ground_station.next_setting(self._satellite)
+      setting_az = math.degrees(self._satellite.az)
+    except ephem.CircumpolarError as ephem_error:
+      # The craft never rises or sets
+      flip_pass = False
+
+    if rising_az > setting_az and (rising_az - setting_az) > 180:
+      flip_pass = True
+    elif rising_az < setting_az and (setting_az - rising_az) > 180:
+      flip_pass = True
+    else:
+      flip_pass = False
+
+    return flip_pass
 
   def _notify_handlers(self):
     """ Notifies all registered handlers that new position information is available.
@@ -212,7 +258,7 @@ class SGP4PropagationService(service.Service):
     # Notify all handlers 
     for handler_callback in self._registered_handlers:
       try:
-        handler_callback(self._target_position)
+        handler_callback(self.W_target_position)
       except Exception as e:
         # A receiver failed, catch and move on
         pass
