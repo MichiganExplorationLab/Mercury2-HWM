@@ -1,0 +1,559 @@
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline}{\section{hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline Class Reference}
+\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline}\index{hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline@{hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline}}
+}
+
+
+Represents and provides access to a hardware pipeline.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aed56445fa619c9390ffeba92d924c861}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Initializes the pipeline with the supplied configuration. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aad6d60b4f9e493b764b98858518c050b}{write}
+\begin{DoxyCompactList}\small\item\em Writes the specified data chunk to the pipeline's input device. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6105f9720a74d918e3a0b13f727b96a8}{write\-\_\-output}
+\begin{DoxyCompactList}\small\item\em Pushes the specified data to the pipeline's output data stream. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a2d55701f3f441a60d0cf807b26e2fa05}{write\-\_\-telemetry}
+\begin{DoxyCompactList}\small\item\em Passes the provided telemetry datum to the session registered to this pipeline. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_afd178f3378608228a03c0dfb01bc03a4}{register\-\_\-service}
+\begin{DoxyCompactList}\small\item\em Registers services with the pipeline. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a899cc9766e24f78bbf0d33c582e65851}{load\-\_\-service}
+\begin{DoxyCompactList}\small\item\em Returns the active service for the specified service type. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aa141e1e323f40181bf8e33f327ebaf9f}{register\-\_\-session}
+\begin{DoxyCompactList}\small\item\em Registers the provided session with this pipeline. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad26c38f4cebea0ce5e50ae9e7a0b0a2f}{get\-\_\-device}
+\begin{DoxyCompactList}\small\item\em Returns the driver for the specified device. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad14ea398b7972960acd534cf15fc92ba}{prepare\-\_\-for\-\_\-session}
+\begin{DoxyCompactList}\small\item\em Prepares the \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline}{Pipeline} and its devices for a new session. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6c632522905ca79a9e52ff9ca817bfa7}{cleanup\-\_\-after\-\_\-session}
+\begin{DoxyCompactList}\small\item\em Cleans up the pipeline and its devices after the session using the pipeline has expired. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a8f72b62acd101f23f6f333b98869a9fd}{run\-\_\-setup\-\_\-commands}
+\begin{DoxyCompactList}\small\item\em Runs the pipeline setup commands. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a75e2d36779704a689c0695a3065a69b9}{reserve\-\_\-pipeline}
+\begin{DoxyCompactList}\small\item\em Locks the pipeline and its hardware. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_abf1dafd14d616a80273d92ed59b7e70c}{free\-\_\-pipeline}
+\begin{DoxyCompactList}\small\item\em Frees the pipeline. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a05272cdc6a155be84ef606be78eb6ad9}{is\-\_\-active}
+\begin{DoxyCompactList}\small\item\em Indicates if the pipeline is currently active. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a29ba2ca1cbe2acd665d2cb8eca5ad331}{{\bfseries device\-\_\-manager}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a29ba2ca1cbe2acd665d2cb8eca5ad331}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a27eb066807e82ceb85f333f2f4b5831f}{{\bfseries command\-\_\-parser}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a27eb066807e82ceb85f333f2f4b5831f}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad99f6dad67f06758c7deda082e41cdf3}{{\bfseries pipeline\-\_\-configuration}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad99f6dad67f06758c7deda082e41cdf3}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a3227f17d687d49dd432118445e715e29}{{\bfseries id}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a3227f17d687d49dd432118445e715e29}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ae78f03089903390d4736414edbfef833}{{\bfseries mode}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ae78f03089903390d4736414edbfef833}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a8b5ff5d8e92fff3211741be10f509f78}{{\bfseries setup\-\_\-commands}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a8b5ff5d8e92fff3211741be10f509f78}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad8525ac89251c16f4a49fbb711e1ff96}{{\bfseries produce\-\_\-telemetry}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad8525ac89251c16f4a49fbb711e1ff96}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a027fc529b636967020c81aafb3fb7147}{{\bfseries current\-\_\-session}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a027fc529b636967020c81aafb3fb7147}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a24346439d6c2932d4f2c7bcf3ca4226f}{{\bfseries input\-\_\-device}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a24346439d6c2932d4f2c7bcf3ca4226f}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aaa028eee1130c878aab0cd4e364eabc8}{{\bfseries output\-\_\-device}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aaa028eee1130c878aab0cd4e364eabc8}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ac47523ad157e5977bb4fb9acadf099ce}{{\bfseries devices}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ac47523ad157e5977bb4fb9acadf099ce}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a49bc22c9894b6e87a02d4be92d2a518b}{{\bfseries services}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a49bc22c9894b6e87a02d4be92d2a518b}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a2c1ac045f6d0e9bc262541984d18a13e}{{\bfseries active\-\_\-services}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a2c1ac045f6d0e9bc262541984d18a13e}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_afc0ca439434b357d8a037d1e0c8e05cd}{{\bfseries telemetry\-\_\-producer}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_afc0ca439434b357d8a037d1e0c8e05cd}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a09b7b495be9a6ad0240e72f17e453822}{\-\_\-set\-\_\-active\-\_\-services}
+\begin{DoxyCompactList}\small\item\em Sets the pipeline's active services. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ae6073fa7336e8f2f9b4a9c71a61a5ad0}{\-\_\-load\-\_\-pipeline\-\_\-devices}
+\begin{DoxyCompactList}\small\item\em Loads the pipeline's devices and performs additional validations on the pipeline's device configuration. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aeb624b5f0f99537026495b7c14a7846c}{{\bfseries \-\_\-active}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aeb624b5f0f99537026495b7c14a7846c}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents and provides access to a hardware pipeline. 
+
+This class provides an interface to the hardware pipeline and associated hardware devices. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aed56445fa619c9390ffeba92d924c861}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{pipeline\-\_\-configuration, }
+\item[{}]{device\-\_\-manager, }
+\item[{}]{command\-\_\-parser}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aed56445fa619c9390ffeba92d924c861}
+
+
+Initializes the pipeline with the supplied configuration. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em May} & pass on any exceptions raised during the pipeline setup procedure (see \-\_\-setup\-\_\-pipeline()).\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em pipeline\-\_\-configuration} & A dictionary containing the configuration settings for this pipeline. This is supplied by the pipeline manager and is loaded from the pipeline configuration file. \\
+\hline
+{\em device\-\_\-manager} & A reference to the Device\-Manager that will be used to load the pipeline hardware. \\
+\hline
+{\em command\-\_\-parser} & A reference to the Command\-Parser that will be used to run pipeline setup commands. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ae6073fa7336e8f2f9b4a9c71a61a5ad0}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!\-\_\-load\-\_\-pipeline\-\_\-devices@{\-\_\-load\-\_\-pipeline\-\_\-devices}}
+\index{\-\_\-load\-\_\-pipeline\-\_\-devices@{\-\_\-load\-\_\-pipeline\-\_\-devices}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{\-\_\-load\-\_\-pipeline\-\_\-devices}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-\_\-load\-\_\-pipeline\-\_\-devices (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ae6073fa7336e8f2f9b4a9c71a61a5ad0}
+
+
+Loads the pipeline's devices and performs additional validations on the pipeline's device configuration. 
+
+\begin{DoxyVerb} This method performs additional initial validations on the pipeline and does some initial setup such as driver
+ registration. It will not check for schema errors because the PipelineManager should have already checked the 
+ pipeline configuration schema by the time this pipeline was initialized.
+
+ Currently, this method checks for the following:
+ - Multiple pipeline input devices
+ - Multiple pipeline output devices
+ - Non-existent pipeline devices
+ - Duplicate pipeline devices
+
+ In addition, it will also register the pipeline with each of its devices.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_config_invalid}{Pipeline\-Config\-Invalid} if any errors are detected. \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a09b7b495be9a6ad0240e72f17e453822}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!\-\_\-set\-\_\-active\-\_\-services@{\-\_\-set\-\_\-active\-\_\-services}}
+\index{\-\_\-set\-\_\-active\-\_\-services@{\-\_\-set\-\_\-active\-\_\-services}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{\-\_\-set\-\_\-active\-\_\-services}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-\_\-set\-\_\-active\-\_\-services (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a09b7b495be9a6ad0240e72f17e453822}
+
+
+Sets the pipeline's active services. 
+
+\begin{DoxyVerb} This method sets the active services for the pipeline based on the provided session's configuration. For example, if
+ the pipeline's devices offer multiple "tracker" services, this method will set the active one based on what's
+ specified in the session configuration.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+The active\-\_\-services dictionary gets reset every time a session is registered (because which services are active always depends on the session configuration). This method should only be called from self.\-register\-\_\-session(). 
+
+Only one service per service type can be active at any given time.
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_service_invalid}{Service\-Invalid} if the session configuration specifies a service that isn't registered to the pipeline or if it specifies a service type that isn't available to the pipeline. \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6c632522905ca79a9e52ff9ca817bfa7}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!cleanup\-\_\-after\-\_\-session@{cleanup\-\_\-after\-\_\-session}}
+\index{cleanup\-\_\-after\-\_\-session@{cleanup\-\_\-after\-\_\-session}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{cleanup\-\_\-after\-\_\-session}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-cleanup\-\_\-after\-\_\-session (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6c632522905ca79a9e52ff9ca817bfa7}
+
+
+Cleans up the pipeline and its devices after the session using the pipeline has expired. 
+
+\begin{DoxyVerb} This method is called after a session has expired and is responsible for putting the pipeline and its devices back 
+ into an "idle" state in preparation for the next session.
+\end{DoxyVerb}
+
+
+\begin{DoxyReturn}{Returns}
+Returns a Deferred\-List containing the results of each device cleanup method wrapped in a deferred (if it's not already). 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_abf1dafd14d616a80273d92ed59b7e70c}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!free\-\_\-pipeline@{free\-\_\-pipeline}}
+\index{free\-\_\-pipeline@{free\-\_\-pipeline}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{free\-\_\-pipeline}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-free\-\_\-pipeline (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_abf1dafd14d616a80273d92ed59b7e70c}
+
+
+Frees the pipeline. 
+
+\begin{DoxyVerb} This method is used to free the hardware pipeline. This typically occurs at the conclusion of a usage session, but 
+ it can also occur in the event that a session that is currently using the pipeline experiences a fatal error.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+This method will only unlock hardware devices if the pipeline is reserved. This will prevent the pipeline from unlocking devices that are being used by other pipelines that share some of the same hardware devices. 
+\end{DoxyNote}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad26c38f4cebea0ce5e50ae9e7a0b0a2f}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!get\-\_\-device@{get\-\_\-device}}
+\index{get\-\_\-device@{get\-\_\-device}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{get\-\_\-device}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-get\-\_\-device (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{device\-\_\-id}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad26c38f4cebea0ce5e50ae9e7a0b0a2f}
+
+
+Returns the driver for the specified device. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em May} & throw Device\-Not\-Found if the specified device is not present in the pipeline.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em device\-\_\-id} & The I\-D of the device driver to load. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns a Driver instance for the specified device. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a05272cdc6a155be84ef606be78eb6ad9}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!is\-\_\-active@{is\-\_\-active}}
+\index{is\-\_\-active@{is\-\_\-active}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{is\-\_\-active}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-is\-\_\-active (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a05272cdc6a155be84ef606be78eb6ad9}
+
+
+Indicates if the pipeline is currently active. 
+
+\begin{DoxyVerb} This property checks if the pipeline is active. That is to say, whether or not it is being used by a session. This 
+ method is commonly used to determine if a given driver should write data to the pipeline or not (if the pipeline is 
+ registered with the device).
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+Because pipelines can only ever be used by a single session at a time, an active pipeline can also be considered locked. This differs from drivers, which can be active and unlocked at the same time (in the case of concurrent access devices).
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+Returns True if the pipeline is currently being used and False otherwise. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a899cc9766e24f78bbf0d33c582e65851}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!load\-\_\-service@{load\-\_\-service}}
+\index{load\-\_\-service@{load\-\_\-service}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{load\-\_\-service}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-load\-\_\-service (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{service\-\_\-type}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a899cc9766e24f78bbf0d33c582e65851}
+
+
+Returns the active service for the specified service type. 
+
+\begin{DoxyVerb} This method queries the pipeline's active service dictionary and returns the callable for the specified service 
+ type. Drivers will use this method to load services when sessions begin.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_service_type_not_found}{Service\-Type\-Not\-Found} if there are currently not any active services for the specified type.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyNote}{Note}
+The registered services that should be active at any given time are specified by the reservation schedule and set in self.\-\_\-set\-\_\-active\-\_\-services() at the beginning of each session.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em service\-\_\-type} & A string indicating the desired service type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the service callable. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad14ea398b7972960acd534cf15fc92ba}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!prepare\-\_\-for\-\_\-session@{prepare\-\_\-for\-\_\-session}}
+\index{prepare\-\_\-for\-\_\-session@{prepare\-\_\-for\-\_\-session}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{prepare\-\_\-for\-\_\-session}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-prepare\-\_\-for\-\_\-session (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{session}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad14ea398b7972960acd534cf15fc92ba}
+
+
+Prepares the \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline}{Pipeline} and its devices for a new session. 
+
+\begin{DoxyVerb} This method gives pipelines and devices a chance to perform any setup actions required for a new session before the 
+ user is given control.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+This step must occur before any pipeline and session setup commands are run so that any devices that the setup commands may be addressed to will be completely setup and ready to receive commands.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em session} & The new session that is being set up. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If successful, this will return a deferred pre-\/fired with \char`\"{}\-True.\char`\"{} If any of the device setup methods throw an exception, it will trigger the errback chain on the return deferred. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_afd178f3378608228a03c0dfb01bc03a4}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!register\-\_\-service@{register\-\_\-service}}
+\index{register\-\_\-service@{register\-\_\-service}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{register\-\_\-service}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-register\-\_\-service (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{service}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_afd178f3378608228a03c0dfb01bc03a4}
+
+
+Registers services with the pipeline. 
+
+\begin{DoxyVerb} This method registers the specified service with the pipeline. Unsurprisingly, services offer some service to the 
+ pipeline and its devices. If another device in the pipeline knows which interface a particular service implements, 
+ it can query the pipeline for the service callable and use it via the methods defined in the service's interface.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+Services may define their own interfaces not derived from one of the standard ones but devices won't be able to use them unless they were specifically designed to be able to do so. 
+
+Pipelines may have multiple services of the same type registered to them. During the session startup process, the \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline}{Pipeline} will configure which service should be active for each service type. It is this service that will be returned when a device queries for a service of that type. All available services are stored in self.\-services whereas the active services are stored in self.\-active\-\_\-services.
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_service_already_registered}{Service\-Already\-Registered} in the event that a device tries to register the same service twice.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em service} & A callable (typically a class) that provides an interface for interacting with the service. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aa141e1e323f40181bf8e33f327ebaf9f}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!register\-\_\-session@{register\-\_\-session}}
+\index{register\-\_\-session@{register\-\_\-session}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{register\-\_\-session}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-register\-\_\-session (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{session}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aa141e1e323f40181bf8e33f327ebaf9f}
+
+
+Registers the provided session with this pipeline. 
+
+\begin{DoxyVerb} This method registers the session with the pipeline for the purpose of sending data such as the main pipeline output
+ and pipeline telemetry to the session (and to the data/telemetry protocols in turn). It also calls a method that 
+ enables the session's active services.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+Only one session can be registered to the pipeline at a time. This is because pipelines can only be used by a single session (or reservation) at a time. Because the session coordinator ends old sessions before it creates new ones, this shouldn't be a problem for back to back reservations.
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_session_already_registered}{Session\-Already\-Registered} in the event that a session is registered to a pipeline that already has a registered session. Sessions must be deregistered before a new one can be registered. \\
+\hline
+{\em May} & pass on \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_service_invalid}{Service\-Invalid} exceptions if the session configuration specifies an invalid service (i.\-e. a non-\/existent service or service type).\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em session} & The Session instance that should currently be associated with the pipeline. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a75e2d36779704a689c0695a3065a69b9}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!reserve\-\_\-pipeline@{reserve\-\_\-pipeline}}
+\index{reserve\-\_\-pipeline@{reserve\-\_\-pipeline}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{reserve\-\_\-pipeline}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-reserve\-\_\-pipeline (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a75e2d36779704a689c0695a3065a69b9}
+
+
+Locks the pipeline and its hardware. 
+
+\begin{DoxyVerb} This method is used primarily by sessions to ensure that a pipeline and its hardware are never used concurrently
+ by two different sessions (unless a device is configured to allow for concurrent access). A session will reserve its
+ pipeline as the session is being set up.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+If a pipeline can not be reserved because one or more of its hardware devices is currently reserved, it will rollback any reservations that it may have acquired already.
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_in_use}{Pipeline\-In\-Use} if the pipeline (or any of its hardware devices) is currently being used and can't be reserved. \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a8f72b62acd101f23f6f333b98869a9fd}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!run\-\_\-setup\-\_\-commands@{run\-\_\-setup\-\_\-commands}}
+\index{run\-\_\-setup\-\_\-commands@{run\-\_\-setup\-\_\-commands}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{run\-\_\-setup\-\_\-commands}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-run\-\_\-setup\-\_\-commands (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{session\-\_\-preparation\-\_\-results}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a8f72b62acd101f23f6f333b98869a9fd}
+
+
+Runs the pipeline setup commands. 
+
+\begin{DoxyVerb} This method runs the pipeline setup commands, which are responsible for putting the pipeline in its intended state
+ before use by a session.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em session\-\_\-preparation\-\_\-results} & The results of the \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_ad14ea398b7972960acd534cf15fc92ba}{prepare\-\_\-for\-\_\-session()} call, should always be True (otherwise the errback chain would have triggered). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If successful, this method will return a Deferred\-List containing the results of the pipeline setup commands. If any of the commands fail additional validations by the command parser, a pre-\/fired failed deferred will be returned. Finally, if this pipeline doesn't have any setup commands None will be returned via a pre-\/fired successful deferred. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aad6d60b4f9e493b764b98858518c050b}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!write@{write}}
+\index{write@{write}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{write}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-write (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{input\-\_\-data}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aad6d60b4f9e493b764b98858518c050b}
+
+
+Writes the specified data chunk to the pipeline's input device. 
+
+\begin{DoxyVerb} This method writes the provided data chunk to the pipeline's input device, if it has one. If the pipeline doesn't 
+ have an input device, the data will simply be dropped and ignored. Typically, this data will come from the Session
+ that is currently using this pipeline.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+The specified data chunk will be passed to the pipeline's input device via its \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_aad6d60b4f9e493b764b98858518c050b}{write()} method.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em input\-\_\-data} & A data chunk of arbitrary size that is to be written to the pipeline's input device. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6105f9720a74d918e3a0b13f727b96a8}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!write\-\_\-output@{write\-\_\-output}}
+\index{write\-\_\-output@{write\-\_\-output}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{write\-\_\-output}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-write\-\_\-output (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{output\-\_\-data}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a6105f9720a74d918e3a0b13f727b96a8}
+
+
+Pushes the specified data to the pipeline's output data stream. 
+
+\begin{DoxyVerb} This method writes the specified data chunk to the pipeline's main data stream by passing it to the registered
+ session's write_output() methods.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+Typically, only a single device in a pipeline should make calls to this method (the pipeline's output device). This behavior is encouraged by the default Driver interface (Driver.\-write\-\_\-output()). If this convention isn't followed, the pipeline output may end up getting jumbled. 
+
+If no session is currently registered to the pipeline any data passed to this method will be discarded.
+\end{DoxyNote}
+\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000001}{Todo}]The pipeline data output stream should use a push producer to keep memory consumption to a minimum. This push producer would write the pipeline output directly to a file and then read from that file as required.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em output\-\_\-data} & A data chunk of arbitrary size that is to be written to the pipeline's main output stream. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a2d55701f3f441a60d0cf807b26e2fa05}{\index{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}!write\-\_\-telemetry@{write\-\_\-telemetry}}
+\index{write\-\_\-telemetry@{write\-\_\-telemetry}!hwm::hardware::pipelines::pipeline::Pipeline@{hwm\-::hardware\-::pipelines\-::pipeline\-::\-Pipeline}}
+\subsubsection[{write\-\_\-telemetry}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-pipeline.\-Pipeline.\-write\-\_\-telemetry (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{source\-\_\-id, }
+\item[{}]{stream, }
+\item[{}]{timestamp, }
+\item[{}]{telemetry\-\_\-datum, }
+\item[{}]{binary = {\ttfamily False}, }
+\item[{}]{extra\-\_\-headers}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1pipeline_1_1_pipeline_a2d55701f3f441a60d0cf807b26e2fa05}
+
+
+Passes the provided telemetry datum to the session registered to this pipeline. 
+
+\begin{DoxyVerb} Sends the provided telemetry datum and its headers to the session currently using this pipeline. The session will
+ be responsible for routing the telemetry to its appropriate destination (typically a telemetry protocol). This
+ method is normally called by the pipeline's output device.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+If no session is currently associated with the pipeline, or if the pipeline's telemetry output is currently being throttled, calls to this method will just be ignored (and the data discarded). As a result, it is not guaranteed that data passed to this method will ever reach the end user.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em source\-\_\-id} & The I\-D of the device or pipeline that generated the telemetry datum. \\
+\hline
+{\em stream} & A string identifying which of the device's telemetry streams the datum should be associated with. \\
+\hline
+{\em timestamp} & A unix timestamp specifying when the telemetry point was assembled. \\
+\hline
+{\em telemetry\-\_\-datum} & The actual telemetry datum. Can take many forms (e.\-g. a dictionary or binary webcam image). \\
+\hline
+{\em binary} & Whether or not the telemetry payload consists of binary data. If set to true, the data will be encoded before being sent to the user. \\
+\hline
+{\em $\ast$$\ast$extra\-\_\-headers} & A dictionary containing extra keyword arguments that should be included as additional headers when sending the telemetry datum. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/pipelines/pipeline.\-py\end{DoxyCompactItemize}

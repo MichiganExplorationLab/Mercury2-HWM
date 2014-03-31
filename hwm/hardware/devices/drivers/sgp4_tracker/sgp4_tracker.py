@@ -138,12 +138,12 @@ class SGP4PropagationService(service.Service):
 
     The SGP4 tracking service will call all registered callbacks everytime new position information is available. 
     Callbacks will be passed a dictionary containing the following elements:
-    * timestamp
-    * longitude 
-    * latitude 
-    * altitude 
-    * azimuth
-    * elevation
+    - timestamp
+    - longitude 
+    - latitude 
+    - altitude 
+    - azimuth
+    - elevation
 
     @param callback  A method that will be called with the satellite's position every time new position information is 
                      available.

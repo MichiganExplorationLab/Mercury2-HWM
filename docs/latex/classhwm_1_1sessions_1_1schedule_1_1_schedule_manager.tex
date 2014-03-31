@@ -1,0 +1,221 @@
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager}{\section{hwm.\-sessions.\-schedule.\-Schedule\-Manager Class Reference}
+\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager}\index{hwm.\-sessions.\-schedule.\-Schedule\-Manager@{hwm.\-sessions.\-schedule.\-Schedule\-Manager}}
+}
+
+
+Represents a reservation access schedule.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a0143ac24564e0a7176921772f522acf4}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Initializes the schedule instance. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a796d64f28ba7cf37b1958077aba60a09}{update\-\_\-schedule}
+\begin{DoxyCompactList}\small\item\em Downloads the most recent version of the schedule from the active source. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a8d1904cfc12d70c97ac0ad66d02b57b4}{get\-\_\-active\-\_\-reservations}
+\begin{DoxyCompactList}\small\item\em Returns a list of the currently active reservations (by timestamp). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_afa995b0beb3c784fdb000e3e831b282e}{{\bfseries config}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_afa995b0beb3c784fdb000e3e831b282e}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a7d2a931d793fc0a6db2e18ab877b7c75}{{\bfseries use\-\_\-network\-\_\-schedule}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a7d2a931d793fc0a6db2e18ab877b7c75}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a80b5a9421afb5f761dfbf5694d168b89}{{\bfseries schedule\-\_\-location}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a80b5a9421afb5f761dfbf5694d168b89}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a32b0341fa62d60fe41040ebcaaf2bf0a}{{\bfseries schedule}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a32b0341fa62d60fe41040ebcaaf2bf0a}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a9327b4c4367245911c7ff3bc2ffd81f6}{{\bfseries last\-\_\-updated}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a9327b4c4367245911c7ff3bc2ffd81f6}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a022e98a41d6254ab8be51509089c11e2}{\-\_\-validate\-\_\-schedule}
+\begin{DoxyCompactList}\small\item\em Validates the newly loaded schedule J\-S\-O\-N. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a969595d4ed4ef73bf5709a4910afb548}{\-\_\-save\-\_\-schedule}
+\begin{DoxyCompactList}\small\item\em Saves the provided schedule to this schedule instance. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a4eb795805cbf4dd66c7c4774f9c07ea9}{\-\_\-download\-\_\-remote\-\_\-schedule}
+\begin{DoxyCompactList}\small\item\em Loads the schedule from the schedule's U\-R\-L. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_ab40776c55c8d1f12a0d59f55bc716675}{\-\_\-download\-\_\-local\-\_\-schedule}
+\begin{DoxyCompactList}\small\item\em Loads the schedule from the local disk. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a reservation access schedule. 
+
+This class provides access to a copy of the reservation schedule. That hardware manager can use \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager}{Schedule\-Manager} to\-:
+\begin{DoxyItemize}
+\item Download new copies of the reservation schedule from the user interface
+\item Query for specific reservations
+\item Access newly active reservations 
+\end{DoxyItemize}
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a0143ac24564e0a7176921772f522acf4}{\index{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::sessions::schedule::ScheduleManager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-schedule.\-Schedule\-Manager.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{schedule\-\_\-endpoint}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a0143ac24564e0a7176921772f522acf4}
+
+
+Initializes the schedule instance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em schedule\-\_\-endpoint} & Where to load the reservation schedule from. This can either be a local file or a network address (such as the mercury2 user interface A\-P\-I). If it begins with 'http', it will be treated as a network address. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_ab40776c55c8d1f12a0d59f55bc716675}{\index{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}!\-\_\-download\-\_\-local\-\_\-schedule@{\-\_\-download\-\_\-local\-\_\-schedule}}
+\index{\-\_\-download\-\_\-local\-\_\-schedule@{\-\_\-download\-\_\-local\-\_\-schedule}!hwm::sessions::schedule::ScheduleManager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}}
+\subsubsection[{\-\_\-download\-\_\-local\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-schedule.\-Schedule\-Manager.\-\_\-download\-\_\-local\-\_\-schedule (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_ab40776c55c8d1f12a0d59f55bc716675}
+
+
+Loads the schedule from the local disk. 
+
+\begin{DoxyVerb} This method loads the local schedule from the disk and returns it.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_error}{Schedule\-Error} if an error occurs while loading or parsing the schedule.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyNote}{Note}
+The schedule file is passed to the constructor and specified by self.\-schedule\-\_\-location. 
+
+This method is intended to be called with threads.\-defer\-To\-Thread. The returned schedule will be passed to the resulting deferred's callback chain.
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+Returns a python object representing the schedule if successful. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a4eb795805cbf4dd66c7c4774f9c07ea9}{\index{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}!\-\_\-download\-\_\-remote\-\_\-schedule@{\-\_\-download\-\_\-remote\-\_\-schedule}}
+\index{\-\_\-download\-\_\-remote\-\_\-schedule@{\-\_\-download\-\_\-remote\-\_\-schedule}!hwm::sessions::schedule::ScheduleManager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}}
+\subsubsection[{\-\_\-download\-\_\-remote\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-schedule.\-Schedule\-Manager.\-\_\-download\-\_\-remote\-\_\-schedule (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a4eb795805cbf4dd66c7c4774f9c07ea9}
+
+
+Loads the schedule from the schedule's U\-R\-L. 
+
+\begin{DoxyVerb} This method loads the the schedule from a URL (e.g. the mercury2 user interface) and returns it.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_error}{Schedule\-Error} if an error occurs while downloading or parsing the schedule.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyNote}{Note}
+This method is intended to be called with threads.\-defer\-To\-Thread. The returned schedule will be passed to the resulting deferred's callback chain.
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+Returns a python object representing the downloaded schedule. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a969595d4ed4ef73bf5709a4910afb548}{\index{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}!\-\_\-save\-\_\-schedule@{\-\_\-save\-\_\-schedule}}
+\index{\-\_\-save\-\_\-schedule@{\-\_\-save\-\_\-schedule}!hwm::sessions::schedule::ScheduleManager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}}
+\subsubsection[{\-\_\-save\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-schedule.\-Schedule\-Manager.\-\_\-save\-\_\-schedule (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{schedule\-\_\-load\-\_\-result}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a969595d4ed4ef73bf5709a4910afb548}
+
+
+Saves the provided schedule to this schedule instance. 
+
+\begin{DoxyNote}{Note}
+This method is intended to be used as a callback for the deferred returned by the various schedule download methods.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em schedule\-\_\-load\-\_\-result} & The result of the attempted schedule download. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns a python object representing the new schedule. Note this returned schedule represents the raw J\-S\-O\-N object before any filters or modifications have been applied. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a022e98a41d6254ab8be51509089c11e2}{\index{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}!\-\_\-validate\-\_\-schedule@{\-\_\-validate\-\_\-schedule}}
+\index{\-\_\-validate\-\_\-schedule@{\-\_\-validate\-\_\-schedule}!hwm::sessions::schedule::ScheduleManager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}}
+\subsubsection[{\-\_\-validate\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-schedule.\-Schedule\-Manager.\-\_\-validate\-\_\-schedule (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{schedule\-\_\-load\-\_\-result}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a022e98a41d6254ab8be51509089c11e2}
+
+
+Validates the newly loaded schedule J\-S\-O\-N. 
+
+\begin{DoxyVerb} This callback validates the format of the new schedule against the JSON schedule schema.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & \hyperlink{classhwm_1_1sessions_1_1schedule_1_1_schedule_error}{Schedule\-Error} if the schedule represented by schedule\-\_\-load\-\_\-result isn't valid.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em schedule\-\_\-load\-\_\-result} & The result of the attempted schedule download.  Returns a python object representing the new schedule. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a8d1904cfc12d70c97ac0ad66d02b57b4}{\index{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}!get\-\_\-active\-\_\-reservations@{get\-\_\-active\-\_\-reservations}}
+\index{get\-\_\-active\-\_\-reservations@{get\-\_\-active\-\_\-reservations}!hwm::sessions::schedule::ScheduleManager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}}
+\subsubsection[{get\-\_\-active\-\_\-reservations}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-schedule.\-Schedule\-Manager.\-get\-\_\-active\-\_\-reservations (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a8d1904cfc12d70c97ac0ad66d02b57b4}
+
+
+Returns a list of the currently active reservations (by timestamp). 
+
+\begin{DoxyNote}{Note}
+This method will return all active reservations whether or not the session coordinator is already responding to them. It is the responsibility of the coordinator to handle duplicates.
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+Returns a list of the reservations that are currently active. If no reservations are active, an empty list will be returned. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a796d64f28ba7cf37b1958077aba60a09}{\index{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}!update\-\_\-schedule@{update\-\_\-schedule}}
+\index{update\-\_\-schedule@{update\-\_\-schedule}!hwm::sessions::schedule::ScheduleManager@{hwm\-::sessions\-::schedule\-::\-Schedule\-Manager}}
+\subsubsection[{update\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-schedule.\-Schedule\-Manager.\-update\-\_\-schedule (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1sessions_1_1schedule_1_1_schedule_manager_a796d64f28ba7cf37b1958077aba60a09}
+
+
+Downloads the most recent version of the schedule from the active source. 
+
+\begin{DoxyNote}{Note}
+This method loads the schedule from the active source (either a local file or network address) and updates the local copy using callbacks. If use\-\_\-local\-\_\-schedule is true, the schedule will be loaded from a local file (specified in the configuration files). If it is false, it will be loaded from the user interface A\-P\-I.
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+Returns a deferred that will be called with the result of the file access (the schedule object or a Failure). 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/sessions/schedule.\-py\end{DoxyCompactItemize}

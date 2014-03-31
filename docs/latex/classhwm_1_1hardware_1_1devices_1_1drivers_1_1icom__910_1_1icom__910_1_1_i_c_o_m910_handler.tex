@@ -1,0 +1,201 @@
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler}{\section{hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler Class Reference}
+\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler}\index{hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler@{hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler}}
+}
+
+
+A command handler that handles basic commands for the I\-C\-O\-M 910 series of radios.  
+
+
+Inheritance diagram for hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_acceb072836241d3185acefbf0d8c60e7}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Sets up the I\-C\-O\-M 910 command handler. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_aed013ab561d17764854c6328a07fb653}{command\-\_\-set\-\_\-mode}
+\begin{DoxyCompactList}\small\item\em Sets the radio's mode and updates the driver's state appropriately. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a78bb56470f35ffceb3a8d648ecbea55e}{settings\-\_\-set\-\_\-mode}
+\begin{DoxyCompactList}\small\item\em Meta-\/data for the \char`\"{}set\-\_\-mode\char`\"{} command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a0ed79c58a0f58f068a4cfcd5283eeeb5}{command\-\_\-set\-\_\-rx\-\_\-freq}
+\begin{DoxyCompactList}\small\item\em Sets the downlink frequency of the radio. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_abaa0ab14485f1f0fb07af686b6dec065}{settings\-\_\-set\-\_\-rx\-\_\-freq}
+\begin{DoxyCompactList}\small\item\em Meta-\/data for the \char`\"{}set\-\_\-rx\-\_\-freq\char`\"{} command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_ae44eddcf317a50ef1bf8f11353f3a4f1}{command\-\_\-set\-\_\-tx\-\_\-freq}
+\begin{DoxyCompactList}\small\item\em Sets the uplink frequency for the radio. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_afa1ed05cf46c841c3c494a8b5869790a}{settings\-\_\-set\-\_\-tx\-\_\-freq}
+\begin{DoxyCompactList}\small\item\em Meta-\/data for the \char`\"{}set\-\_\-tx\-\_\-freq\char`\"{} command. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a0f4d5b69ebf8d384e86bb0ebba686233}{{\bfseries radio\-\_\-rig}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a0f4d5b69ebf8d384e86bb0ebba686233}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A command handler that handles basic commands for the I\-C\-O\-M 910 series of radios. 
+
+\begin{DoxyNote}{Note}
+Most of the commands in this handler require that Hamlib be installed with the Python bindings. 
+\end{DoxyNote}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_acceb072836241d3185acefbf0d8c60e7}{\index{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::hardware::devices::drivers::icom_910::icom_910::ICOM910Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{driver}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_acceb072836241d3185acefbf0d8c60e7}
+
+
+Sets up the I\-C\-O\-M 910 command handler. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em driver} & The Driver instance that offers this command handler. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_aed013ab561d17764854c6328a07fb653}{\index{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}!command\-\_\-set\-\_\-mode@{command\-\_\-set\-\_\-mode}}
+\index{command\-\_\-set\-\_\-mode@{command\-\_\-set\-\_\-mode}!hwm::hardware::devices::drivers::icom_910::icom_910::ICOM910Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}}
+\subsubsection[{command\-\_\-set\-\_\-mode}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler.\-command\-\_\-set\-\_\-mode (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{active\-\_\-command}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_aed013ab561d17764854c6328a07fb653}
+
+
+Sets the radio's mode and updates the driver's state appropriately. 
+
+\begin{DoxyNote}{Note}
+Currently, this command can only set the mode to\-: \char`\"{}\-F\-M\char`\"{}
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & Command\-Error if the command fails for some reason.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em active\-\_\-command} & The executing Command. Contains the command parameters. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing the command response. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a0ed79c58a0f58f068a4cfcd5283eeeb5}{\index{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}!command\-\_\-set\-\_\-rx\-\_\-freq@{command\-\_\-set\-\_\-rx\-\_\-freq}}
+\index{command\-\_\-set\-\_\-rx\-\_\-freq@{command\-\_\-set\-\_\-rx\-\_\-freq}!hwm::hardware::devices::drivers::icom_910::icom_910::ICOM910Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}}
+\subsubsection[{command\-\_\-set\-\_\-rx\-\_\-freq}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler.\-command\-\_\-set\-\_\-rx\-\_\-freq (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{active\-\_\-command}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a0ed79c58a0f58f068a4cfcd5283eeeb5}
+
+
+Sets the downlink frequency of the radio. 
+
+\begin{DoxyNote}{Note}
+This driver works in half-\/duplex mode with the R\-X frequency set on V\-F\-O A and the T\-X frequency set via a split frequency on V\-F\-O B.
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & Command\-Error if the command fails for some reason.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em active\-\_\-command} & The executing Command. Contains the command parameters. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing the command response. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_ae44eddcf317a50ef1bf8f11353f3a4f1}{\index{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}!command\-\_\-set\-\_\-tx\-\_\-freq@{command\-\_\-set\-\_\-tx\-\_\-freq}}
+\index{command\-\_\-set\-\_\-tx\-\_\-freq@{command\-\_\-set\-\_\-tx\-\_\-freq}!hwm::hardware::devices::drivers::icom_910::icom_910::ICOM910Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}}
+\subsubsection[{command\-\_\-set\-\_\-tx\-\_\-freq}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler.\-command\-\_\-set\-\_\-tx\-\_\-freq (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{active\-\_\-command}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_ae44eddcf317a50ef1bf8f11353f3a4f1}
+
+
+Sets the uplink frequency for the radio. 
+
+\begin{DoxyNote}{Note}
+The T\-X frequency is set in V\-F\-O B on the main band via a split. 
+
+If the user or driver attempts to change the T\-X frequency while transmitting (as determined by the 'tnc\-\_\-state' service and 'doppler\-\_\-update\-\_\-inactive\-\_\-tx\-\_\-delay' configuration setting), this command will fail. If the driver failed to load a 'tnc\-\_\-state' service from the pipeline, this protection will not take place.
+\end{DoxyNote}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & Command\-Error if the command fails for some reason.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em active\-\_\-command} & The currently executing Command. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing the command response. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a78bb56470f35ffceb3a8d648ecbea55e}{\index{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}!settings\-\_\-set\-\_\-mode@{settings\-\_\-set\-\_\-mode}}
+\index{settings\-\_\-set\-\_\-mode@{settings\-\_\-set\-\_\-mode}!hwm::hardware::devices::drivers::icom_910::icom_910::ICOM910Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}}
+\subsubsection[{settings\-\_\-set\-\_\-mode}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler.\-settings\-\_\-set\-\_\-mode (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_a78bb56470f35ffceb3a8d648ecbea55e}
+
+
+Meta-\/data for the \char`\"{}set\-\_\-mode\char`\"{} command. 
+
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing meta-\/data about the command. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_abaa0ab14485f1f0fb07af686b6dec065}{\index{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}!settings\-\_\-set\-\_\-rx\-\_\-freq@{settings\-\_\-set\-\_\-rx\-\_\-freq}}
+\index{settings\-\_\-set\-\_\-rx\-\_\-freq@{settings\-\_\-set\-\_\-rx\-\_\-freq}!hwm::hardware::devices::drivers::icom_910::icom_910::ICOM910Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}}
+\subsubsection[{settings\-\_\-set\-\_\-rx\-\_\-freq}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler.\-settings\-\_\-set\-\_\-rx\-\_\-freq (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_abaa0ab14485f1f0fb07af686b6dec065}
+
+
+Meta-\/data for the \char`\"{}set\-\_\-rx\-\_\-freq\char`\"{} command. 
+
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing meta-\/data about the command. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_afa1ed05cf46c841c3c494a8b5869790a}{\index{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}!settings\-\_\-set\-\_\-tx\-\_\-freq@{settings\-\_\-set\-\_\-tx\-\_\-freq}}
+\index{settings\-\_\-set\-\_\-tx\-\_\-freq@{settings\-\_\-set\-\_\-tx\-\_\-freq}!hwm::hardware::devices::drivers::icom_910::icom_910::ICOM910Handler@{hwm\-::hardware\-::devices\-::drivers\-::icom\-\_\-910\-::icom\-\_\-910\-::\-I\-C\-O\-M910\-Handler}}
+\subsubsection[{settings\-\_\-set\-\_\-tx\-\_\-freq}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-icom\-\_\-910.\-icom\-\_\-910.\-I\-C\-O\-M910\-Handler.\-settings\-\_\-set\-\_\-tx\-\_\-freq (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1icom__910_1_1icom__910_1_1_i_c_o_m910_handler_afa1ed05cf46c841c3c494a8b5869790a}
+
+
+Meta-\/data for the \char`\"{}set\-\_\-tx\-\_\-freq\char`\"{} command. 
+
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing meta-\/data about the command. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/devices/drivers/icom\-\_\-910/icom\-\_\-910.\-py\end{DoxyCompactItemize}

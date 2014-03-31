@@ -1,0 +1,171 @@
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c}{\section{hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C Class Reference}
+\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c}\index{hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C@{hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C}}
+}
+
+
+" A driver for the Kantronics T\-N\-C.  
+
+
+Inheritance diagram for hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aca9ca4923a0f8592f5622ab8530808e3}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Sets up the T\-N\-C hardware driver. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a94214de15f97f949d0f70cf59b26ea28}{prepare\-\_\-for\-\_\-session}
+\begin{DoxyCompactList}\small\item\em Resets the T\-N\-C before each session. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_adb66d89d127728ed7b6a1c20e61242f2}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_adb66d89d127728ed7b6a1c20e61242f2}{cleanup\-\_\-after\-\_\-session}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_adb66d89d127728ed7b6a1c20e61242f2}
+
+\begin{DoxyCompactList}\small\item\em Resets the T\-N\-C to its idle state after the session using it has ended. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a5e6c5bb6bd4dfd1deb5e9c34492f8e8b}{get\-\_\-state}
+\begin{DoxyCompactList}\small\item\em Provides a dictionary that contains the current state of the T\-N\-C. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aece51eff1bff2fd5e3bc1b3ebbbce1fa}{write}
+\begin{DoxyCompactList}\small\item\em Writes the specified chunk of input data to the T\-N\-C. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a916d48084822829a303c59b097737f22}{{\bfseries tnc\-\_\-device}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a916d48084822829a303c59b097737f22}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a5167a44287332f51920f6475178992d5}{\-\_\-register\-\_\-services}
+\begin{DoxyCompactList}\small\item\em Registers the T\-N\-C's tnc\-\_\-state service with the session pipeline. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a119213ec8e13f681c34ba6c34a96509d}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a119213ec8e13f681c34ba6c34a96509d}{\-\_\-reset\-\_\-\-T\-N\-C\-\_\-state}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a119213ec8e13f681c34ba6c34a96509d}
+
+\begin{DoxyCompactList}\small\item\em Resets the T\-N\-C driver's state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_ae3fdb57793b47806fecbaea131c0cbb6}{{\bfseries \-\_\-tnc\-\_\-state\-\_\-service}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_ae3fdb57793b47806fecbaea131c0cbb6}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aa3905712cb1c219666bd3e46b853cbd5}{{\bfseries \-\_\-tnc\-\_\-protocol}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aa3905712cb1c219666bd3e46b853cbd5}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a7b342bdb9c9bac6e4128af6d810e39ce}{{\bfseries \-\_\-serial\-\_\-port\-\_\-connection}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a7b342bdb9c9bac6e4128af6d810e39ce}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_abf046a9d9fa45d23ff6cd4927263850f}{{\bfseries \-\_\-tnc\-\_\-state}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_abf046a9d9fa45d23ff6cd4927263850f}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+" A driver for the Kantronics T\-N\-C. 
+
+This class provides a driver for the Kantronics T\-N\-C. It is designed to work in conjunction with a radio and serves as the pipeline's input and output device (i.\-e. the device that pipeline data flows into and out of). 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aca9ca4923a0f8592f5622ab8530808e3}{\index{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::hardware::devices::drivers::kantronics_tnc::kantronics_tnc::Kantronics_TNC@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{device\-\_\-configuration, }
+\item[{}]{command\-\_\-parser}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aca9ca4923a0f8592f5622ab8530808e3}
+
+
+Sets up the T\-N\-C hardware driver. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em device\-\_\-configuration} & A dictionary containing the T\-N\-C's configuration options. \\
+\hline
+{\em command\-\_\-parser} & A reference to the active Command\-Parser instance. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a5167a44287332f51920f6475178992d5}{\index{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}!\-\_\-register\-\_\-services@{\-\_\-register\-\_\-services}}
+\index{\-\_\-register\-\_\-services@{\-\_\-register\-\_\-services}!hwm::hardware::devices::drivers::kantronics_tnc::kantronics_tnc::Kantronics_TNC@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}}
+\subsubsection[{\-\_\-register\-\_\-services}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C.\-\_\-register\-\_\-services (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{session\-\_\-pipeline}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a5167a44287332f51920f6475178992d5}
+
+
+Registers the T\-N\-C's tnc\-\_\-state service with the session pipeline. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em session\-\_\-pipeline} & The pipeline being used by the new session. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a5e6c5bb6bd4dfd1deb5e9c34492f8e8b}{\index{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}!get\-\_\-state@{get\-\_\-state}}
+\index{get\-\_\-state@{get\-\_\-state}!hwm::hardware::devices::drivers::kantronics_tnc::kantronics_tnc::Kantronics_TNC@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}}
+\subsubsection[{get\-\_\-state}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C.\-get\-\_\-state (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a5e6c5bb6bd4dfd1deb5e9c34492f8e8b}
+
+
+Provides a dictionary that contains the current state of the T\-N\-C. 
+
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing elements of the T\-N\-C's state. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a94214de15f97f949d0f70cf59b26ea28}{\index{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}!prepare\-\_\-for\-\_\-session@{prepare\-\_\-for\-\_\-session}}
+\index{prepare\-\_\-for\-\_\-session@{prepare\-\_\-for\-\_\-session}!hwm::hardware::devices::drivers::kantronics_tnc::kantronics_tnc::Kantronics_TNC@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}}
+\subsubsection[{prepare\-\_\-for\-\_\-session}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C.\-prepare\-\_\-for\-\_\-session (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{session\-\_\-pipeline}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_a94214de15f97f949d0f70cf59b26ea28}
+
+
+Resets the T\-N\-C before each session. 
+
+\begin{DoxyVerb} This method creates a Protocol that will be used to communicate with the TNC.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+The T\-N\-C must be configured (with a callsign, baud rate, etc.) before it can be used. If it has not been configured the T\-N\-C will probably not be able to send or receive data.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em session\-\_\-pipeline} & The Pipeline associated with the new session. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns True once the configuration commands have been sent. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aece51eff1bff2fd5e3bc1b3ebbbce1fa}{\index{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}!write@{write}}
+\index{write@{write}!hwm::hardware::devices::drivers::kantronics_tnc::kantronics_tnc::Kantronics_TNC@{hwm\-::hardware\-::devices\-::drivers\-::kantronics\-\_\-tnc\-::kantronics\-\_\-tnc\-::\-Kantronics\-\_\-\-T\-N\-C}}
+\subsubsection[{write}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-kantronics\-\_\-tnc.\-kantronics\-\_\-tnc.\-Kantronics\-\_\-\-T\-N\-C.\-write (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{input\-\_\-data}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1kantronics__tnc_1_1kantronics__tnc_1_1_kantronics___t_n_c_aece51eff1bff2fd5e3bc1b3ebbbce1fa}
+
+
+Writes the specified chunk of input data to the T\-N\-C. 
+
+\begin{DoxyNote}{Note}
+Any radio drivers that interface with the T\-N\-C should take care to not change the uplink frequency while data is being written to the device. The 'tnc\-\_\-state' service can be used to check if the T\-N\-C is currently sending or likely to send data.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em input\-\_\-data} & A user provided data chunk that is to be sent to the T\-N\-C. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/devices/drivers/kantronics\-\_\-tnc/kantronics\-\_\-tnc.\-py\end{DoxyCompactItemize}

@@ -1,0 +1,40 @@
+\hypertarget{namespacehwm_1_1core_1_1configuration}{\section{hwm.\-core.\-configuration Namespace Reference}
+\label{namespacehwm_1_1core_1_1configuration}\index{hwm.\-core.\-configuration@{hwm.\-core.\-configuration}}
+}
+
+
+Contains a class to store the hardware manager configuration.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classhwm_1_1core_1_1configuration_1_1_config}{Config}
+\begin{DoxyCompactList}\small\item\em Provides access to the hardware manager application configuration. \end{DoxyCompactList}\item 
+class \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_file_malformed}{Config\-File\-Malformed}
+\item 
+class \hyperlink{classhwm_1_1core_1_1configuration_1_1_config_invalid}{Config\-Invalid}
+\item 
+class \hyperlink{classhwm_1_1core_1_1configuration_1_1_option_protected}{Option\-Protected}
+\item 
+class \hyperlink{classhwm_1_1core_1_1configuration_1_1_option_not_found}{Option\-Not\-Found}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+tuple \hyperlink{namespacehwm_1_1core_1_1configuration_a87c77155d12f2ea9ccfb44c9602cb86a}{Configuration} = \hyperlink{classhwm_1_1core_1_1configuration_1_1_config}{Config}()
+\begin{DoxyCompactList}\small\item\em Stores a 'singleton' instance of the \hyperlink{classhwm_1_1core_1_1configuration_1_1_config}{Config} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Contains a class to store the hardware manager configuration. This module contains a class that provides methods for storing, modifying, and retrieving application configuration and some other shared state for the hardware manager. Access it by importing the Configuration variable (defined at the end of the module). 
+
+\subsection{Variable Documentation}
+\hypertarget{namespacehwm_1_1core_1_1configuration_a87c77155d12f2ea9ccfb44c9602cb86a}{\index{hwm\-::core\-::configuration@{hwm\-::core\-::configuration}!Configuration@{Configuration}}
+\index{Configuration@{Configuration}!hwm::core::configuration@{hwm\-::core\-::configuration}}
+\subsubsection[{Configuration}]{\setlength{\rightskip}{0pt plus 5cm}tuple hwm.\-core.\-configuration.\-Configuration = {\bf Config}()}}\label{namespacehwm_1_1core_1_1configuration_a87c77155d12f2ea9ccfb44c9602cb86a}
+
+
+Stores a 'singleton' instance of the \hyperlink{classhwm_1_1core_1_1configuration_1_1_config}{Config} object. 
+
+Assign local references to this instance to access the configuration. Because this is a top level module variable, it will only be initialized the first time this module is included. 

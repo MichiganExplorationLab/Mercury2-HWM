@@ -1,0 +1,240 @@
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline}{\section{hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline Class Reference}
+\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline}\index{hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline@{hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline}}
+}
+
+
+This test suite is used to test the functionality of the Pipeline class, which is used to represent and provide access to hardware pipelines.  
+
+
+Inheritance diagram for hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a427de15ae30cf533fa70e9c03e197bbb}{def {\bfseries set\-Up}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a427de15ae30cf533fa70e9c03e197bbb}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ac031a1223aa937d491d47219f064df5b}{def {\bfseries tear\-Down}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ac031a1223aa937d491d47219f064df5b}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a9d8a4572fd6774588f825b4feb808995}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a9d8a4572fd6774588f825b4feb808995}{test\-\_\-loading\-\_\-pipeline\-\_\-device}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a9d8a4572fd6774588f825b4feb808995}
+
+\begin{DoxyCompactList}\small\item\em Tests that the pipeline can return references to its devices. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a35a7eb6d43b30e9d076797fe20ed413d}{test\-\_\-writing\-\_\-pipeline\-\_\-output}
+\begin{DoxyCompactList}\small\item\em Checks that the Pipeline class can pass pipeline output to its currently registered session. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ab3bcf77e1bc61ef40fa3e703d507218e}{test\-\_\-writing\-\_\-telemetry\-\_\-datum}
+\begin{DoxyCompactList}\small\item\em This test verifies that the Pipeline class can correctly relay telemetry data to it's currently registered session. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_aa894d0d57cb4ca370d7573800e8dadc0}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_aa894d0d57cb4ca370d7573800e8dadc0}{test\-\_\-writing\-\_\-to\-\_\-pipeline}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_aa894d0d57cb4ca370d7573800e8dadc0}
+
+\begin{DoxyCompactList}\small\item\em Verifies that upon receiving data from the session, the pipeline correctly routes it to its input device. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ab7ca9c008a91170d9ffa387a52b563a6}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ab7ca9c008a91170d9ffa387a52b563a6}{test\-\_\-prepare\-\_\-for\-\_\-session\-\_\-error}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ab7ca9c008a91170d9ffa387a52b563a6}
+
+\begin{DoxyCompactList}\small\item\em Tests that the prepare\-\_\-for\-\_\-session() method returns a failed deferred if one of its devices throws an exception. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a1db39ac8a000451ed58a7c90a3abc4a5}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a1db39ac8a000451ed58a7c90a3abc4a5}{test\-\_\-prepare\-\_\-for\-\_\-session}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a1db39ac8a000451ed58a7c90a3abc4a5}
+
+\begin{DoxyCompactList}\small\item\em Verifies that the pipeline calls the prepare\-\_\-for\-\_\-session() method on each of its devices when asked, which is used to give drivers an opportunity to load and setup services before a new session begins. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a05d10d8d854d7af6e0fed191e6efdbb0}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a05d10d8d854d7af6e0fed191e6efdbb0}{test\-\_\-session\-\_\-cleanup}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a05d10d8d854d7af6e0fed191e6efdbb0}
+
+\begin{DoxyCompactList}\small\item\em This test makes sure that the pipeline can correctly clean itself up after the session that is using the pipeline expires. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_aa98c4e9c56b533cbd5f37d1f46c5f505}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_aa98c4e9c56b533cbd5f37d1f46c5f505}{test\-\_\-session\-\_\-cleanup\-\_\-error}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_aa98c4e9c56b533cbd5f37d1f46c5f505}
+
+\begin{DoxyCompactList}\small\item\em This test makes sure that the pipeline can correctly handle errors when attempted to clean up an expired session. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a48c55d273d6e3520508fcec0c42f7517}{test\-\_\-service\-\_\-activation\-\_\-and\-\_\-lookup}
+\begin{DoxyCompactList}\small\item\em This tests that the service activation and lookup methods are working as expected. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a2a1f139140dcaa5c9416c961c6729d71}{test\-\_\-service\-\_\-registration}
+\begin{DoxyCompactList}\small\item\em Verifies that the Pipeline class can correctly register services. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6e97f0356d167c151d95577683e8ad01}{test\-\_\-session\-\_\-registration}
+\begin{DoxyCompactList}\small\item\em Tests that the Pipeline class can correctly register sessions. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a569fcc0a744cd01148343c99da35307c}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a569fcc0a744cd01148343c99da35307c}{test\-\_\-initialization\-\_\-errors}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a569fcc0a744cd01148343c99da35307c}
+
+\begin{DoxyCompactList}\small\item\em Tests that the pipeline generates the correct errors during the initialization process. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a8c58cb4f65e0ba4ebfaa4c38046fe6c3}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a8c58cb4f65e0ba4ebfaa4c38046fe6c3}{test\-\_\-setup\-\_\-commands\-\_\-none\-\_\-specified}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a8c58cb4f65e0ba4ebfaa4c38046fe6c3}
+
+\begin{DoxyCompactList}\small\item\em Tests that the Pipeline class behaves correctly when it doesn't have any configured setup commands. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_af9f987be980cd1bdbe6b6ab414c1b762}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_af9f987be980cd1bdbe6b6ab414c1b762}{test\-\_\-setup\-\_\-commands\-\_\-failed\-\_\-device\-\_\-command}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_af9f987be980cd1bdbe6b6ab414c1b762}
+
+\begin{DoxyCompactList}\small\item\em Checks that the Pipeline class correctly responds to failed pipeline setup device commands. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a70b13b33a4e12d978c612c930d6a5c21}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a70b13b33a4e12d978c612c930d6a5c21}{test\-\_\-setup\-\_\-commands\-\_\-successful}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a70b13b33a4e12d978c612c930d6a5c21}
+
+\begin{DoxyCompactList}\small\item\em Checks that the Pipeline class can correctly run valid setup commands. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a14a19a3d52356903ed58e185fadbe456}{def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a14a19a3d52356903ed58e185fadbe456}{test\-\_\-setup\-\_\-commands\-\_\-failed\-\_\-system\-\_\-command}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a14a19a3d52356903ed58e185fadbe456}
+
+\begin{DoxyCompactList}\small\item\em Checks that the Pipeline class correctly responds to failed pipeline setup commands. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_acbbafe1bf23e6473b1a98eec98f6eeaa}{test\-\_\-locking\-\_\-successful}
+\begin{DoxyCompactList}\small\item\em Verifies that the Pipeline class can correctly lock a pipeline and its associated hardware. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6c908ebf291f5f28609ff03685735b43}{test\-\_\-locking\-\_\-failed\-\_\-rollback}
+\begin{DoxyCompactList}\small\item\em Verifies that, in the event of a pipeline locking conflict (i.\-e. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ac1cc920885c0a0fbcbf50261c214691f}{{\bfseries config}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ac1cc920885c0a0fbcbf50261c214691f}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a4b630f344d80e800cf4df3a7832bf655}{{\bfseries source\-\_\-data\-\_\-directory}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a4b630f344d80e800cf4df3a7832bf655}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a7ac664f98088c4ee1d83c20aa07a50bc}{{\bfseries command\-\_\-parser}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a7ac664f98088c4ee1d83c20aa07a50bc}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a729628d50eb58f7043a4e117cd8b72f3}{{\bfseries pipeline\-\_\-manager}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a729628d50eb58f7043a4e117cd8b72f3}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a97805ecc9df304a968783f919c885082}{{\bfseries device\-\_\-manager}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a97805ecc9df304a968783f919c885082}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a709fd1cbc3200ad6af3c4dc6f7646618}{\-\_\-load\-\_\-test\-\_\-schedule}
+\begin{DoxyCompactList}\small\item\em Loads a valid test schedule and returns a deferred that will be fired once that schedule has been loaded and parsed. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a4383fe9d9a0a6b4235c3bd2306cbac90}{\-\_\-load\-\_\-reservation\-\_\-config}
+\begin{DoxyCompactList}\small\item\em Returns the configuration dictionary for the specified reservation I\-D from the complete reservation schedule. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a8e9d8bb9f71f1632a8f7fe3fab3b622e}{\-\_\-reset\-\_\-device\-\_\-manager}
+\begin{DoxyCompactList}\small\item\em Resets the device manager instance. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6ce7f9b04cf67069ba8829e769b71947}{def {\bfseries \-\_\-reset\-\_\-config\-\_\-entries}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6ce7f9b04cf67069ba8829e769b71947}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This test suite is used to test the functionality of the Pipeline class, which is used to represent and provide access to hardware pipelines. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a4383fe9d9a0a6b4235c3bd2306cbac90}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!\-\_\-load\-\_\-reservation\-\_\-config@{\-\_\-load\-\_\-reservation\-\_\-config}}
+\index{\-\_\-load\-\_\-reservation\-\_\-config@{\-\_\-load\-\_\-reservation\-\_\-config}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{\-\_\-load\-\_\-reservation\-\_\-config}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-\_\-load\-\_\-reservation\-\_\-config (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{reservation\-\_\-schedule, }
+\item[{}]{reservation\-\_\-id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a4383fe9d9a0a6b4235c3bd2306cbac90}
+
+
+Returns the configuration dictionary for the specified reservation I\-D from the complete reservation schedule. 
+
+\begin{DoxyVerb} This is used to pick out individual session configurations to test with.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & Lookup\-Error if the specified reservation I\-D can't be found in the reservation schedule. \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a709fd1cbc3200ad6af3c4dc6f7646618}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!\-\_\-load\-\_\-test\-\_\-schedule@{\-\_\-load\-\_\-test\-\_\-schedule}}
+\index{\-\_\-load\-\_\-test\-\_\-schedule@{\-\_\-load\-\_\-test\-\_\-schedule}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{\-\_\-load\-\_\-test\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-\_\-load\-\_\-test\-\_\-schedule (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a709fd1cbc3200ad6af3c4dc6f7646618}
+
+
+Loads a valid test schedule and returns a deferred that will be fired once that schedule has been loaded and parsed. 
+
+This schedule is used to test the Pipeline class. \hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a8e9d8bb9f71f1632a8f7fe3fab3b622e}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!\-\_\-reset\-\_\-device\-\_\-manager@{\-\_\-reset\-\_\-device\-\_\-manager}}
+\index{\-\_\-reset\-\_\-device\-\_\-manager@{\-\_\-reset\-\_\-device\-\_\-manager}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{\-\_\-reset\-\_\-device\-\_\-manager}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-\_\-reset\-\_\-device\-\_\-manager (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{command\-\_\-parser}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a8e9d8bb9f71f1632a8f7fe3fab3b622e}
+
+
+Resets the device manager instance. 
+
+This is required if multiple pipeline configurations are tested in the same test method because the device pipeline registrations don't get reset when the pipeline manager does.
+
+
+\begin{DoxyParams}{Parameters}
+{\em command\-\_\-parser} & The active command parser instance. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6c908ebf291f5f28609ff03685735b43}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!test\-\_\-locking\-\_\-failed\-\_\-rollback@{test\-\_\-locking\-\_\-failed\-\_\-rollback}}
+\index{test\-\_\-locking\-\_\-failed\-\_\-rollback@{test\-\_\-locking\-\_\-failed\-\_\-rollback}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{test\-\_\-locking\-\_\-failed\-\_\-rollback}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-test\-\_\-locking\-\_\-failed\-\_\-rollback (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6c908ebf291f5f28609ff03685735b43}
+
+
+Verifies that, in the event of a pipeline locking conflict (i.\-e. 
+
+the pipeline is free but a device it uses isn't), the Pipeline class correctly rolls back any hardware locks it may have acquired before the error occured. \hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_acbbafe1bf23e6473b1a98eec98f6eeaa}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!test\-\_\-locking\-\_\-successful@{test\-\_\-locking\-\_\-successful}}
+\index{test\-\_\-locking\-\_\-successful@{test\-\_\-locking\-\_\-successful}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{test\-\_\-locking\-\_\-successful}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-test\-\_\-locking\-\_\-successful (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_acbbafe1bf23e6473b1a98eec98f6eeaa}
+
+
+Verifies that the Pipeline class can correctly lock a pipeline and its associated hardware. 
+
+It also verifies that the pipeline registers itself with its devices. \hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a48c55d273d6e3520508fcec0c42f7517}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!test\-\_\-service\-\_\-activation\-\_\-and\-\_\-lookup@{test\-\_\-service\-\_\-activation\-\_\-and\-\_\-lookup}}
+\index{test\-\_\-service\-\_\-activation\-\_\-and\-\_\-lookup@{test\-\_\-service\-\_\-activation\-\_\-and\-\_\-lookup}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{test\-\_\-service\-\_\-activation\-\_\-and\-\_\-lookup}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-test\-\_\-service\-\_\-activation\-\_\-and\-\_\-lookup (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a48c55d273d6e3520508fcec0c42f7517}
+
+
+This tests that the service activation and lookup methods are working as expected. 
+
+In order for a service to be query-\/able, it must be active (as specified by the configuration for the session using the pipeline). \hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a2a1f139140dcaa5c9416c961c6729d71}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!test\-\_\-service\-\_\-registration@{test\-\_\-service\-\_\-registration}}
+\index{test\-\_\-service\-\_\-registration@{test\-\_\-service\-\_\-registration}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{test\-\_\-service\-\_\-registration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-test\-\_\-service\-\_\-registration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a2a1f139140dcaa5c9416c961c6729d71}
+
+
+Verifies that the Pipeline class can correctly register services. 
+
+The service registration feature allows devices to offer services or script access to other devices in the pipeline. \hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6e97f0356d167c151d95577683e8ad01}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!test\-\_\-session\-\_\-registration@{test\-\_\-session\-\_\-registration}}
+\index{test\-\_\-session\-\_\-registration@{test\-\_\-session\-\_\-registration}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{test\-\_\-session\-\_\-registration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-test\-\_\-session\-\_\-registration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a6e97f0356d167c151d95577683e8ad01}
+
+
+Tests that the Pipeline class can correctly register sessions. 
+
+The Pipeline class uses registered sessions to relay the pipeline telemetry and data streams to the end user. This test uses a mock session without any active services specified so that Pipeline.\-\_\-set\-\_\-active\-\_\-services() will be skipped. \hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a35a7eb6d43b30e9d076797fe20ed413d}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!test\-\_\-writing\-\_\-pipeline\-\_\-output@{test\-\_\-writing\-\_\-pipeline\-\_\-output}}
+\index{test\-\_\-writing\-\_\-pipeline\-\_\-output@{test\-\_\-writing\-\_\-pipeline\-\_\-output}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{test\-\_\-writing\-\_\-pipeline\-\_\-output}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-test\-\_\-writing\-\_\-pipeline\-\_\-output (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_a35a7eb6d43b30e9d076797fe20ed413d}
+
+
+Checks that the Pipeline class can pass pipeline output to its currently registered session. 
+
+The pipeline's registered output device will normally use Pipeline.\-write\-\_\-output() to pass its output to the pipeline (and in turn to the session). \hypertarget{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ab3bcf77e1bc61ef40fa3e703d507218e}{\index{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}!test\-\_\-writing\-\_\-telemetry\-\_\-datum@{test\-\_\-writing\-\_\-telemetry\-\_\-datum}}
+\index{test\-\_\-writing\-\_\-telemetry\-\_\-datum@{test\-\_\-writing\-\_\-telemetry\-\_\-datum}!hwm::hardware::pipelines::tests::test_pipeline::TestPipeline@{hwm\-::hardware\-::pipelines\-::tests\-::test\-\_\-pipeline\-::\-Test\-Pipeline}}
+\subsubsection[{test\-\_\-writing\-\_\-telemetry\-\_\-datum}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-pipelines.\-tests.\-test\-\_\-pipeline.\-Test\-Pipeline.\-test\-\_\-writing\-\_\-telemetry\-\_\-datum (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1pipelines_1_1tests_1_1test__pipeline_1_1_test_pipeline_ab3bcf77e1bc61ef40fa3e703d507218e}
+
+
+This test verifies that the Pipeline class can correctly relay telemetry data to it's currently registered session. 
+
+Drivers use Pipeline.\-write\-\_\-telemetry() to send additional data (i.\-e. separate from the main pipeline datastream) and state to the Pipeline (and in turn to the Session). 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/pipelines/tests/test\-\_\-pipeline.\-py\end{DoxyCompactItemize}

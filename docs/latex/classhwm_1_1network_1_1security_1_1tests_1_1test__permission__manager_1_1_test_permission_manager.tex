@@ -1,0 +1,84 @@
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager}{\section{hwm.\-network.\-security.\-tests.\-test\-\_\-permission\-\_\-manager.\-Test\-Permission\-Manager Class Reference}
+\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager}\index{hwm.\-network.\-security.\-tests.\-test\-\_\-permission\-\_\-manager.\-Test\-Permission\-Manager@{hwm.\-network.\-security.\-tests.\-test\-\_\-permission\-\_\-manager.\-Test\-Permission\-Manager}}
+}
+
+
+This test suite tests the permission manager class, which is used to manage and cache downloaded user command execution permissions.  
+
+
+Inheritance diagram for hwm.\-network.\-security.\-tests.\-test\-\_\-permission\-\_\-manager.\-Test\-Permission\-Manager\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a61a58a4a9bcd519e596ac948f9e0a300}{def {\bfseries set\-Up}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a61a58a4a9bcd519e596ac948f9e0a300}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aa7e122dfe0bcd7e71ab96c86fb861ee9}{def {\bfseries tear\-Down}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aa7e122dfe0bcd7e71ab96c86fb861ee9}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_abcc7964d11265a0872f92bca987c3d64}{def \hyperlink{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_abcc7964d11265a0872f92bca987c3d64}{test\-\_\-local\-\_\-file\-\_\-load\-\_\-missing}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_abcc7964d11265a0872f92bca987c3d64}
+
+\begin{DoxyCompactList}\small\item\em Verifies that the correct error is generated when the offline permissions file can't be found. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a9bdeb7e26ec75254ecd4618aa1acaf41}{def \hyperlink{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a9bdeb7e26ec75254ecd4618aa1acaf41}{test\-\_\-local\-\_\-file\-\_\-load\-\_\-invalid}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a9bdeb7e26ec75254ecd4618aa1acaf41}
+
+\begin{DoxyCompactList}\small\item\em Checks that the permissions manager correctly rejects a schedule containing invalid J\-S\-O\-N (doesn't conform to the schema). \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a34314ab1fd59a33168e3fa16d57e4dab}{test\-\_\-get\-\_\-valid\-\_\-new\-\_\-user}
+\begin{DoxyCompactList}\small\item\em Tests that a valid non-\/resident (i.\-e. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a603f45b0113fa8309419c11ced6eafc6}{def \hyperlink{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a603f45b0113fa8309419c11ced6eafc6}{test\-\_\-get\-\_\-valid\-\_\-old\-\_\-user}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a603f45b0113fa8309419c11ced6eafc6}
+
+\begin{DoxyCompactList}\small\item\em Verifies that the permissions manager correctly returns the cached permissions in the event that they need to be updated (instead of waiting for the new ones). \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aedf0b2442119d17932394093d6a7edce}{def \hyperlink{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aedf0b2442119d17932394093d6a7edce}{test\-\_\-background\-\_\-update\-\_\-error\-\_\-handling}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aedf0b2442119d17932394093d6a7edce}
+
+\begin{DoxyCompactList}\small\item\em Tests that errors are correctly handled when a background update thread fails. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_af630aa02e05870d2473d39f20c31bcd1}{test\-\_\-get\-\_\-invalid\-\_\-user}
+\begin{DoxyCompactList}\small\item\em Attempt to get an invalid user from a valid permissions file (i.\-e. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aff2d3c454bf99d9c252fecd5258c3d60}{def \hyperlink{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aff2d3c454bf99d9c252fecd5258c3d60}{test\-\_\-old\-\_\-permissions\-\_\-purge}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_aff2d3c454bf99d9c252fecd5258c3d60}
+
+\begin{DoxyCompactList}\small\item\em Verifies that the purge method correctly removes old permission entries. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a065012c8d8097e4460becd5573a4461d}{{\bfseries config}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a065012c8d8097e4460becd5573a4461d}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a1929f415fd625c724d36a0317cbb5e8b}{{\bfseries source\-\_\-data\-\_\-directory}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a1929f415fd625c724d36a0317cbb5e8b}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This test suite tests the permission manager class, which is used to manage and cache downloaded user command execution permissions. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_af630aa02e05870d2473d39f20c31bcd1}{\index{hwm\-::network\-::security\-::tests\-::test\-\_\-permission\-\_\-manager\-::\-Test\-Permission\-Manager@{hwm\-::network\-::security\-::tests\-::test\-\_\-permission\-\_\-manager\-::\-Test\-Permission\-Manager}!test\-\_\-get\-\_\-invalid\-\_\-user@{test\-\_\-get\-\_\-invalid\-\_\-user}}
+\index{test\-\_\-get\-\_\-invalid\-\_\-user@{test\-\_\-get\-\_\-invalid\-\_\-user}!hwm::network::security::tests::test_permission_manager::TestPermissionManager@{hwm\-::network\-::security\-::tests\-::test\-\_\-permission\-\_\-manager\-::\-Test\-Permission\-Manager}}
+\subsubsection[{test\-\_\-get\-\_\-invalid\-\_\-user}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-security.\-tests.\-test\-\_\-permission\-\_\-manager.\-Test\-Permission\-Manager.\-test\-\_\-get\-\_\-invalid\-\_\-user (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_af630aa02e05870d2473d39f20c31bcd1}
+
+
+Attempt to get an invalid user from a valid permissions file (i.\-e. 
+
+a user not defined in the file). \hypertarget{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a34314ab1fd59a33168e3fa16d57e4dab}{\index{hwm\-::network\-::security\-::tests\-::test\-\_\-permission\-\_\-manager\-::\-Test\-Permission\-Manager@{hwm\-::network\-::security\-::tests\-::test\-\_\-permission\-\_\-manager\-::\-Test\-Permission\-Manager}!test\-\_\-get\-\_\-valid\-\_\-new\-\_\-user@{test\-\_\-get\-\_\-valid\-\_\-new\-\_\-user}}
+\index{test\-\_\-get\-\_\-valid\-\_\-new\-\_\-user@{test\-\_\-get\-\_\-valid\-\_\-new\-\_\-user}!hwm::network::security::tests::test_permission_manager::TestPermissionManager@{hwm\-::network\-::security\-::tests\-::test\-\_\-permission\-\_\-manager\-::\-Test\-Permission\-Manager}}
+\subsubsection[{test\-\_\-get\-\_\-valid\-\_\-new\-\_\-user}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-security.\-tests.\-test\-\_\-permission\-\_\-manager.\-Test\-Permission\-Manager.\-test\-\_\-get\-\_\-valid\-\_\-new\-\_\-user (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1security_1_1tests_1_1test__permission__manager_1_1_test_permission_manager_a34314ab1fd59a33168e3fa16d57e4dab}
+
+
+Tests that a valid non-\/resident (i.\-e. 
+
+not cached) user can be loaded and returned from a local permissions file successfully. 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/network/security/tests/test\-\_\-permission\-\_\-manager.\-py\end{DoxyCompactItemize}

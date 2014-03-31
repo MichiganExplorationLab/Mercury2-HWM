@@ -1,0 +1,95 @@
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service}{\section{hwm.\-hardware.\-devices.\-drivers.\-service.\-Service Class Reference}
+\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service}\index{hwm.\-hardware.\-devices.\-drivers.\-service.\-Service@{hwm.\-hardware.\-devices.\-drivers.\-service.\-Service}}
+}
+
+
+Provides the base automated service abstract class.  
+
+
+Inheritance diagram for hwm.\-hardware.\-devices.\-drivers.\-service.\-Service\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=0.909091cm]{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_aefbe1df6318a06a3a37acccb566d42f3}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Sets up the service instance. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a0ea6b1a043405067d56a80df71f797a9}{id}
+\begin{DoxyCompactList}\small\item\em Returns the I\-D of the service. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a1948200718e29efe2a6177b2e85f017c}{type}
+\begin{DoxyCompactList}\small\item\em Returns the service type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a091b4bd813eb4102dc35d3ff3233fc93}{{\bfseries \-\_\-service\-\_\-id}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a091b4bd813eb4102dc35d3ff3233fc93}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a0b2131decb7e57ac1ec0d48c124449ec}{{\bfseries \-\_\-service\-\_\-type}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a0b2131decb7e57ac1ec0d48c124449ec}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Provides the base automated service abstract class. 
+
+This class provides a base abstract class that driver services may implement.
+
+\begin{DoxyNote}{Note}
+The properties defined by this interface are required for the Pipeline class (among others) to function properly. If you decide not to use this class, make sure to implement these properties. 
+\end{DoxyNote}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_aefbe1df6318a06a3a37acccb566d42f3}{\index{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service@{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::hardware::devices::drivers::service::Service@{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-service.\-Service.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{service\-\_\-id, }
+\item[{}]{service\-\_\-type}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_aefbe1df6318a06a3a37acccb566d42f3}
+
+
+Sets up the service instance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em service\-\_\-id} & The service I\-D (what other pipeline devices will search for when looking for the service). \\
+\hline
+{\em service\-\_\-type} & The service type. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a0ea6b1a043405067d56a80df71f797a9}{\index{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service@{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service}!id@{id}}
+\index{id@{id}!hwm::hardware::devices::drivers::service::Service@{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service}}
+\subsubsection[{id}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-service.\-Service.\-id (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a0ea6b1a043405067d56a80df71f797a9}
+
+
+Returns the I\-D of the service. 
+
+This property returns the I\-D of the service which, when combined with the service type, forms a unique identifier for a given pipeline. \hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a1948200718e29efe2a6177b2e85f017c}{\index{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service@{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service}!type@{type}}
+\index{type@{type}!hwm::hardware::devices::drivers::service::Service@{hwm\-::hardware\-::devices\-::drivers\-::service\-::\-Service}}
+\subsubsection[{type}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-service.\-Service.\-type (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1service_1_1_service_a1948200718e29efe2a6177b2e85f017c}
+
+
+Returns the service type. 
+
+This property returns the service's type as a string. There are several standard service types (such as 'tracker') that the service can use, or it can define its own. However, if a service defines its own type other devices will only be able to use it if they query that specific type and if they know how to use the interface. 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/devices/drivers/service.\-py\end{DoxyCompactItemize}

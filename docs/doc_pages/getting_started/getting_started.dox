@@ -1,8 +1,0 @@
-/**
-@mainpage Getting Started
-
-Mercury2 is the next generation of ground station management systems that allows users to remotely command configured ground stations over the internet. Mercury2 is composed of two primary components: the web based user interface, and the hardware manager.
-
-@subpage how_it_works
-@subpage installation
-*/

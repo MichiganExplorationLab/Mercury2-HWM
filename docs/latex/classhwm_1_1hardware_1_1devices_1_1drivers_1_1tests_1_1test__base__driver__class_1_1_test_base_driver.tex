@@ -1,0 +1,93 @@
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver}{\section{hwm.\-hardware.\-devices.\-drivers.\-tests.\-test\-\_\-base\-\_\-driver\-\_\-class.\-Test\-Base\-Driver Class Reference}
+\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver}\index{hwm.\-hardware.\-devices.\-drivers.\-tests.\-test\-\_\-base\-\_\-driver\-\_\-class.\-Test\-Base\-Driver@{hwm.\-hardware.\-devices.\-drivers.\-tests.\-test\-\_\-base\-\_\-driver\-\_\-class.\-Test\-Base\-Driver}}
+}
+
+
+This test suite tests the functionality of the base driver class that all other drivers inherit from.  
+
+
+Inheritance diagram for hwm.\-hardware.\-devices.\-drivers.\-tests.\-test\-\_\-base\-\_\-driver\-\_\-class.\-Test\-Base\-Driver\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a56333f7737f3e50d625f84a27043645b}{def {\bfseries set\-Up}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a56333f7737f3e50d625f84a27043645b}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aef68353e676e00e528edeb17b188bf6f}{def {\bfseries tear\-Down}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aef68353e676e00e528edeb17b188bf6f}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aadfc6f4f10a75070c1051fe63481f153}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aadfc6f4f10a75070c1051fe63481f153}{test\-\_\-loading\-\_\-device\-\_\-state}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aadfc6f4f10a75070c1051fe63481f153}
+
+\begin{DoxyCompactList}\small\item\em Tests that the Driver class get\-\_\-state() method works as expected. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aa53309058da0a13228b7f5ff22d290fc}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aa53309058da0a13228b7f5ff22d290fc}{test\-\_\-loading\-\_\-command\-\_\-handler}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_aa53309058da0a13228b7f5ff22d290fc}
+
+\begin{DoxyCompactList}\small\item\em Tests that the Driver class returns its command handler (if it has one). \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a0b74bdc7ab0ca112fd4f746e1d349069}{test\-\_\-writing\-\_\-device\-\_\-output}
+\begin{DoxyCompactList}\small\item\em Tests that the Driver class can pass its output to its registered pipelines. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_acedb6b11e05334613cdffa261054d622}{test\-\_\-writing\-\_\-device\-\_\-telemetry}
+\begin{DoxyCompactList}\small\item\em Tests that the Driver class can pass device telemetry and extra data streams to its registered pipelines via the Driver.\-write\-\_\-telemetry() method. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a3fcce29e3c28863a72e59b787e0e7f64}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a3fcce29e3c28863a72e59b787e0e7f64}{test\-\_\-pipeline\-\_\-registration}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a3fcce29e3c28863a72e59b787e0e7f64}
+
+\begin{DoxyCompactList}\small\item\em Verifies that the base driver class can correctly register pipelines. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a0cf0df34bd8ceefd2bfda5e11d1ea814}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a0cf0df34bd8ceefd2bfda5e11d1ea814}{test\-\_\-driver\-\_\-reservation}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a0cf0df34bd8ceefd2bfda5e11d1ea814}
+
+\begin{DoxyCompactList}\small\item\em Tests the reservation functionality of the base driver class. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a71dc72417a57dd0e135a84d11f372e35}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a71dc72417a57dd0e135a84d11f372e35}{test\-\_\-concurrent\-\_\-driver\-\_\-reservation}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a71dc72417a57dd0e135a84d11f372e35}
+
+\begin{DoxyCompactList}\small\item\em Tests the reservation functionality of the base driver class when using a device configured for concurrent access. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_ad5f2924b18723d5a8695ba7364a11f16}{{\bfseries config}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_ad5f2924b18723d5a8695ba7364a11f16}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_acf0aa77ae8bd5657afd8624d8385da38}{{\bfseries source\-\_\-data\-\_\-directory}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_acf0aa77ae8bd5657afd8624d8385da38}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a859fee3785ef3d39c0699b1a07e5e546}{{\bfseries device\-\_\-manager}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a859fee3785ef3d39c0699b1a07e5e546}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_afb52afdfc45faf61c8be871caa4c3b57}{def {\bfseries \-\_\-reset\-\_\-config\-\_\-entries}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_afb52afdfc45faf61c8be871caa4c3b57}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This test suite tests the functionality of the base driver class that all other drivers inherit from. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a0b74bdc7ab0ca112fd4f746e1d349069}{\index{hwm\-::hardware\-::devices\-::drivers\-::tests\-::test\-\_\-base\-\_\-driver\-\_\-class\-::\-Test\-Base\-Driver@{hwm\-::hardware\-::devices\-::drivers\-::tests\-::test\-\_\-base\-\_\-driver\-\_\-class\-::\-Test\-Base\-Driver}!test\-\_\-writing\-\_\-device\-\_\-output@{test\-\_\-writing\-\_\-device\-\_\-output}}
+\index{test\-\_\-writing\-\_\-device\-\_\-output@{test\-\_\-writing\-\_\-device\-\_\-output}!hwm::hardware::devices::drivers::tests::test_base_driver_class::TestBaseDriver@{hwm\-::hardware\-::devices\-::drivers\-::tests\-::test\-\_\-base\-\_\-driver\-\_\-class\-::\-Test\-Base\-Driver}}
+\subsubsection[{test\-\_\-writing\-\_\-device\-\_\-output}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-tests.\-test\-\_\-base\-\_\-driver\-\_\-class.\-Test\-Base\-Driver.\-test\-\_\-writing\-\_\-device\-\_\-output (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_a0b74bdc7ab0ca112fd4f746e1d349069}
+
+
+Tests that the Driver class can pass its output to its registered pipelines. 
+
+The default implementation of the Driver.\-write\-\_\-output() method only writes to active pipelines that specify this device as its output device. \hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_acedb6b11e05334613cdffa261054d622}{\index{hwm\-::hardware\-::devices\-::drivers\-::tests\-::test\-\_\-base\-\_\-driver\-\_\-class\-::\-Test\-Base\-Driver@{hwm\-::hardware\-::devices\-::drivers\-::tests\-::test\-\_\-base\-\_\-driver\-\_\-class\-::\-Test\-Base\-Driver}!test\-\_\-writing\-\_\-device\-\_\-telemetry@{test\-\_\-writing\-\_\-device\-\_\-telemetry}}
+\index{test\-\_\-writing\-\_\-device\-\_\-telemetry@{test\-\_\-writing\-\_\-device\-\_\-telemetry}!hwm::hardware::devices::drivers::tests::test_base_driver_class::TestBaseDriver@{hwm\-::hardware\-::devices\-::drivers\-::tests\-::test\-\_\-base\-\_\-driver\-\_\-class\-::\-Test\-Base\-Driver}}
+\subsubsection[{test\-\_\-writing\-\_\-device\-\_\-telemetry}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-tests.\-test\-\_\-base\-\_\-driver\-\_\-class.\-Test\-Base\-Driver.\-test\-\_\-writing\-\_\-device\-\_\-telemetry (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1tests_1_1test__base__driver__class_1_1_test_base_driver_acedb6b11e05334613cdffa261054d622}
+
+
+Tests that the Driver class can pass device telemetry and extra data streams to its registered pipelines via the Driver.\-write\-\_\-telemetry() method. 
+
+This method should always be used to write extra device data and telemetry back to its pipelines. 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/devices/drivers/tests/test\-\_\-base\-\_\-driver\-\_\-class.\-py\end{DoxyCompactItemize}

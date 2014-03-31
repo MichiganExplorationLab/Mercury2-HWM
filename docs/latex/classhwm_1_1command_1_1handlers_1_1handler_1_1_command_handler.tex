@@ -1,0 +1,70 @@
+\hypertarget{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler}{\section{hwm.\-command.\-handlers.\-handler.\-Command\-Handler Class Reference}
+\label{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler}\index{hwm.\-command.\-handlers.\-handler.\-Command\-Handler@{hwm.\-command.\-handlers.\-handler.\-Command\-Handler}}
+}
+
+
+The base command handler interface.  
+
+
+Inheritance diagram for hwm.\-command.\-handlers.\-handler.\-Command\-Handler\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.427746cm]{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler_a3b4250e1a9908112b946dbc010373999}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Initializes the command handler. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler_aeae3e505cc026285e12444cf0eb64c69}{{\bfseries name}}\label{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler_aeae3e505cc026285e12444cf0eb64c69}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The base command handler interface. 
+
+This class defines the base command handler interface that all system and device command handlers should extend. Command handlers are responsible for responding to commands that control the behavior of the hardware manager. These commands can be submitted manually by users during their reservations, or automatically in the case of pipeline and session setup commands (which both run before any session begins).
+
+Every command response method is prefixed with \char`\"{}command\-\_\-\char`\"{} and will be called by the command parser when it receives a raw command request for that command. Command methods can also have a sibling \char`\"{}settings\-\_\-\char`\"{} method which returns a standardized dictionary containing information about the command such as what parameters it accepts. The user interface uses this command metadata to keep track of what commands are available and to build appropriate forms for each command. If a command does not define a \char`\"{}settings\-\_\-\char`\"{} method, it will not be included in the user interface.
+
+For system commands that require an active session, the individual command methods must perform any necessary validations on the session to determine if the command should be executed. For device commands that require an active session, the command parser will ensure that the command method only gets called if the user has an active session with a pipeline that contains that hardware device (although the Session reference will still be passed to the command method to allow for additional checks if needed).
+
+\begin{DoxyNote}{Note}
+Commands will be executed asynchronously and, as a result, must not block. If one of the handler's commands needs to make a blocking system call (such as querying a network device), it should use defer.\-defer\-To\-Thread to make the action non-\/blocking and return a deferred that will eventually be fired with the command results.
+
+The rationale behind specifying the command meta-\/data at this level is so that command handlers (system or device) can be developed and installed without requiring any changes to the user interface (unless you want custom command forms). 
+\end{DoxyNote}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler_a3b4250e1a9908112b946dbc010373999}{\index{hwm\-::command\-::handlers\-::handler\-::\-Command\-Handler@{hwm\-::command\-::handlers\-::handler\-::\-Command\-Handler}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::command::handlers::handler::CommandHandler@{hwm\-::command\-::handlers\-::handler\-::\-Command\-Handler}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-handlers.\-handler.\-Command\-Handler.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{command\-\_\-handler\-\_\-name}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1handlers_1_1handler_1_1_command_handler_a3b4250e1a9908112b946dbc010373999}
+
+
+Initializes the command handler. 
+
+\begin{DoxyVerb} This constructor initializes the command handler by setting some common attributes.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em command\-\_\-handler\-\_\-name} & The name of the command handler. If the command handler is a system level command handler, this will be the destination for this handler's commands. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/command/handlers/handler.\-py\end{DoxyCompactItemize}
