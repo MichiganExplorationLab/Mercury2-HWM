@@ -31,6 +31,12 @@ class TestIcom910(unittest.TestCase):
     # Disable logging for most events
     logging.disable(logging.CRITICAL)
   
+  # A mocked Hamlib Rig class with a non-error error_status value (instead of a MagicMock instance)
+  class TestHamlibRig(MagicMock):
+    def __init__(self, *args, **kw):
+      super(TestIcom910.TestHamlibRig, self).__init__(*args, **kw)
+      self.error_status = 0
+
   def tearDown(self):
     # Reset the recorded configuration values
     self._reset_config_entries()
@@ -57,9 +63,9 @@ class TestIcom910(unittest.TestCase):
     self.assertEqual(test_device._tnc_state_service, None)
     self.assertTrue(len(test_device._radio_state) > 0)
 
-  @patch("Hamlib.Rig")
+  @patch("Hamlib.Rig", new_callable=TestHamlibRig)
   def test_prepare_for_session(self, mocked_Hamlib):
-    """ Makes sure that the driver can prepare for a new useage session. """
+    """ Makes sure that the driver can prepare for a new usage session. """
 
     # Initialize a test driver
     test_cp = MagicMock()
@@ -88,7 +94,7 @@ class TestIcom910(unittest.TestCase):
                                                mock.call("retry", "5")])
     mocked_Hamlib().open.assert_called_once_with()
 
-  @patch("Hamlib.Rig")
+  @patch("Hamlib.Rig", new_callable=TestHamlibRig)
   def test_prepare_for_session_missing_service(self, mocked_Hamlib):
     """ Verifies that the driver still prepares itself for new sessions if it can't find any services that it is capable
     of using. """
@@ -112,7 +118,7 @@ class TestIcom910(unittest.TestCase):
                                                mock.call("retry", "5")])
     mocked_Hamlib().open.assert_called_once_with()
 
-  @patch("Hamlib.Rig")
+  @patch("Hamlib.Rig", new_callable=TestHamlibRig)
   def test_cleanup_after_session(self, mocked_Hamlib):
     """ Makes sure that the driver correctly cleans up after the session using it ends. """
 
@@ -153,9 +159,9 @@ class TestIcom910(unittest.TestCase):
 
     def mock_parse_command(command_request, **keywords):
       if command_request['command'] == "set_rx_freq":
-        self.assertEqual(command_request['parameters']['frequency'], 5)
+        self.assertEqual(command_request['parameters']['rx_freq'], 1)
       elif command_request['command'] == "set_tx_freq":
-        self.assertEqual(command_request['parameters']['frequency'], 25)
+        self.assertEqual(command_request['parameters']['tx_freq'], 2.5)
 
       return defer.succeed({'response':{'status':'okay'}})
 
@@ -164,8 +170,8 @@ class TestIcom910(unittest.TestCase):
     test_cp.parse_command = mock_parse_command
     test_device = icom_910.ICOM_910(self.standard_icom_config, test_cp)
     test_device._session_pipeline = test_pipeline
-    test_device._radio_state['set_rx_freq'] = 20
-    test_device._radio_state['set_tx_freq'] = 100
+    test_device._radio_state['set_rx_freq'] = 4000000
+    test_device._radio_state['set_tx_freq'] = 10000000
 
     # Create a mock target_position and submit it
     doppler_correction = {
@@ -176,7 +182,7 @@ class TestIcom910(unittest.TestCase):
 
     # Verify result
     self.assertTrue(results)
-    self.assertTrue(test_device._last_doppler_update > 0)
+    self.assertTrue(test_device._last_doppler_update > int(time.time())-4)
 
   @inlineCallbacks
   def test_process_new_doppler_correction_error(self):
@@ -192,7 +198,7 @@ class TestIcom910(unittest.TestCase):
       if command_request['command'] == "set_rx_freq":
         return defer.succeed({'response':{'status':'okay'}})
       elif command_request['command'] == "set_tx_freq":
-        return defer.succeed({'response':{'status':'error'}})
+        return defer.succeed({'response':{'status':'okay'}})
 
     # Create a test Icom driver
     test_cp = MagicMock()
@@ -210,16 +216,31 @@ class TestIcom910(unittest.TestCase):
     results = yield test_deferred
 
     # Verify results and submit a valid doppler correction
-    self.assertTrue(not results)
+    self.assertTrue(results==False)
     doppler_correction = {
       "doppler_multiplier": 0.25
     }
     test_deferred = test_device.process_new_doppler_correction(doppler_correction)
     results = yield test_deferred
 
-    # Make sure the update failed (due to a failed set_tx_freq command)
-    self.assertTrue(not results)
-    self.assertEqual(test_device._last_doppler_update, 0)
+    # Make sure the update succeeded and simulate a failed 'set_rx_freq' command
+    self.assertTrue(results)
+    self.assertTrue(test_device._last_doppler_update > (int(time.time()) - 4))
+
+    def mock_parse_command_error(command_request, **keywords):
+      if command_request['command'] == "set_rx_freq":
+        return defer.fail(Exception("Simulated failed 'set_rx_freq' command."))
+      elif command_request['command'] == "set_tx_freq":
+        return defer.succeed({'response':{'status':'okay'}})
+    test_cp.parse_command = mock_parse_command_error
+    test_device._last_doppler_update = int(time.time()) - test_device.doppler_update_frequency*2
+    doppler_correction = {
+      "doppler_multiplier": 0.25
+    }
+    test_deferred = test_device.process_new_doppler_correction(doppler_correction)
+    results = yield test_deferred
+
+    self.assertTrue(results==False)
 
   def _reset_config_entries(self):
     # Reset the recorded configuration entries
@@ -268,6 +289,7 @@ class TestICOM910Handler(unittest.TestCase):
     # Setup a mock rig and submit a test command
     Hamlib.rig_strrmode = mock_rig_strrmode
     test_handler.radio_rig = MagicMock()
+    test_handler.radio_rig.error_status = 0
     test_handler.radio_rig.set_mode = lambda mode : Hamlib.RIG_OK
     test_handler.radio_rig.get_mode = lambda : ("FM", 10)
     test_command.parameters = {'mode': "FM"}
@@ -275,7 +297,8 @@ class TestICOM910Handler(unittest.TestCase):
 
     # Check results
     self.assertEqual(test_device._radio_state['mode'], "FM")
-    self.assertEqual(results['message'], "The radio mode has been set.")
+    self.assertEqual(results['mode'], "FM")
+    self.assertTrue(results['message'] != "")
 
   def test_set_mode_command_errors(self):
     """ Verifies that the 'set_mode' command can correctly handle various errors. """
@@ -291,6 +314,7 @@ class TestICOM910Handler(unittest.TestCase):
 
     # Setup a mock rig and submit a command that doesn't include a mode
     test_handler.radio_rig = MagicMock()
+    test_handler.radio_rig.error_status = Hamlib.RIG_DEBUG_ERR
     test_command.parameters = {'missing_mode': True}
     self.assertRaises(command.CommandError, test_handler.command_set_mode, test_command)
 
@@ -299,7 +323,7 @@ class TestICOM910Handler(unittest.TestCase):
     self.assertRaises(command.CommandError, test_handler.command_set_mode, test_command)
 
     # Submit a command that causes Hamlib to fail
-    test_handler.radio_rig.set_mode = lambda mode : Hamlib.RIG_DEBUG_ERR
+    test_handler.radio_rig.set_mode = lambda new_mode : -1
     test_command.parameters = {'mode': "FM"}
     self.assertRaises(command.CommandError, test_handler.command_set_mode, test_command)
 
@@ -315,24 +339,25 @@ class TestICOM910Handler(unittest.TestCase):
 
     # Setup a mock rig and submit a command which should set the initial frequency
     test_handler.radio_rig = MagicMock()
-    test_handler.radio_rig.get_freq = lambda : 10 * freq_mult # Convert to Hz from Mhz like Hamlib does
-    test_handler.radio_rig.set_freq = lambda freq, vfo : Hamlib.RIG_OK
+    test_handler.radio_rig.error_status = 0
+    test_handler.radio_rig.get_freq = lambda vfo : 10 * freq_mult # Convert to Hz from Mhz like Hamlib does
+    test_handler.radio_rig.set_freq = lambda freq : Hamlib.RIG_OK
     test_command.parameters = {'rx_freq': 10}
     results = test_handler.command_set_rx_freq(test_command)
 
-    # Check results and submit another command which simulates a doppler correction
+    # Check results and submit another command which simulates a doppler correction or manual command
     self.assertEqual(test_device._radio_state['shifted_rx_freq'], 0)
     self.assertEqual(test_device._radio_state['set_rx_freq'], 10 * freq_mult)
-    self.assertEqual("The radio's RX frequency has been set.", results['message'])
+    self.assertTrue(results['message'] != "")
     self.assertEqual(results['frequency'], 10)
-    test_handler.radio_rig.get_freq = lambda : 5 * freq_mult
+    test_handler.radio_rig.get_freq = lambda vfo : 5 * freq_mult
     test_command.parameters = {'rx_freq': 5}
     results = test_handler.command_set_rx_freq(test_command)
 
     # Verify results
     self.assertEqual(test_device._radio_state['shifted_rx_freq'], 5 * freq_mult)
     self.assertEqual(test_device._radio_state['set_rx_freq'], 10 * freq_mult)
-    self.assertEqual("The radio's RX frequency has been set.", results['message'])
+    self.assertTrue(results['message'] != "")
     self.assertEqual(results['frequency'], 5)
 
   def test_set_rx_freq_errors(self):
@@ -352,10 +377,25 @@ class TestICOM910Handler(unittest.TestCase):
     test_command.parameters = {'missing_rx_freq': True}
     self.assertRaises(command.CommandError, test_handler.command_set_rx_freq, test_command)
 
-    # Submit a command that causes Hamlib to fail
-    test_handler.radio_rig.set_freq = lambda freq, vfo : Hamlib.RIG_DEBUG_ERR
+    # Submit a command that causes the Hamlib 'set_freq' call to fail
+    old_set_freq = test_handler.radio_rig.set_freq
+    def set_rx_error(self):
+        test_handler.radio_rig.error_status = Hamlib.RIG_DEBUG_ERR
+        return 0
+    test_handler.radio_rig.set_freq = set_rx_error
     test_command.parameters = {'rx_freq': 10}
     self.assertRaises(command.CommandError, test_handler.command_set_rx_freq, test_command)
+    test_handler.radio_rig.set_freq = old_set_freq
+
+    # Submit a command that causes the Hamlib 'get_freq' call to fail
+    old_get_freq = test_handler.radio_rig.get_freq
+    def get_rx_error(self):
+        test_handler.radio_rig.error_status = Hamlib.RIG_DEBUG_ERR
+        return 0
+    test_handler.radio_rig.get_freq = get_rx_error
+    test_command.parameters = {'rx_freq': 10}
+    self.assertRaises(command.CommandError, test_handler.command_set_rx_freq, test_command)
+    test_handler.radio_rig.get_freq = old_get_freq
 
   def test_set_tx_freq(self):
     """ Tests the functionality of the 'set_tx_freq' command. """
@@ -366,30 +406,31 @@ class TestICOM910Handler(unittest.TestCase):
     test_device = MagicMock()
     test_device._radio_state = {'shifted_tx_freq': 0, 'set_tx_freq': 0}
     test_device.doppler_update_inactive_tx_delay = 2 # s
-    mock_tnc_state = {'last_transmitted': int(time.time())-test_device.doppler_update_inactive_tx_delay*2, 'output_buffer_size_bytes': 0}
+    mock_tnc_state = {'last_transmitted': int(time.time())-test_device.doppler_update_inactive_tx_delay*2}
     test_device._tnc_state_service.get_state = lambda : mock_tnc_state
     test_handler = icom_910.ICOM910Handler(test_device)
 
     # Setup a mock rig and submit a command which should set the initial frequency
     test_handler.radio_rig = MagicMock()
-    test_handler.radio_rig.get_split_freq = lambda : 10 * freq_mult # Convert to Hz from Mhz like Hamlib does
-    test_handler.radio_rig.set_split_freq = lambda vfo, freq : Hamlib.RIG_OK
+    test_handler.radio_rig.error_status = 0
+    test_handler.radio_rig.get_freq = lambda vfo : 10 * freq_mult # Convert to Hz from Mhz like Hamlib does
+    test_handler.radio_rig.set_freq = lambda freq : Hamlib.RIG_OK
     test_command.parameters = {'tx_freq': 10}
     results = test_handler.command_set_tx_freq(test_command)
 
     # Check results and submit another command which simulates a doppler correction
     self.assertEqual(test_device._radio_state['shifted_tx_freq'], 0)
     self.assertEqual(test_device._radio_state['set_tx_freq'], 10 * freq_mult)
-    self.assertEqual("The radio's TX frequency has been set using a split.", results['message'])
+    self.assertTrue(results['message'] != "")
     self.assertEqual(results['frequency'], 10)
-    test_handler.radio_rig.get_split_freq = lambda : 5 * freq_mult
+    test_handler.radio_rig.get_freq = lambda vfo : 5 * freq_mult
     test_command.parameters = {'tx_freq': 5}
     results = test_handler.command_set_tx_freq(test_command)
 
     # Verify results
     self.assertEqual(test_device._radio_state['shifted_tx_freq'], 5 * freq_mult)
     self.assertEqual(test_device._radio_state['set_tx_freq'], 10 * freq_mult)
-    self.assertEqual("The radio's TX frequency has been set using a split.", results['message'])
+    self.assertTrue(results['message'] != "")
     self.assertEqual(results['frequency'], 5)
 
   def test_set_tx_freq_errors(self):
@@ -398,8 +439,8 @@ class TestICOM910Handler(unittest.TestCase):
     # Create a command handler to test with
     test_command = MagicMock()
     test_device = MagicMock()
-    test_device.doppler_update_inactive_tx_delay = 2 # s
-    mock_tnc_state = {'last_transmitted': int(time.time())-test_device.doppler_update_inactive_tx_delay*2, 'output_buffer_size_bytes': 20}
+    test_device.doppler_update_inactive_tx_delay = 4 # s
+    mock_tnc_state = {'last_transmitted': int(time.time())-2}
     test_device._tnc_state_service.get_state = lambda : mock_tnc_state
     test_handler = icom_910.ICOM910Handler(test_device)
 
@@ -412,21 +453,32 @@ class TestICOM910Handler(unittest.TestCase):
     test_command.parameters = {'missing_tx_freq': True}
     self.assertRaises(command.CommandError, test_handler.command_set_tx_freq, test_command)
 
-    # Submit a command that fails because TNC is writing data
+    # Submit a command that fails because the TNC has recently written data to the radio
+    mock_tnc_state['last_transmitted'] = int(time.time()) - 2
     test_command.parameters = {'tx_freq': 10}
     self.assertRaises(command.CommandError, test_handler.command_set_tx_freq, test_command)
 
-    # Submit a command that fails because the TNC was recently written to
-    mock_tnc_state['last_transmitted'] = int(time.time()) - 1
-    mock_tnc_state['output_buffer_size_bytes'] = 0
-    test_command.parameters = {'tx_freq': 10}
-    self.assertRaises(command.CommandError, test_handler.command_set_tx_freq, test_command)
-
-    # Submit a command that causes Hamlib to fail
+    # Submit a command that causes the 'set_freq' Hamlib call to fail
+    old_set_freq = test_handler.radio_rig.set_freq
+    def set_tx_error(self):
+        test_handler.radio_rig.error_status = Hamlib.RIG_DEBUG_ERR
+        return 0
     mock_tnc_state['last_transmitted'] = int(time.time()) - test_device.doppler_update_inactive_tx_delay*2
-    test_handler.radio_rig.set_split_freq = lambda vfo, freq : Hamlib.RIG_DEBUG_ERR
+    test_handler.radio_rig.set_freq = set_tx_error
     test_command.parameters = {'tx_freq': 10}
     self.assertRaises(command.CommandError, test_handler.command_set_tx_freq, test_command)
+    test_handler.radio_rig.set_freq = old_set_freq
+
+    # Submit a command that causes the 'get_freq' Hamlib call to fail
+    old_get_freq = test_handler.radio_rig.get_freq
+    def get_tx_error(self):
+        test_handler.radio_rig.error_status = Hamlib.RIG_DEBUG_ERR
+        return 0
+    mock_tnc_state['last_transmitted'] = int(time.time()) - test_device.doppler_update_inactive_tx_delay*2
+    test_handler.radio_rig.get_freq = get_tx_error
+    test_command.parameters = {'tx_freq': 10}
+    self.assertRaises(command.CommandError, test_handler.command_set_tx_freq, test_command)
+    test_handler.radio_rig.get_freq = old_get_freq
 
   def _reset_config_entries(self):
     # Reset the recorded configuration entries

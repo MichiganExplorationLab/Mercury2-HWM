@@ -15,11 +15,6 @@ class Kantronics_TNC(driver.HardwareDriver):
 
   This class provides a driver for the Kantronics TNC. It is designed to work in conjunction with a radio and serves as 
   the pipeline's input and output device (i.e. the device that pipeline data flows into and out of).
-
-  @note This driver is currently very simple and not capable of sending commands on demand like other drivers. It is 
-        simply responsible for setting up the TNC, relaying the pipeline data stream to and from it, and for providing 
-        a service to the pipeline to check the state of the TNC (to make sure it's safe to change the radio frequency, 
-        for example).
   """
 
   def __init__(self, device_configuration, command_parser):
@@ -33,21 +28,19 @@ class Kantronics_TNC(driver.HardwareDriver):
 
     # Set configuration settings
     self.tnc_device = self.settings['tnc_device']
-    self.tnc_port = self.settings['tnc_port']
-    self.callsign = self.settings['callsign']
 
     # Initialize the 'tnc_state' service that can report the state of the TNC
-    self._tnc_state_service = TNCStateService('sgp4_propagation_service', 'tnc_state', self)
+    self._tnc_state_service = TNCStateService('kantronics_tnc_state', 'tnc_state', self)
 
     self._reset_TNC_state()
 
   def prepare_for_session(self, session_pipeline):
     """ Resets the TNC before each session.
 
-    This method resets the TNC before each session by sending the necessary configuration settings.
+    This method creates a Protocol that will be used to communicate with the TNC.
 
-    @note Generally, the TNC must be reset before each session because it may have been rebooted between sessions, 
-          loosing the saved configuration settings in the process.
+    @note The TNC must be configured (with a callsign, baud rate, etc.) before it can be used. If it has not been
+          configured the TNC will probably not be able to send or receive data.
 
     @param session_pipeline  The Pipeline associated with the new session.
     @return Returns True once the configuration commands have been sent.
@@ -56,17 +49,6 @@ class Kantronics_TNC(driver.HardwareDriver):
     # Bind a protocol instance to the Serial port
     self._tnc_protocol = KantronicsTNCProtocol(self)
     self._serial_port_connection = serialport.SerialPort(self._tnc_protocol, self.tnc_device, reactor, baudrate='38400')
-
-    # Write the configuration settings to the TNC using the command protocol
-    self._tnc_protocol.setLineMode()
-    self._tnc_protocol.sendLine(self.callsign)
-    self._tnc_protocol.sendLine("txdelay 30/100")
-    self._tnc_protocol.sendLine("intface terminal")
-    self._tnc_protocol.sendLine("xmitlvl 100/20")
-    self._tnc_protocol.sendLine("port "+str(self.tnc_port))
-    self._tnc_protocol.sendLine("abaud 38400")
-    self._tnc_protocol.sendLine("intface kiss")
-    self._tnc_protocol.sendLine("reset")
     self._tnc_protocol.setRawMode()
   
   def cleanup_after_session(self):
@@ -89,9 +71,9 @@ class Kantronics_TNC(driver.HardwareDriver):
   def write(self, input_data):
     """ Writes the specified chunk of input data to the TNC.
 
-    @note Any radio drivers that interface with this driver should take care to not change the uplink frequency while
-          data is being written to the device (the 'tnc_state' service can be used to check if the TNC is currently 
-          receiving or likely to receive data).
+    @note Any radio drivers that interface with the TNC should take care to not change the uplink frequency while
+          data is being written to the device. The 'tnc_state' service can be used to check if the TNC is currently 
+          sending or likely to send data.
 
     @param input_data  A user provided data chunk that is to be sent to the TNC.
     """
@@ -116,13 +98,12 @@ class Kantronics_TNC(driver.HardwareDriver):
     self._tnc_protocol = None
     self._serial_port_connection = None
     self._tnc_state = {
-      "last_transmitted": None,
-      "output_buffer_size_bytes": 0
+      'last_transmitted': 0,
     }
 
 class TNCStateService(service.Service):
-  """ Provides a service that reveals the state of the TNC buffer. This is used to make sure it is safe to change the 
-  uplink frequency on the device.
+  """ Provides a service that reveals some state of the TNC. This is primarily used to make sure it is safe to change 
+  the uplink frequency on the associated radio.
   """
 
   def __init__(self, service_id, service_type, tnc_driver):
@@ -139,18 +120,15 @@ class TNCStateService(service.Service):
     self.tnc_driver = tnc_driver
 
   def get_state(self):
-    """ Returns a dictionary containing properties of the TNC connection such as it's buffer and last time modified.
+    """ Provides a dictionary containing the current state of the TNC such as the last time it transmitted data.
 
-    @note This method also updates the state of the TNC driver with the newly measured buffer size, which is measured 
-          each time this method is called.
+    @return Returns the TNC's state dictionary.
     """
-
-    self.tnc_driver._tnc_state['output_buffer_size_bytes'] = self.tnc_driver._serial_port_connection._serial.outWaiting()
 
     return self.tnc_driver.get_state()
 
 class KantronicsTNCProtocol(LineReceiver):
-  """ A protocol that is used to relay command and pipeline data streams to and from the TNC.
+  """ Used to pass data to and from the TNC over a serial transport.
   """
 
   def __init__(self, tnc_driver):
@@ -169,3 +147,4 @@ class KantronicsTNCProtocol(LineReceiver):
 
     # Pass the data up the pipeline
     self.tnc_driver.write_output(data)
+
