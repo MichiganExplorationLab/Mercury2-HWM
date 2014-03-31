@@ -203,7 +203,7 @@ class SGP4PropagationService(service.Service):
       }
 
       # Correct for flip passes
-      if self._is_flip_pass():
+      if self._is_flip_pass(ground_station):
         self._target_position['azimuth'] = (self._target_position['azimuth'] + 180) % 360
         self._target_position['elevation'] = 180 - self._target_position['elevation']
 
@@ -214,7 +214,7 @@ class SGP4PropagationService(service.Service):
 
     return None
 
-  def _is_flip_pass(self):
+  def _is_flip_pass(self, ground_station):
     """ Detects if the current pass is a flip pass (i.e. a pass that goes through 0 azimuth). 
 
     @return Returns True if the current pass is a flip pass and if the propagator supports flip passes. Returns False 
@@ -226,19 +226,14 @@ class SGP4PropagationService(service.Service):
     if not self.flip_pass_support:
       return flip_pass
 
+    # Calculate the next pass
     try:
-      # Check if the target is above the horizon (i.e. the reservation started after the pass)
-      if self._target_position['elevation'] > 0;
-        ground_station.previous_rising(self._satellite)
-      else:
-        ground_station.next_rising(self._satellite)
+      next_pass = ground_station.next_pass(self._satellite)
+    except Exception as pass_error:
+      return flip_pass
 
-      rising_az = math.degrees(self._satellite.az)
-      ground_station.next_setting(self._satellite)
-      setting_az = math.degrees(self._satellite.az)
-    except ephem.CircumpolarError as ephem_error:
-      # The craft never rises or sets
-      flip_pass = False
+    rising_az = math.degrees(next_pass[1])
+    setting_az = math.degrees(next_pass[5])
 
     if rising_az > setting_az and (rising_az - setting_az) > 180:
       flip_pass = True
@@ -258,10 +253,10 @@ class SGP4PropagationService(service.Service):
     # Notify all handlers 
     for handler_callback in self._registered_handlers:
       try:
-        handler_callback(self.W_target_position)
+        handler_callback(self._target_position)
       except Exception as e:
         # A receiver failed, catch and move on
-        pass
+        continue
 
   def _handle_propagation_error(self, failure):
     """ Handles any errors that may occur while executing the SGP4 propagation loop.

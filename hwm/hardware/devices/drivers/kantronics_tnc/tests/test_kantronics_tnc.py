@@ -41,32 +41,21 @@ class TestKantronicsTNC(unittest.TestCase):
 
     # Make sure the constructor set the correct attributes
     self.assertEqual(test_device.tnc_device, self.standard_tnc_config['settings']['tnc_device'])
-    self.assertEqual(test_device.tnc_port, self.standard_tnc_config['settings']['tnc_port'])
-    self.assertEqual(test_device.callsign, self.standard_tnc_config['settings']['callsign'])
-    self.assertEqual(test_device.get_state()['last_transmitted'], None)
-    self.assertEqual(test_device.get_state()['output_buffer_size_bytes'], 0)
+    self.assertEqual(test_device.get_state()['last_transmitted'], 0)
 
   @patch("twisted.internet.serialport.SerialPort")
   @patch("hwm.hardware.devices.drivers.kantronics_tnc.kantronics_tnc.KantronicsTNCProtocol")
   def test_prepare_for_session(self, mocked_KantronicsTNCProtocol, mocked_SerialPort):
-    """ This test verifies that the driver for the Kantronics TNC properly resets the TNC before each session (in case 
-    it was rebooted and lost its saved configuration, etc.).
+    """ This test verifies that the driver for the Kantronics TNC properly creates and sets up the TNC serial connection.
     """
 
     # Create a TNC instance to test with
     test_cp = MagicMock()
     test_device = kantronics_tnc.Kantronics_TNC(self.standard_tnc_config, test_cp)
 
-    # Prepare for the session and make sure the correct initialization commands are getting sent to the TNC
-    # Note: Commands are checked in reverse order because 
+    # Prepare for the session and make sure it was put into raw mode
     test_pipeline = MagicMock()
     test_device.prepare_for_session(test_pipeline)
-    test_device._tnc_protocol.setLineMode.assert_called_once_with()
-    test_device._tnc_protocol.sendLine.assert_has_calls([mock.call("txdelay 30/100"), mock.call("intface terminal"),
-                                                         mock.call("xmitlvl 100/20"),
-                                                         mock.call("port "+str(self.standard_tnc_config['settings']['tnc_port'])),
-                                                         mock.call("abaud 38400"), mock.call("intface kiss"),
-                                                         mock.call("reset")])
     test_device._tnc_protocol.setRawMode.assert_called_once_with()
 
   @patch("twisted.internet.serialport.SerialPort")
@@ -86,8 +75,7 @@ class TestKantronicsTNC(unittest.TestCase):
     test_device.cleanup_after_session()
     old_tnc_protocol.clearLineBuffer.assert_called_once_with()
     old_serial_port_connection.loseConnection.assert_called_once_with()
-    self.assertEqual(test_device.get_state()['last_transmitted'], None)
-    self.assertEqual(test_device.get_state()['output_buffer_size_bytes'], 0)
+    self.assertEqual(test_device.get_state()['last_transmitted'], 0)
 
   def test_tnc_write(self):
     """ Tests that the TNC can be written to (i.e. that data gets sent to the serial port). """
@@ -98,10 +86,10 @@ class TestKantronicsTNC(unittest.TestCase):
     test_device._tnc_protocol = MagicMock()
 
     # Write some data to the TNC
-    self.assertTrue(test_device._tnc_state['last_transmitted'] is None)
+    self.assertTrue(test_device._tnc_state['last_transmitted'] is 0)
     test_device.write("waffles")
     test_device._tnc_protocol.transport.write.assert_called_once_with("waffles")
-    self.assertTrue(test_device._tnc_state['last_transmitted'] is not None)
+    self.assertTrue(test_device._tnc_state['last_transmitted'] > int(time.time())-2)
 
   def test_register_service(self):
     """ Tests that the TNC driver registers its 'tnc_state' service with the active pipeline. """
@@ -148,12 +136,13 @@ class TestKantronicsTNCStateService(unittest.TestCase):
     test_cp = MagicMock()
     test_device = kantronics_tnc.Kantronics_TNC(self.standard_tnc_config, test_cp)
     test_device._serial_port_connection = MagicMock()
-    test_device._serial_port_connection._serial.outWaiting = MagicMock(return_value=10)
+    test_device._tnc_protocol = MagicMock()
 
-    # Create and test the service
+    # Write some data to the TNC and make sure it is reflected in state
+    test_device.write("test data")
     returned_state = test_device._tnc_state_service.get_state()
-    self.assertEqual(returned_state['output_buffer_size_bytes'], 10)
-    self.assertEqual(test_device._tnc_state['output_buffer_size_bytes'], 10)
+    self.assertTrue(returned_state['last_transmitted'] > int(time.time())-2)
+    self.assertTrue(test_device._tnc_state['last_transmitted'] > int(time.time())-2)
 
   def _reset_config_entries(self):
     # Reset the recorded configuration entries

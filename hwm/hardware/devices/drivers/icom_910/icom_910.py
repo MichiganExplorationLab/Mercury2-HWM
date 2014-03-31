@@ -127,7 +127,7 @@ class ICOM_910(driver.HardwareDriver):
 
     @note Because this method uses the set_tx_freq command, it will only update the uplink frequency if the radio has
           not recently transmitted. See the set_tx_freq command method for more information.
-    
+
     @param target_position  A dictionary containing details about the target's position, including its doppler 
                             correction.
     @return Returns True after updating both the uplink and download frequencies or False if an error occurs.
@@ -176,7 +176,7 @@ class ICOM_910(driver.HardwareDriver):
 
       # Verify the results
       if uplink_freq_set and downlink_freq_set:
-        self._last_doppler_update = time.time()
+        self._last_doppler_update = int(time.time())
         yield defer.returnValue(True)
       else:
         if not uplink_freq_set:
@@ -184,8 +184,10 @@ class ICOM_910(driver.HardwareDriver):
         
         if not downlink_freq_set:
           logging.error("An error occured while applying a doppler correction to "+self.id+"'s RX frequency.")
-        
         yield defer.returnValue(False)
+
+    # A doppler correction was recently applied, just return false
+    yield defer.returnValue(False)
 
   def _reset_driver_state(self):
     """ Resets the radio driver's state.
@@ -237,7 +239,7 @@ class ICOM910Handler(handler.DeviceCommandHandler):
         # Set the mode in Hamlib
         new_mode = active_command.parameters['mode']
         if new_mode == "FM":
-          response = self.radio_rig.set_mode(Hamlib.RIG_MODE_FM)
+          self.radio_rig.set_mode(Hamlib.RIG_MODE_FM)
         else:
           raise command.CommandError("An unrecognized mode was specified: "+new_mode)
 
@@ -253,7 +255,7 @@ class ICOM910Handler(handler.DeviceCommandHandler):
                                      Hamlib.rigerror(self.radio_rig.error_status))
         self.driver._radio_state['mode'] = Hamlib.rig_strrmode(mode)
 
-        return {'message': "The radio's mode has been set.", 'mode': new_mode}
+        return {'message': "The radio's mode has been set.", 'mode': self.driver._radio_state['mode']}
       else:
         raise command.CommandError("The mode was not specified in the command parameters.")
     else:
