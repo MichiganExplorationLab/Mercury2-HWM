@@ -1,5 +1,0 @@
-# This configuration file contains a invalid pipeline configuration and is used to test the PipelineManager and
-# Pipeline classes.
-
-# Empty pipeline configuration
-pipelines: []

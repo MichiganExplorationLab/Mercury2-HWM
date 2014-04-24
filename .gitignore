@@ -1,8 +1,0 @@
-*.pyc
-*.log
-
-distribute-*
-Mercury2HWM.egg-info/*
-build/*
-dist/*
-_trial_temp/*

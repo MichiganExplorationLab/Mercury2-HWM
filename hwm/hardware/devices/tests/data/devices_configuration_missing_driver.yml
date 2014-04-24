@@ -1,7 +1,0 @@
-# This configuration file contains a device configuration that references a non-existent driver and is used for testing.
-
-devices:
-  - id: "test_device"
-    driver: "Test_Failure"
-    settings:
-      address: "test"

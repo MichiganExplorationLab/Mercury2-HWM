@@ -1,9 +1,0 @@
-# This configuration file contains an invalid device configuration and is used to test the device manager. The
-# "Test_Driver" driver is assumed to exist in the HWM drivers package.
-
-devices:
-  - id: "test_device"
-    description: "The following attribute should be 'driver', not 'driver_class'."
-    driver_class: "Test_Driver"
-    settings:
-      address: "test"

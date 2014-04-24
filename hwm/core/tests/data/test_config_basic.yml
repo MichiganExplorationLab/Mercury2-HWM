@@ -1,9 +1,0 @@
-# This configuration file contains a valid HWM configuration containing elements required for testing.
-
-# Specify the ground station. Some test cases (i.e. for the SGP4 propagator) depend on this being set to the MXL ground
-# station, don't change!
-station-name: "MXL Test Ground Station"
-station-longitude: -83.71264
-station-latitude: 42.29364
-station-altitude: 276
-mercury2-ui-location: "http://localhost/mercury2"

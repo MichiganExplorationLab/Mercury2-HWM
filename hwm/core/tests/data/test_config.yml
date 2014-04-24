@@ -1,8 +1,0 @@
-# This data file contains some configuration options used to test the configuration manager
-
-# Define a custom value for an option that does have a default value
-schedule-update-timeout: 3
-
-# Some extra options not defined in the schema
-protected-option: "Protected Value"
-protected-option-2: "Second Protected Value"
