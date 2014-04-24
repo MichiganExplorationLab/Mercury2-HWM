@@ -1,0 +1,280 @@
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service}{\section{hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service Class Reference}
+\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service}\index{hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service@{hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service}}
+}
+
+
+This service provides access to a S\-G\-P4 propagator.  
+
+
+Inheritance diagram for hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac8ab0781d719053c936565423bc40172}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Sets up the S\-G\-P4 propagation service. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa5112929c8703ff743fd881885076b93}{start\-\_\-tracker}
+\begin{DoxyCompactList}\small\item\em Starts the S\-G\-P4 propagation loop. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a7208ed9d9c09b3a264ea38e927b3fdb5}{reset\-\_\-tracker}
+\begin{DoxyCompactList}\small\item\em Stops the S\-G\-P4 propagator in between sessions. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac5635340793cf2e0a0faa5e03b1fe6c9}{register\-\_\-position\-\_\-receiver}
+\begin{DoxyCompactList}\small\item\em Registers the callback with the service. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa0cbf4299446750f017893b9ea6d8968}{set\-\_\-tle}
+\begin{DoxyCompactList}\small\item\em Sets the target's T\-L\-E. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac9219f0209bf16052a35bc09dee77860}{{\bfseries propagation\-\_\-frequency}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac9219f0209bf16052a35bc09dee77860}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a25ce0f3d0fa3f2cc38c02340ae5e52c5}{{\bfseries flip\-\_\-pass\-\_\-support}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a25ce0f3d0fa3f2cc38c02340ae5e52c5}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_afcfffeb568845a241cc0b89c032289e4}{\-\_\-propagate\-\_\-tle}
+\begin{DoxyCompactList}\small\item\em Propagates the configured T\-L\-E to determine the target's current position. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aed19e238a58dfced328c3cdd961387c1}{\-\_\-is\-\_\-flip\-\_\-pass}
+\begin{DoxyCompactList}\small\item\em Detects if the current (or next) pass is a flip pass (i.\-e. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aad212a39d618326af260e1b97fad6d93}{\-\_\-notify\-\_\-handlers}
+\begin{DoxyCompactList}\small\item\em Notifies all registered handlers that new position information is available. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ab87cddee9fc99bb1e3cf59986b13716e}{\-\_\-handle\-\_\-propagation\-\_\-error}
+\begin{DoxyCompactList}\small\item\em Handles any errors that may occur while executing the S\-G\-P4 propagation loop. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a63bbc3f61c575abaf94d6c3bf1001432}{\-\_\-reset\-\_\-propagator\-\_\-state}
+\begin{DoxyCompactList}\small\item\em Resets the propagator's state initially and in between sessions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a0b098506fa8e208acfde39c56a97bc9a}{{\bfseries \-\_\-global\-\_\-config}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a0b098506fa8e208acfde39c56a97bc9a}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a9a01c7e2a8a9965c0cb226b896cec477}{{\bfseries \-\_\-station\-\_\-longitude}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a9a01c7e2a8a9965c0cb226b896cec477}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ae43f4d1324ea4363ee10c493a6a8d005}{{\bfseries \-\_\-station\-\_\-latitude}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ae43f4d1324ea4363ee10c493a6a8d005}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a9ec542be56272c75648f1d3bbe7b100f}{{\bfseries \-\_\-station\-\_\-altitude}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a9ec542be56272c75648f1d3bbe7b100f}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a77d2eb07c272e4fbe6dda3d8e639afc8}{{\bfseries \-\_\-propagation\-\_\-loop}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a77d2eb07c272e4fbe6dda3d8e639afc8}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a43d03a3b496ef41d2ea8b006ca7ff84b}{{\bfseries \-\_\-\-T\-L\-E\-\_\-line\-\_\-1}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a43d03a3b496ef41d2ea8b006ca7ff84b}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa8c03646f4cb66af965747ec6920d63c}{{\bfseries \-\_\-\-T\-L\-E\-\_\-line\-\_\-2}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa8c03646f4cb66af965747ec6920d63c}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a040b8a13f454defc6a5aae49a907a59b}{{\bfseries \-\_\-satellite}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a040b8a13f454defc6a5aae49a907a59b}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_af2d2726b74b56e9188b4e89aed7a0e2f}{{\bfseries \-\_\-target\-\_\-position}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_af2d2726b74b56e9188b4e89aed7a0e2f}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a870418c6e24354d557ac6ea99e5d48a0}{{\bfseries \-\_\-registered\-\_\-handlers}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a870418c6e24354d557ac6ea99e5d48a0}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This service provides access to a S\-G\-P4 propagator. 
+
+The S\-G\-P4 Propagation Service can be used by an antenna controller or other devices to determine the location of the session's satellite of interest.
+
+\begin{DoxyNote}{Note}
+This service returns an azimuth in the range \mbox{[}0, 360\mbox{]} and an elevation in the range \mbox{[}0, 180\mbox{]}. If your antenna controller requires an azimuth in the range \mbox{[}-\/180, 180\mbox{]}, you will need to manually convert it in your antenna controller driver. If your antenna controller can't cover the full elevation range, you will need to disable flip pass support using the 'flip\-\_\-pass\-\_\-support' configuration setting. 
+\end{DoxyNote}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac8ab0781d719053c936565423bc40172}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{service\-\_\-id, }
+\item[{}]{service\-\_\-type, }
+\item[{}]{settings}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac8ab0781d719053c936565423bc40172}
+
+
+Sets up the S\-G\-P4 propagation service. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em service\-\_\-id} & The unique service I\-D. \\
+\hline
+{\em service\-\_\-type} & The service type. Other drivers, such as the antenna controller driver, will search the active pipeline for this when looking for this service. \\
+\hline
+{\em settings} & A dictionary containing the tracker's configuration options. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ab87cddee9fc99bb1e3cf59986b13716e}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!\-\_\-handle\-\_\-propagation\-\_\-error@{\-\_\-handle\-\_\-propagation\-\_\-error}}
+\index{\-\_\-handle\-\_\-propagation\-\_\-error@{\-\_\-handle\-\_\-propagation\-\_\-error}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{\-\_\-handle\-\_\-propagation\-\_\-error}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-\_\-handle\-\_\-propagation\-\_\-error (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{failure}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ab87cddee9fc99bb1e3cf59986b13716e}
+
+
+Handles any errors that may occur while executing the S\-G\-P4 propagation loop. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em failure} & A Failure object encapsulating the error. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns False after logging the error. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aed19e238a58dfced328c3cdd961387c1}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!\-\_\-is\-\_\-flip\-\_\-pass@{\-\_\-is\-\_\-flip\-\_\-pass}}
+\index{\-\_\-is\-\_\-flip\-\_\-pass@{\-\_\-is\-\_\-flip\-\_\-pass}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{\-\_\-is\-\_\-flip\-\_\-pass}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-\_\-is\-\_\-flip\-\_\-pass (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{ground\-\_\-station}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aed19e238a58dfced328c3cdd961387c1}
+
+
+Detects if the current (or next) pass is a flip pass (i.\-e. 
+
+a pass that goes through 0 azimuth).
+
+\begin{DoxyReturn}{Returns}
+Returns True if the current (or next) pass is a flip pass and if the propagator supports flip passes. Returns False otherwise. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aad212a39d618326af260e1b97fad6d93}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!\-\_\-notify\-\_\-handlers@{\-\_\-notify\-\_\-handlers}}
+\index{\-\_\-notify\-\_\-handlers@{\-\_\-notify\-\_\-handlers}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{\-\_\-notify\-\_\-handlers}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-\_\-notify\-\_\-handlers (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aad212a39d618326af260e1b97fad6d93}
+
+
+Notifies all registered handlers that new position information is available. 
+
+This method sends the saved position information to all registered handlers. \hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_afcfffeb568845a241cc0b89c032289e4}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!\-\_\-propagate\-\_\-tle@{\-\_\-propagate\-\_\-tle}}
+\index{\-\_\-propagate\-\_\-tle@{\-\_\-propagate\-\_\-tle}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{\-\_\-propagate\-\_\-tle}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-\_\-propagate\-\_\-tle (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_afcfffeb568845a241cc0b89c032289e4}
+
+
+Propagates the configured T\-L\-E to determine the target's current position. 
+
+\begin{DoxyVerb} This method performs a single iteration of propagation on the target's TLE to determine it's current location. The 
+ new location will be passed to all registered callbacks.
+\end{DoxyVerb}
+
+
+\begin{DoxyReturn}{Returns}
+Returns a dictionary containing the target's current position if the T\-L\-E is set, and None otherwise. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a63bbc3f61c575abaf94d6c3bf1001432}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!\-\_\-reset\-\_\-propagator\-\_\-state@{\-\_\-reset\-\_\-propagator\-\_\-state}}
+\index{\-\_\-reset\-\_\-propagator\-\_\-state@{\-\_\-reset\-\_\-propagator\-\_\-state}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{\-\_\-reset\-\_\-propagator\-\_\-state}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-\_\-reset\-\_\-propagator\-\_\-state (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a63bbc3f61c575abaf94d6c3bf1001432}
+
+
+Resets the propagator's state initially and in between sessions. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac5635340793cf2e0a0faa5e03b1fe6c9}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!register\-\_\-position\-\_\-receiver@{register\-\_\-position\-\_\-receiver}}
+\index{register\-\_\-position\-\_\-receiver@{register\-\_\-position\-\_\-receiver}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{register\-\_\-position\-\_\-receiver}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-register\-\_\-position\-\_\-receiver (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{callback}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_ac5635340793cf2e0a0faa5e03b1fe6c9}
+
+
+Registers the callback with the service. 
+
+\begin{DoxyVerb} The SGP4 tracking service will call all registered callbacks everytime new position information is available. 
+ Callbacks will be passed a dictionary containing the following elements:
+ - timestamp
+ - longitude 
+ - latitude 
+ - altitude 
+ - azimuth
+ - elevation
+\end{DoxyVerb}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em callback} & A method that will be called with the satellite's position every time new position information is available. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a7208ed9d9c09b3a264ea38e927b3fdb5}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!reset\-\_\-tracker@{reset\-\_\-tracker}}
+\index{reset\-\_\-tracker@{reset\-\_\-tracker}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{reset\-\_\-tracker}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-reset\-\_\-tracker (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_a7208ed9d9c09b3a264ea38e927b3fdb5}
+
+
+Stops the S\-G\-P4 propagator in between sessions. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa0cbf4299446750f017893b9ea6d8968}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!set\-\_\-tle@{set\-\_\-tle}}
+\index{set\-\_\-tle@{set\-\_\-tle}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{set\-\_\-tle}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-set\-\_\-tle (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{line\-\_\-1, }
+\item[{}]{line\-\_\-2}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa0cbf4299446750f017893b9ea6d8968}
+
+
+Sets the target's T\-L\-E. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em line\-\_\-1} & The first line of the T\-L\-E. \\
+\hline
+{\em line\-\_\-2} & The second line of the T\-L\-E. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa5112929c8703ff743fd881885076b93}{\index{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}!start\-\_\-tracker@{start\-\_\-tracker}}
+\index{start\-\_\-tracker@{start\-\_\-tracker}!hwm::hardware::devices::drivers::sgp4_tracker::sgp4_tracker::SGP4PropagationService@{hwm\-::hardware\-::devices\-::drivers\-::sgp4\-\_\-tracker\-::sgp4\-\_\-tracker\-::\-S\-G\-P4\-Propagation\-Service}}
+\subsubsection[{start\-\_\-tracker}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-sgp4\-\_\-tracker.\-sgp4\-\_\-tracker.\-S\-G\-P4\-Propagation\-Service.\-start\-\_\-tracker (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1sgp4__tracker_1_1sgp4__tracker_1_1_s_g_p4_propagation_service_aa5112929c8703ff743fd881885076b93}
+
+
+Starts the S\-G\-P4 propagation loop. 
+
+\begin{DoxyNote}{Note}
+The S\-G\-P4 propagation depends on the target's T\-L\-E, which isn't available until the session setup commands have been executed. As a result, The body of the propagation loop will be skipped until the T\-L\-E is available.
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+Returns the deferred for the propagation Looping\-Call. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/devices/drivers/sgp4\-\_\-tracker/sgp4\-\_\-tracker.\-py\end{DoxyCompactItemize}

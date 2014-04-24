@@ -1,0 +1,219 @@
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2}{\section{hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler Class Reference}
+\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2}\index{hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+}
+
+
+Tests the command handler for the M\-X\-L antenna controller.  
+
+
+Inheritance diagram for hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.551247cm]{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a86ad3c91a1f28c49aefe9fe1c5fc607e}{def {\bfseries set\-Up}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a86ad3c91a1f28c49aefe9fe1c5fc607e}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_af5e54ef7bdda4c9ea8594a4b4019e2e7}{def {\bfseries tear\-Down}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_af5e54ef7bdda4c9ea8594a4b4019e2e7}
+
+\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a687e38b0d47ab2e5ba341511b58d51fd}{test\-\_\-build\-\_\-request}
+\begin{DoxyCompactList}\small\item\em Tests the \-\_\-build\-\_\-request method, which is responsible for building individual requests for the antenna controller A\-P\-I. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a7d7cda12881df8daa6d964747576ce31}{test\-\_\-send\-\_\-commands}
+\begin{DoxyCompactList}\small\item\em Tests that the \-\_\-send\-\_\-commands method, which is responsible for sending commands to the antenna controller A\-P\-I, correctly packages commands and returns the response. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a09130cc432b8abd59893b082760e2cca}{test\-\_\-send\-\_\-commands\-\_\-errors}
+\begin{DoxyCompactList}\small\item\em Tests that the \-\_\-send\-\_\-commands() method can correctly handle connection errors if they arise. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_ae01fd5b65ef00dc7ab874c0ec675b6cf}{test\-\_\-send\-\_\-commands\-\_\-malformed\-\_\-response}
+\begin{DoxyCompactList}\small\item\em Tests that the \-\_\-send\-\_\-commands() method can correctly handle malformed responses. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aff2516189d4a82cde63bce9663819a46}{test\-\_\-move\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'move' command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a320e1674154b6d9e69ce4a7e9623f79c}{test\-\_\-park\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'park' command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a1b1cc000e55d25e248c14775e86506f0}{test\-\_\-calibrate\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'calibrate' command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aad2466a6bbd90f1f34a2ba714c03c8aa}{test\-\_\-calibrate\-\_\-vert\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'calibrate\-\_\-vert' command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aaf95ab1b66d16420b47bc05e13a0dd02}{test\-\_\-calibrate\-\_\-and\-\_\-park\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'calibrate\-\_\-and\-\_\-park' command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a174d9791d359dd1072343bfb1a619b55}{test\-\_\-get\-\_\-state\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'get\-\_\-state' command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_adad0f1be9e0129fa7cdb5b48af3e92e8}{test\-\_\-stop\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'stop' command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a7ea0510ec6f64c53aa6d9859c2a38308}{test\-\_\-stop\-\_\-emergency\-\_\-command}
+\begin{DoxyCompactList}\small\item\em Verifies the functionality of the 'stop\-\_\-emergency' command. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a574f33f772c9144cef8e3f536ef82405}{{\bfseries config}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a574f33f772c9144cef8e3f536ef82405}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aecf9f805ffe49d70eac3eed88e7a6c5f}{{\bfseries source\-\_\-data\-\_\-directory}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aecf9f805ffe49d70eac3eed88e7a6c5f}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aceb022c4b5a58c6cc314d276a697c4cf}{{\bfseries old\-\_\-build\-\_\-opener}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aceb022c4b5a58c6cc314d276a697c4cf}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_ac1761a6adaaf931938b4bbbd8633deb8}{{\bfseries test\-\_\-driver}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_ac1761a6adaaf931938b4bbbd8633deb8}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a3bebbf8931c800d6fce350259bc4bff0}{{\bfseries test\-\_\-handler}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a3bebbf8931c800d6fce350259bc4bff0}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_afa9725b4a33e1f0320ca83716d2b899c}{def {\bfseries \-\_\-reset\-\_\-config\-\_\-entries}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_afa9725b4a33e1f0320ca83716d2b899c}
+
+\item 
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a73f0ff3e36b4e5fe4ff687066b5c13f0}{def \hyperlink{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a73f0ff3e36b4e5fe4ff687066b5c13f0}{\-\_\-set\-\_\-mock\-\_\-request\-\_\-builder}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a73f0ff3e36b4e5fe4ff687066b5c13f0}
+
+\begin{DoxyCompactList}\small\item\em This method modifies the global urllib2 module to return a handler that we constructed that uses a custom request handler to simulate network events. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Tests the command handler for the M\-X\-L antenna controller. 
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a687e38b0d47ab2e5ba341511b58d51fd}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-build\-\_\-request@{test\-\_\-build\-\_\-request}}
+\index{test\-\_\-build\-\_\-request@{test\-\_\-build\-\_\-request}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-build\-\_\-request}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-build\-\_\-request (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a687e38b0d47ab2e5ba341511b58d51fd}
+
+
+Tests the \-\_\-build\-\_\-request method, which is responsible for building individual requests for the antenna controller A\-P\-I. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aaf95ab1b66d16420b47bc05e13a0dd02}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-calibrate\-\_\-and\-\_\-park\-\_\-command@{test\-\_\-calibrate\-\_\-and\-\_\-park\-\_\-command}}
+\index{test\-\_\-calibrate\-\_\-and\-\_\-park\-\_\-command@{test\-\_\-calibrate\-\_\-and\-\_\-park\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-calibrate\-\_\-and\-\_\-park\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-calibrate\-\_\-and\-\_\-park\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aaf95ab1b66d16420b47bc05e13a0dd02}
+
+
+Verifies the functionality of the 'calibrate\-\_\-and\-\_\-park' command. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a1b1cc000e55d25e248c14775e86506f0}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-calibrate\-\_\-command@{test\-\_\-calibrate\-\_\-command}}
+\index{test\-\_\-calibrate\-\_\-command@{test\-\_\-calibrate\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-calibrate\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-calibrate\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a1b1cc000e55d25e248c14775e86506f0}
+
+
+Verifies the functionality of the 'calibrate' command. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aad2466a6bbd90f1f34a2ba714c03c8aa}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-calibrate\-\_\-vert\-\_\-command@{test\-\_\-calibrate\-\_\-vert\-\_\-command}}
+\index{test\-\_\-calibrate\-\_\-vert\-\_\-command@{test\-\_\-calibrate\-\_\-vert\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-calibrate\-\_\-vert\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-calibrate\-\_\-vert\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aad2466a6bbd90f1f34a2ba714c03c8aa}
+
+
+Verifies the functionality of the 'calibrate\-\_\-vert' command. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a174d9791d359dd1072343bfb1a619b55}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-get\-\_\-state\-\_\-command@{test\-\_\-get\-\_\-state\-\_\-command}}
+\index{test\-\_\-get\-\_\-state\-\_\-command@{test\-\_\-get\-\_\-state\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-get\-\_\-state\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-get\-\_\-state\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a174d9791d359dd1072343bfb1a619b55}
+
+
+Verifies the functionality of the 'get\-\_\-state' command. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aff2516189d4a82cde63bce9663819a46}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-move\-\_\-command@{test\-\_\-move\-\_\-command}}
+\index{test\-\_\-move\-\_\-command@{test\-\_\-move\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-move\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-move\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_aff2516189d4a82cde63bce9663819a46}
+
+
+Verifies the functionality of the 'move' command. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a320e1674154b6d9e69ce4a7e9623f79c}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-park\-\_\-command@{test\-\_\-park\-\_\-command}}
+\index{test\-\_\-park\-\_\-command@{test\-\_\-park\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-park\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-park\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a320e1674154b6d9e69ce4a7e9623f79c}
+
+
+Verifies the functionality of the 'park' command. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a7d7cda12881df8daa6d964747576ce31}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-send\-\_\-commands@{test\-\_\-send\-\_\-commands}}
+\index{test\-\_\-send\-\_\-commands@{test\-\_\-send\-\_\-commands}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-send\-\_\-commands}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-send\-\_\-commands (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a7d7cda12881df8daa6d964747576ce31}
+
+
+Tests that the \-\_\-send\-\_\-commands method, which is responsible for sending commands to the antenna controller A\-P\-I, correctly packages commands and returns the response. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a09130cc432b8abd59893b082760e2cca}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-send\-\_\-commands\-\_\-errors@{test\-\_\-send\-\_\-commands\-\_\-errors}}
+\index{test\-\_\-send\-\_\-commands\-\_\-errors@{test\-\_\-send\-\_\-commands\-\_\-errors}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-send\-\_\-commands\-\_\-errors}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-send\-\_\-commands\-\_\-errors (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a09130cc432b8abd59893b082760e2cca}
+
+
+Tests that the \-\_\-send\-\_\-commands() method can correctly handle connection errors if they arise. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_ae01fd5b65ef00dc7ab874c0ec675b6cf}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-send\-\_\-commands\-\_\-malformed\-\_\-response@{test\-\_\-send\-\_\-commands\-\_\-malformed\-\_\-response}}
+\index{test\-\_\-send\-\_\-commands\-\_\-malformed\-\_\-response@{test\-\_\-send\-\_\-commands\-\_\-malformed\-\_\-response}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-send\-\_\-commands\-\_\-malformed\-\_\-response}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-send\-\_\-commands\-\_\-malformed\-\_\-response (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_ae01fd5b65ef00dc7ab874c0ec675b6cf}
+
+
+Tests that the \-\_\-send\-\_\-commands() method can correctly handle malformed responses. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_adad0f1be9e0129fa7cdb5b48af3e92e8}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-stop\-\_\-command@{test\-\_\-stop\-\_\-command}}
+\index{test\-\_\-stop\-\_\-command@{test\-\_\-stop\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-stop\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-stop\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_adad0f1be9e0129fa7cdb5b48af3e92e8}
+
+
+Verifies the functionality of the 'stop' command. 
+
+\hypertarget{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a7ea0510ec6f64c53aa6d9859c2a38308}{\index{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}!test\-\_\-stop\-\_\-emergency\-\_\-command@{test\-\_\-stop\-\_\-emergency\-\_\-command}}
+\index{test\-\_\-stop\-\_\-emergency\-\_\-command@{test\-\_\-stop\-\_\-emergency\-\_\-command}!hwm::hardware::devices::drivers::mxl_antenna_controller::tests::test_mxl_antenna_controller::TestMXLAntennaControllerHandler@{hwm\-::hardware\-::devices\-::drivers\-::mxl\-\_\-antenna\-\_\-controller\-::tests\-::test\-\_\-mxl\-\_\-antenna\-\_\-controller\-::\-Test\-M\-X\-L\-Antenna\-Controller\-Handler}}
+\subsubsection[{test\-\_\-stop\-\_\-emergency\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-hardware.\-devices.\-drivers.\-mxl\-\_\-antenna\-\_\-controller.\-tests.\-test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-Test\-M\-X\-L\-Antenna\-Controller\-Handler.\-test\-\_\-stop\-\_\-emergency\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__antenna__controller_1_1tests_1_1test__mxl__anf1b82778ca0869b41ace53be3d0454a2_a7ea0510ec6f64c53aa6d9859c2a38308}
+
+
+Verifies the functionality of the 'stop\-\_\-emergency' command. 
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/hardware/devices/drivers/mxl\-\_\-antenna\-\_\-controller/tests/test\-\_\-mxl\-\_\-antenna\-\_\-controller.\-py\end{DoxyCompactItemize}

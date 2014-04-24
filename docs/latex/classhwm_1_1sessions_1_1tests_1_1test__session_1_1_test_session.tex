@@ -1,0 +1,166 @@
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session}{\section{hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session Class Reference}
+\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session}\index{hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session@{hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session}}
+}
+
+
+This test suite is used to test the functionality of the Session class, which is used to represent user hardware pipeline reservations.  
+
+
+Inheritance diagram for hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a6ebfe0c0771bd2fb341e72d71db092a9}{def {\bfseries set\-Up}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a6ebfe0c0771bd2fb341e72d71db092a9}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a25226f9f9452d7fa0dfd7c89fd116bcd}{def {\bfseries tear\-Down}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a25226f9f9452d7fa0dfd7c89fd116bcd}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a7b43f3f300631450e7f45bedfce982ed}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a7b43f3f300631450e7f45bedfce982ed}{test\-\_\-writing\-\_\-to\-\_\-telemetry\-\_\-protocol}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a7b43f3f300631450e7f45bedfce982ed}
+
+\begin{DoxyCompactList}\small\item\em Tests that the Session class can write telemetry data passed to it to its registered telemetry protocols. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a9fa066025f1f0fa7b153515eb56775ed}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a9fa066025f1f0fa7b153515eb56775ed}{test\-\_\-writing\-\_\-to\-\_\-output\-\_\-protocol}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a9fa066025f1f0fa7b153515eb56775ed}
+
+\begin{DoxyCompactList}\small\item\em This test verifies that the Session class can correctly pass pipeline output from the Pipeline class to its registered data protocols. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a43863ec3e07c86e62727b21c537a5d2f}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a43863ec3e07c86e62727b21c537a5d2f}{test\-\_\-writing\-\_\-to\-\_\-input\-\_\-stream}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a43863ec3e07c86e62727b21c537a5d2f}
+
+\begin{DoxyCompactList}\small\item\em Checks that the Session class can correctly write input data that it receives to its associated pipeline. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a381833b5662313a5f1693d87d76eb77e}{test\-\_\-telemetry\-\_\-protocol\-\_\-registration}
+\begin{DoxyCompactList}\small\item\em Verifies that the Session class can correctly register telemetry protocols. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a93dd8b73edf9d76e4b887e7614d2b7b9}{test\-\_\-data\-\_\-protocol\-\_\-registration}
+\begin{DoxyCompactList}\small\item\em Verifies that the Session class can correctly register data protocols. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a8dc0b41ad1ce126fcc2e22024e908773}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a8dc0b41ad1ce126fcc2e22024e908773}{test\-\_\-kill\-\_\-session}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a8dc0b41ad1ce126fcc2e22024e908773}
+
+\begin{DoxyCompactList}\small\item\em Tests that sessions can be killed and that they notify their pipelines that the session has ended (to give them an opportunity to clean up their resources). \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ac037a79f5767312653e0c68eec2cc8a5}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ac037a79f5767312653e0c68eec2cc8a5}{test\-\_\-session\-\_\-startup\-\_\-pipeline\-\_\-in\-\_\-use}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ac037a79f5767312653e0c68eec2cc8a5}
+
+\begin{DoxyCompactList}\small\item\em Makes sure that the Session class responds appropriately when a session's hardware pipeline can't be reserved. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a10799c2bd7d72723b91db6a8e9350157}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a10799c2bd7d72723b91db6a8e9350157}{test\-\_\-session\-\_\-startup\-\_\-pipeline\-\_\-setup\-\_\-command\-\_\-errors}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a10799c2bd7d72723b91db6a8e9350157}
+
+\begin{DoxyCompactList}\small\item\em Tests that the Session class correctly handles fatal pipeline setup command errors when starting a new session. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ab10bfae11e99cd6f98cc526a8f5d554f}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ab10bfae11e99cd6f98cc526a8f5d554f}{test\-\_\-session\-\_\-startup\-\_\-error\-\_\-during\-\_\-device\-\_\-session\-\_\-preparation}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ab10bfae11e99cd6f98cc526a8f5d554f}
+
+\begin{DoxyCompactList}\small\item\em Verifies that the session class can correctly handle errors that may occur during device prepare\-\_\-for\-\_\-session() method calls; such errors are supposed to be fatal to the session. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a7322caa254e3e238c5d04759004740ca}{def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a7322caa254e3e238c5d04759004740ca}{test\-\_\-session\-\_\-startup\-\_\-no\-\_\-session\-\_\-setup\-\_\-commands}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a7322caa254e3e238c5d04759004740ca}
+
+\begin{DoxyCompactList}\small\item\em Tests that the Session class can correctly start a session that doesn't specify any session setup commands. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a14325bd8a3bb38a88fac3daffdc5c345}{test\-\_\-session\-\_\-startup\-\_\-setup\-\_\-commands\-\_\-mixed\-\_\-success}
+\begin{DoxyCompactList}\small\item\em Tests that the Session class can correctly start a session based on a reservation that specifies some valid, and invalid, session setup commands. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ab66303b1ac3d00a4df884381ef28095d}{{\bfseries config}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ab66303b1ac3d00a4df884381ef28095d}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a67bd03b6c8852594262feecc20d0dd57}{{\bfseries source\-\_\-data\-\_\-directory}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a67bd03b6c8852594262feecc20d0dd57}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ae9748835a4c3892b68e23c5266695c7a}{{\bfseries command\-\_\-parser}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_ae9748835a4c3892b68e23c5266695c7a}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_af05d56b07c2a3094d012791aa6eecdfd}{{\bfseries device\-\_\-manager}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_af05d56b07c2a3094d012791aa6eecdfd}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a603c53be9a8b950effec858bc6cff819}{{\bfseries pipeline\-\_\-manager}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a603c53be9a8b950effec858bc6cff819}
+
+\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a8103404781329482e3b1ab03b04f8a3e}{{\bfseries session\-\_\-coordinator}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a8103404781329482e3b1ab03b04f8a3e}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a1dbb72634c88c0000ceb8de2672649d3}{\-\_\-load\-\_\-test\-\_\-schedule}
+\begin{DoxyCompactList}\small\item\em Loads a valid test schedule and returns a deferred that will be fired once that schedule has been loaded and parsed. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a89aa4b0361af66195b3e02df29760700}{\-\_\-load\-\_\-reservation\-\_\-config}
+\begin{DoxyCompactList}\small\item\em Returns the configuration dictionary for the specified reservation I\-D from the complete reservation schedule. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a40f0110c38033eb73371862cf29d932c}{def {\bfseries \-\_\-reset\-\_\-config\-\_\-entries}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a40f0110c38033eb73371862cf29d932c}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This test suite is used to test the functionality of the Session class, which is used to represent user hardware pipeline reservations. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a89aa4b0361af66195b3e02df29760700}{\index{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}!\-\_\-load\-\_\-reservation\-\_\-config@{\-\_\-load\-\_\-reservation\-\_\-config}}
+\index{\-\_\-load\-\_\-reservation\-\_\-config@{\-\_\-load\-\_\-reservation\-\_\-config}!hwm::sessions::tests::test_session::TestSession@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}}
+\subsubsection[{\-\_\-load\-\_\-reservation\-\_\-config}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session.\-\_\-load\-\_\-reservation\-\_\-config (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{reservation\-\_\-schedule, }
+\item[{}]{reservation\-\_\-id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a89aa4b0361af66195b3e02df29760700}
+
+
+Returns the configuration dictionary for the specified reservation I\-D from the complete reservation schedule. 
+
+\begin{DoxyVerb} This is used to pick out individual session configurations to test with.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Raises} & Lookup\-Error if the specified reservation I\-D can't be found in the reservation schedule. \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a1dbb72634c88c0000ceb8de2672649d3}{\index{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}!\-\_\-load\-\_\-test\-\_\-schedule@{\-\_\-load\-\_\-test\-\_\-schedule}}
+\index{\-\_\-load\-\_\-test\-\_\-schedule@{\-\_\-load\-\_\-test\-\_\-schedule}!hwm::sessions::tests::test_session::TestSession@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}}
+\subsubsection[{\-\_\-load\-\_\-test\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session.\-\_\-load\-\_\-test\-\_\-schedule (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a1dbb72634c88c0000ceb8de2672649d3}
+
+
+Loads a valid test schedule and returns a deferred that will be fired once that schedule has been loaded and parsed. 
+
+This schedule is used to test the Session class. \hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a93dd8b73edf9d76e4b887e7614d2b7b9}{\index{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}!test\-\_\-data\-\_\-protocol\-\_\-registration@{test\-\_\-data\-\_\-protocol\-\_\-registration}}
+\index{test\-\_\-data\-\_\-protocol\-\_\-registration@{test\-\_\-data\-\_\-protocol\-\_\-registration}!hwm::sessions::tests::test_session::TestSession@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}}
+\subsubsection[{test\-\_\-data\-\_\-protocol\-\_\-registration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session.\-test\-\_\-data\-\_\-protocol\-\_\-registration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a93dd8b73edf9d76e4b887e7614d2b7b9}
+
+
+Verifies that the Session class can correctly register data protocols. 
+
+The Session class uses these data protocols to pass the primary pipeline output stream to the end user. \hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a14325bd8a3bb38a88fac3daffdc5c345}{\index{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}!test\-\_\-session\-\_\-startup\-\_\-setup\-\_\-commands\-\_\-mixed\-\_\-success@{test\-\_\-session\-\_\-startup\-\_\-setup\-\_\-commands\-\_\-mixed\-\_\-success}}
+\index{test\-\_\-session\-\_\-startup\-\_\-setup\-\_\-commands\-\_\-mixed\-\_\-success@{test\-\_\-session\-\_\-startup\-\_\-setup\-\_\-commands\-\_\-mixed\-\_\-success}!hwm::sessions::tests::test_session::TestSession@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}}
+\subsubsection[{test\-\_\-session\-\_\-startup\-\_\-setup\-\_\-commands\-\_\-mixed\-\_\-success}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session.\-test\-\_\-session\-\_\-startup\-\_\-setup\-\_\-commands\-\_\-mixed\-\_\-success (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a14325bd8a3bb38a88fac3daffdc5c345}
+
+
+Tests that the Session class can correctly start a session based on a reservation that specifies some valid, and invalid, session setup commands. 
+
+Because session setup command errors are considered non-\/fatal, invalid commands should still leave the session in a running state. This test also verifies that the session\-:
+\begin{DoxyItemize}
+\item Correctly registers itself with its pipeline (which occurs right before the session setup commands are executed)
+\item Successfully executes a valid device command that requires a session for the test pipeline.
+\item Fails to execute a device command that specifies a device the user doesn't have permission to execute. 
+\end{DoxyItemize}\hypertarget{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a381833b5662313a5f1693d87d76eb77e}{\index{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}!test\-\_\-telemetry\-\_\-protocol\-\_\-registration@{test\-\_\-telemetry\-\_\-protocol\-\_\-registration}}
+\index{test\-\_\-telemetry\-\_\-protocol\-\_\-registration@{test\-\_\-telemetry\-\_\-protocol\-\_\-registration}!hwm::sessions::tests::test_session::TestSession@{hwm\-::sessions\-::tests\-::test\-\_\-session\-::\-Test\-Session}}
+\subsubsection[{test\-\_\-telemetry\-\_\-protocol\-\_\-registration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-sessions.\-tests.\-test\-\_\-session.\-Test\-Session.\-test\-\_\-telemetry\-\_\-protocol\-\_\-registration (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1sessions_1_1tests_1_1test__session_1_1_test_session_a381833b5662313a5f1693d87d76eb77e}
+
+
+Verifies that the Session class can correctly register telemetry protocols. 
+
+The Session class uses telemetry protocols to pass pipeline telemetry data to the end user. 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/sessions/tests/test\-\_\-session.\-py\end{DoxyCompactItemize}

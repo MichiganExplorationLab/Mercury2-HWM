@@ -1,0 +1,211 @@
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data}{\section{hwm.\-network.\-protocols.\-data.\-Pipeline\-Data Class Reference}
+\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data}\index{hwm.\-network.\-protocols.\-data.\-Pipeline\-Data@{hwm.\-network.\-protocols.\-data.\-Pipeline\-Data}}
+}
+
+
+Represents a Pipeline data connection.  
+
+
+Inheritance diagram for hwm.\-network.\-protocols.\-data.\-Pipeline\-Data\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ac3dfd691e6237cfaa2fdae4197518071}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Sets up the \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data}{Pipeline\-Data} protocol instance. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a9099afa62c9ce4fc18d75092f18d6f3d}{write\-\_\-output}
+\begin{DoxyCompactList}\small\item\em Sends a chunk of pipeline output to the user. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a2025a02a3697d0baa7a0d8884fd04edb}{data\-Received}
+\begin{DoxyCompactList}\small\item\em Receives data that the user is trying to write to the pipeline. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a21ff6145ca078501cc457f3b3ee25ee1}{connection\-Made}
+\begin{DoxyCompactList}\small\item\em Sets up the data protocol before any data transfer occurs. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a04dbdf4b7c0e0ade9e40c54bfa6028cf}{def \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a04dbdf4b7c0e0ade9e40c54bfa6028cf}{connection\-Lost}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a04dbdf4b7c0e0ade9e40c54bfa6028cf}
+
+\begin{DoxyCompactList}\small\item\em Called when the pipeline data connection is lost. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ab817fdf1e9a2d1f3b391416e40c73315}{perform\-\_\-registrations}
+\begin{DoxyCompactList}\small\item\em Performs the necessary registrations between the protocol and its associated session. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a742b0f71b186c65aa5cd4e5b5aec2012}{{\bfseries session\-\_\-coordinator}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a742b0f71b186c65aa5cd4e5b5aec2012}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a1482b4c38b299e99db4d11fab87e8ff9}{{\bfseries session}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a1482b4c38b299e99db4d11fab87e8ff9}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ad7c04014de21311a3073d6859c417038}{\-\_\-connection\-\_\-setup\-\_\-error}
+\begin{DoxyCompactList}\small\item\em Handles errors that arise during the data protocol connection setup. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a Pipeline data connection. 
+
+This Protocol represents a Pipeline data stream connection to the pipeline's active user (through its currently active session). It is responsible for sending the pipeline's output to the end user as well as passing the user's input to the pipeline. It uses a basic T\-C\-P protocol.
+
+\begin{DoxyNote}{Note}
+This Protocol only routes the pipeline data stream (what \char`\"{}flows\char`\"{} in and out of the pipeline). All other data, such as the pipeline telemetry stream and station commands, pass through different protocols. 
+\end{DoxyNote}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ac3dfd691e6237cfaa2fdae4197518071}{\index{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::network::protocols::data::PipelineData@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-data.\-Pipeline\-Data.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{session\-\_\-coordinator}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ac3dfd691e6237cfaa2fdae4197518071}
+
+
+Sets up the \hyperlink{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data}{Pipeline\-Data} protocol instance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em session\-\_\-coordinator} & A Session\-Coordinator instance that will be used to locate requested sessions. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ad7c04014de21311a3073d6859c417038}{\index{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}!\-\_\-connection\-\_\-setup\-\_\-error@{\-\_\-connection\-\_\-setup\-\_\-error}}
+\index{\-\_\-connection\-\_\-setup\-\_\-error@{\-\_\-connection\-\_\-setup\-\_\-error}!hwm::network::protocols::data::PipelineData@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}}
+\subsubsection[{\-\_\-connection\-\_\-setup\-\_\-error}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-data.\-Pipeline\-Data.\-\_\-connection\-\_\-setup\-\_\-error (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{failure}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ad7c04014de21311a3073d6859c417038}
+
+
+Handles errors that arise during the data protocol connection setup. 
+
+\begin{DoxyVerb} This callback handles errors that may occur when authenticating the protocol user and loading their requested
+ session. It logs the error and cleans up the protocol's connection.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em failure} & A Failure object encapsulating the error. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns None after handling the error. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a21ff6145ca078501cc457f3b3ee25ee1}{\index{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}!connection\-Made@{connection\-Made}}
+\index{connection\-Made@{connection\-Made}!hwm::network::protocols::data::PipelineData@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}}
+\subsubsection[{connection\-Made}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-data.\-Pipeline\-Data.\-connection\-Made (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a21ff6145ca078501cc457f3b3ee25ee1}
+
+
+Sets up the data protocol before any data transfer occurs. 
+
+\begin{DoxyVerb} This method sets up the protocol right after the connection has been established. It is responsible for calling a
+ function that will wait and load the user's certificate after the TLS handshake has been performed.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+Because this method may be (and probably will be) called before the connection's T\-L\-S handshake is complete, it calls an additional function that periodically checks if the client's certificate is available and, once it is, returns it via a deferred. Any data that the user tries to pass to the connection before the T\-L\-S handshake has completed will be dropped. 
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+Returns a deferred that will be fired with the requested Session. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a2025a02a3697d0baa7a0d8884fd04edb}{\index{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}!data\-Received@{data\-Received}}
+\index{data\-Received@{data\-Received}!hwm::network::protocols::data::PipelineData@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}}
+\subsubsection[{data\-Received}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-data.\-Pipeline\-Data.\-data\-Received (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{data}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a2025a02a3697d0baa7a0d8884fd04edb}
+
+
+Receives data that the user is trying to write to the pipeline. 
+
+\begin{DoxyVerb} This method receives data from the pipeline user and passes it along to the target pipeline via the associated
+ session.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+If the session specified in the user's S\-S\-L certificate is not yet active, any data that they send will be discarded until the session is made active active.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em data} & A chunk of data of indeterminate size that is to be passed to the session. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ab817fdf1e9a2d1f3b391416e40c73315}{\index{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}!perform\-\_\-registrations@{perform\-\_\-registrations}}
+\index{perform\-\_\-registrations@{perform\-\_\-registrations}!hwm::network::protocols::data::PipelineData@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}}
+\subsubsection[{perform\-\_\-registrations}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-data.\-Pipeline\-Data.\-perform\-\_\-registrations (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{requested\-\_\-session}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_ab817fdf1e9a2d1f3b391416e40c73315}
+
+
+Performs the necessary registrations between the protocol and its associated session. 
+
+\begin{DoxyVerb} This callback makes the necessary registrations between the pipeline data protocol and its Session. It will be 
+ called with session specified in the client's TLS certificate after the TLS handshake is complete.
+\end{DoxyVerb}
+
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em May} & pass along session.\-Protocol\-Already\-Registered exceptions when trying to register this protocol with its session.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em requested\-\_\-session} & The Session associated with the protocol. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the newly loaded Session that was passed to this callback. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a9099afa62c9ce4fc18d75092f18d6f3d}{\index{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}!write\-\_\-output@{write\-\_\-output}}
+\index{write\-\_\-output@{write\-\_\-output}!hwm::network::protocols::data::PipelineData@{hwm\-::network\-::protocols\-::data\-::\-Pipeline\-Data}}
+\subsubsection[{write\-\_\-output}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-data.\-Pipeline\-Data.\-write\-\_\-output (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{output\-\_\-data}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1data_1_1_pipeline_data_a9099afa62c9ce4fc18d75092f18d6f3d}
+
+
+Sends a chunk of pipeline output to the user. 
+
+\begin{DoxyVerb} This method writes the provided chunk of data (output from the pipeline) to the end user.
+\end{DoxyVerb}
+
+
+\begin{DoxyNote}{Note}
+Because all pipeline output must reach the end user, any data received by this function is passed to the transport regardless of the buffer state. All data in the transport's buffer will eventually be sent to the pipeline user (unless the connection is lost).
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See Also}
+\href{https://twistedmatrix.com/documents/8.1.0/api/twisted.internet.interfaces.ITransport.html#write}{\tt https\-://twistedmatrix.\-com/documents/8.\-1.\-0/api/twisted.\-internet.\-interfaces.\-I\-Transport.\-html\#write}
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+{\em output\-\_\-data} & A chunk of pipeline output of arbitrary size that is to be sent to the pipeline user. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/network/protocols/data.\-py\end{DoxyCompactItemize}

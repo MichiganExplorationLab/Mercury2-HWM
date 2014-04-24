@@ -1,0 +1,64 @@
+\hypertarget{classhwm_1_1command_1_1command_1_1_command_error}{\section{hwm.\-command.\-command.\-Command\-Error Class Reference}
+\label{classhwm_1_1command_1_1command_1_1_command_error}\index{hwm.\-command.\-command.\-Command\-Error@{hwm.\-command.\-command.\-Command\-Error}}
+}
+
+
+A general purpose exception thrown in the event that a command fails.  
+
+
+Inheritance diagram for hwm.\-command.\-command.\-Command\-Error\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1command_1_1command_1_1_command_error}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1command_1_1command_1_1_command_error_a88d2545897a406152e087b31d951ee64}{\-\_\-\-\_\-init\-\_\-\-\_\-}
+\begin{DoxyCompactList}\small\item\em Sets up the command error. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1command_1_1command_1_1_command_error_a84a3bc8d7d0a1414823da1d05c4d4abc}{def {\bfseries \-\_\-\-\_\-str\-\_\-\-\_\-}}\label{classhwm_1_1command_1_1command_1_1_command_error_a84a3bc8d7d0a1414823da1d05c4d4abc}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1command_1_1command_1_1_command_error_a9a544ad650f5613142cb3e8fb049d6c9}{{\bfseries message}}\label{classhwm_1_1command_1_1command_1_1_command_error_a9a544ad650f5613142cb3e8fb049d6c9}
+
+\item 
+\hypertarget{classhwm_1_1command_1_1command_1_1_command_error_ad7dc99967f7c3c8019f3fe724331595c}{{\bfseries error\-\_\-parameters}}\label{classhwm_1_1command_1_1command_1_1_command_error_ad7dc99967f7c3c8019f3fe724331595c}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A general purpose exception thrown in the event that a command fails. 
+
+It allows command handlers to embed additional metadata with the failure in the form of a dictionary passed to the exception. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classhwm_1_1command_1_1command_1_1_command_error_a88d2545897a406152e087b31d951ee64}{\index{hwm\-::command\-::command\-::\-Command\-Error@{hwm\-::command\-::command\-::\-Command\-Error}!\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-init\-\_\-\-\_\-@{\-\_\-\-\_\-init\-\_\-\-\_\-}!hwm::command::command::CommandError@{hwm\-::command\-::command\-::\-Command\-Error}}
+\subsubsection[{\-\_\-\-\_\-init\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-command.\-Command\-Error.\-\_\-\-\_\-init\-\_\-\-\_\- (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{command\-\_\-error\-\_\-message, }
+\item[{}]{error\-\_\-data = {\ttfamily None}}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1command_1_1_command_error_a88d2545897a406152e087b31d951ee64}
+
+
+Sets up the command error. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em command\-\_\-error\-\_\-message} & A string summarizing the failure. \\
+\hline
+{\em error\-\_\-data} & A simple dictionary containing additional fields to be passed with the error response. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/command/command.\-py\end{DoxyCompactItemize}

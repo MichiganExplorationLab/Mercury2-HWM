@@ -1,0 +1,62 @@
+\hypertarget{namespacehwm_1_1command_1_1command}{\section{hwm.\-command.\-command Namespace Reference}
+\label{namespacehwm_1_1command_1_1command}\index{hwm.\-command.\-command@{hwm.\-command.\-command}}
+}
+
+
+Contains a class used to store the state of submitted ground station commands.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classhwm_1_1command_1_1command_1_1_command}{Command}
+\begin{DoxyCompactList}\small\item\em Used to represent user commands. \end{DoxyCompactList}\item 
+class \hyperlink{classhwm_1_1command_1_1command_1_1_command_not_found}{Command\-Not\-Found}
+\item 
+class \hyperlink{classhwm_1_1command_1_1command_1_1_command_invalid_schema}{Command\-Invalid\-Schema}
+\item 
+class \hyperlink{classhwm_1_1command_1_1command_1_1_command_malformed}{Command\-Malformed}
+\item 
+class \hyperlink{classhwm_1_1command_1_1command_1_1_command_error}{Command\-Error}
+\begin{DoxyCompactList}\small\item\em A general purpose exception thrown in the event that a command fails. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+dictionary {\bfseries schema}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Contains a class used to store the state of submitted ground station commands. 
+
+\subsection{Variable Documentation}
+\hypertarget{namespacehwm_1_1command_1_1command_a2b81c33fcc6c0fdbbe23ae07f0fbba30}{\index{hwm\-::command\-::command@{hwm\-::command\-::command}!schema@{schema}}
+\index{schema@{schema}!hwm::command::command@{hwm\-::command\-::command}}
+\subsubsection[{schema}]{\setlength{\rightskip}{0pt plus 5cm}dictionary hwm.\-command.\-command.\-schema}}\label{namespacehwm_1_1command_1_1command_a2b81c33fcc6c0fdbbe23ae07f0fbba30}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+1 = \{
+2   \textcolor{stringliteral}{"type"}: \textcolor{stringliteral}{"object"},
+3   \textcolor{stringliteral}{"$schema"}: \textcolor{stringliteral}{"http://json-schema.org/draft-03/schema"},
+4   \textcolor{stringliteral}{"required"}: \textcolor{keyword}{True},
+5   \textcolor{stringliteral}{"additionalProperties"}: \textcolor{keyword}{False},
+6   \textcolor{stringliteral}{"properties"}: \{
+7     \textcolor{stringliteral}{"command"}: \{
+8       \textcolor{stringliteral}{"type"}: \textcolor{stringliteral}{"string"},
+9       \textcolor{stringliteral}{"id"}: \textcolor{stringliteral}{"command"},
+10       \textcolor{stringliteral}{"required"}: \textcolor{keyword}{True}
+11     \},
+12     \textcolor{stringliteral}{"destination"}: \{
+13       \textcolor{stringliteral}{"type"}: \textcolor{stringliteral}{"string"},
+14       \textcolor{stringliteral}{"id"}: \textcolor{stringliteral}{"destination"},
+15       \textcolor{stringliteral}{"required"}: \textcolor{keyword}{True},
+16       \textcolor{stringliteral}{"pattern"}: \textcolor{stringliteral}{"^(\(\backslash\)w+\(\backslash\).\(\backslash\)w+)|(\(\backslash\)w+)$"}
+17     \},
+18     \textcolor{stringliteral}{"parameters"}: \{
+19       \textcolor{stringliteral}{"type"}: \textcolor{stringliteral}{"object"},
+20       \textcolor{stringliteral}{"additionalProperties"}: \textcolor{keyword}{True},
+21       \textcolor{stringliteral}{"required"}: \textcolor{keyword}{False}
+22     \}
+23   \}
+24 \}
+\end{DoxyCode}

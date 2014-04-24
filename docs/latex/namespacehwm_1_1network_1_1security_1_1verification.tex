@@ -1,0 +1,35 @@
+\hypertarget{namespacehwm_1_1network_1_1security_1_1verification}{\section{hwm.\-network.\-security.\-verification Namespace Reference}
+\label{namespacehwm_1_1network_1_1security_1_1verification}\index{hwm.\-network.\-security.\-verification@{hwm.\-network.\-security.\-verification}}
+}
+
+
+Contains functions for verifying user authorization credentials.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacehwm_1_1network_1_1security_1_1verification_acb65887dd1fc9f24f54037e50c50fbab}{create\-\_\-tls\-\_\-context\-\_\-factory}
+\begin{DoxyCompactList}\small\item\em Creates and returns a new ssl.\-Context\-Factory used to create T\-L\-S contexts for various ground station connections. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Contains functions for verifying user authorization credentials. This module functions for authenticating users based on their provided S\-S\-L certificate. 
+
+\subsection{Function Documentation}
+\hypertarget{namespacehwm_1_1network_1_1security_1_1verification_acb65887dd1fc9f24f54037e50c50fbab}{\index{hwm\-::network\-::security\-::verification@{hwm\-::network\-::security\-::verification}!create\-\_\-tls\-\_\-context\-\_\-factory@{create\-\_\-tls\-\_\-context\-\_\-factory}}
+\index{create\-\_\-tls\-\_\-context\-\_\-factory@{create\-\_\-tls\-\_\-context\-\_\-factory}!hwm::network::security::verification@{hwm\-::network\-::security\-::verification}}
+\subsubsection[{create\-\_\-tls\-\_\-context\-\_\-factory}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-security.\-verification.\-create\-\_\-tls\-\_\-context\-\_\-factory (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{namespacehwm_1_1network_1_1security_1_1verification_acb65887dd1fc9f24f54037e50c50fbab}
+
+
+Creates and returns a new ssl.\-Context\-Factory used to create T\-L\-S contexts for various ground station connections. 
+
+This method initializes a T\-L\-S context factory that uses the H\-W\-M instance's private key and public certificate (specified by 'tls-\/private-\/key-\/location' and 'tls-\/public-\/cert-\/location', respectively). These files uniquely identify the H\-W\-M instance and are typically generated and signed by the user interface. In addition, it also initializes the T\-L\-S context factory with the ground station's public C\-A certificate which is used to verify the integrity of user certificates.
+
+\begin{DoxyReturn}{Returns}
+Returns an ssl.\-Context\-Factory for use by S\-S\-L listeners. 
+\end{DoxyReturn}

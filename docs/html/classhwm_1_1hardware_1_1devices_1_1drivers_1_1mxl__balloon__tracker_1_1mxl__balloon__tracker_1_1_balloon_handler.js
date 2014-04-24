@@ -1,0 +1,9 @@
+var classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__balloon__tracker_1_1mxl__balloon__tracker_1_1_balloon_handler =
+[
+    [ "command_set_callsign", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__balloon__tracker_1_1mxl__balloon__tracker_1_1_balloon_handler.html#a34870073e0440be4f31bc438a3cdc068", null ],
+    [ "command_start_tracking", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__balloon__tracker_1_1mxl__balloon__tracker_1_1_balloon_handler.html#a6951fb907a005831fdecc5aef575b577", null ],
+    [ "command_stop_tracking", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__balloon__tracker_1_1mxl__balloon__tracker_1_1_balloon_handler.html#af04447c432a010b4808d107b469dce5e", null ],
+    [ "settings_set_callsign", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__balloon__tracker_1_1mxl__balloon__tracker_1_1_balloon_handler.html#a9ad83f8658ffe2942320a533d6667d78", null ],
+    [ "settings_start_tracking", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__balloon__tracker_1_1mxl__balloon__tracker_1_1_balloon_handler.html#a740a4bddc714d3e77f8d4d17afd4389f", null ],
+    [ "settings_stop_tracking", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1mxl__balloon__tracker_1_1mxl__balloon__tracker_1_1_balloon_handler.html#aaa8d5ec961c6f7eccf8f06c1dad1d70c", null ]
+];

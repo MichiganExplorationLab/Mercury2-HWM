@@ -1,0 +1,7 @@
+var classhwm_1_1hardware_1_1devices_1_1drivers_1_1test__virtual__driver_1_1test__virtual__driver_1_1_test___virtual___driver =
+[
+    [ "__init__", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1test__virtual__driver_1_1test__virtual__driver_1_1_test___virtual___driver.html#add0d87a04c96c93b213fdbd5b74341f0", null ],
+    [ "test_value", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1test__virtual__driver_1_1test__virtual__driver_1_1_test___virtual___driver.html#a7003c9f2b6d27d50b560dace532abdf9", null ],
+    [ "device_name", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1test__virtual__driver_1_1test__virtual__driver_1_1_test___virtual___driver.html#ad874f18c691320e4e21a9314b1607731", null ],
+    [ "is_virtual_driver", "classhwm_1_1hardware_1_1devices_1_1drivers_1_1test__virtual__driver_1_1test__virtual__driver_1_1_test___virtual___driver.html#aecf4d6c6e16939a03ef229c1d96dc093", null ]
+];

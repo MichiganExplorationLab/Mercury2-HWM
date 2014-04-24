@@ -1,0 +1,142 @@
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol}{\section{hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol Class Reference}
+\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol}\index{hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol@{hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol}}
+}
+
+
+This test suite is designed to test the functionality of the Pipeline\-Telemetry protocol, which is responsible for routing the various pipeline telemetry streams to the end user (typically through the user interface).  
+
+
+Inheritance diagram for hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a73e9a44de9a0fff958802c4994ae8998}{def {\bfseries set\-Up}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a73e9a44de9a0fff958802c4994ae8998}
+
+\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ab284817aa396aa8588de82343569a141}{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry}
+\begin{DoxyCompactList}\small\item\em This test verifies that the protocol can correctly relay any pipeline telemetry that it receives to the pipeline user. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a26ea2216647e717a77c80bedb56b0e08}{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry\-\_\-binary}
+\begin{DoxyCompactList}\small\item\em Tests that the protocol can send binary telemetry data over the network. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a1c2a982e6b8d756ea8128908b76318b7}{def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a1c2a982e6b8d756ea8128908b76318b7}{test\-\_\-protocol\-\_\-registrations}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a1c2a982e6b8d756ea8128908b76318b7}
+
+\begin{DoxyCompactList}\small\item\em This test verifies that the Pipeline\-Telemetry.\-perform\-\_\-registrations() callback correctly registers the Protocol with the necessary resources and that it correctly handles possible errors. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_aaeb38296cc22748c625fb338b30f33d5}{test\-\_\-initial\-\_\-session\-\_\-lookup\-\_\-session\-\_\-not\-\_\-found}
+\begin{DoxyCompactList}\small\item\em This test verifies that the telemetry protocol correctly handles errors that may occur when setting up the connection such as an invalid session. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a25aaff647c8c34d4ba819f472fa5b539}{test\-\_\-initial\-\_\-session\-\_\-lookup}
+\begin{DoxyCompactList}\small\item\em This test verifies that the telemetry protocol can load the requested session and perform the necessary registrations when the user connection is made via it's connection\-Made() callback. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a8259f900f3836b888ac3fd320b2d4daf}{{\bfseries source\-\_\-data\-\_\-directory}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a8259f900f3836b888ac3fd320b2d4daf}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ad20ca0ba03d5be246abb5b98374b64f2}{{\bfseries session\-\_\-coordinator}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ad20ca0ba03d5be246abb5b98374b64f2}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a846b607bc5df150b456e35ab025acbb1}{{\bfseries protocol}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a846b607bc5df150b456e35ab025acbb1}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_aa643426fc172be5e811293877252601a}{{\bfseries old\-\_\-connection\-Made}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_aa643426fc172be5e811293877252601a}
+
+\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a3a1c1d0a3136075a6d79e4fc56750226}{{\bfseries transport}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a3a1c1d0a3136075a6d79e4fc56750226}
+
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a40c8764cf87719c21e2906b59dfcd78a}{\-\_\-mock\-\_\-connection\-Made}
+\begin{DoxyCompactList}\small\item\em A mock version of the Pipeline\-Data Protocol that does not call the Auth\-Utilities.\-\_\-wait\-\_\-for\-\_\-session mixin. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a97c3ce828070de6295cddaf03afb18fc}{\-\_\-mock\-\_\-session\-\_\-protocol\-\_\-registration}
+\begin{DoxyCompactList}\small\item\em Simulates a duplicate telemetry protocol registration on a Session by throwing the Protocol\-Already\-Registered exception. \end{DoxyCompactList}\item 
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ac3e3ad87a5c6bd2e8dc1cebb9ed7da6b}{def \hyperlink{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ac3e3ad87a5c6bd2e8dc1cebb9ed7da6b}{\-\_\-mock\-\_\-session\-\_\-lookup\-\_\-failed}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ac3e3ad87a5c6bd2e8dc1cebb9ed7da6b}
+
+\begin{DoxyCompactList}\small\item\em This function raises a coordinator.\-Session\-Not\-Found exception and is used to test error handling. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This test suite is designed to test the functionality of the Pipeline\-Telemetry protocol, which is responsible for routing the various pipeline telemetry streams to the end user (typically through the user interface). 
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a40c8764cf87719c21e2906b59dfcd78a}{\index{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}!\-\_\-mock\-\_\-connection\-Made@{\-\_\-mock\-\_\-connection\-Made}}
+\index{\-\_\-mock\-\_\-connection\-Made@{\-\_\-mock\-\_\-connection\-Made}!hwm::network::protocols::tests::test_telemetry_protocol::TestPipelineTelemetryProtocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}}
+\subsubsection[{\-\_\-mock\-\_\-connection\-Made}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol.\-\_\-mock\-\_\-connection\-Made (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a40c8764cf87719c21e2906b59dfcd78a}
+
+
+A mock version of the Pipeline\-Data Protocol that does not call the Auth\-Utilities.\-\_\-wait\-\_\-for\-\_\-session mixin. 
+
+This is required because the proto\-\_\-helpers.\-String\-Transport() transport we're testing with doesn't support S\-S\-L. In addition, the call\-Later() call in \-\_\-wait\-\_\-for\-\_\-session() would make test cleanup more difficult. \hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a97c3ce828070de6295cddaf03afb18fc}{\index{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}!\-\_\-mock\-\_\-session\-\_\-protocol\-\_\-registration@{\-\_\-mock\-\_\-session\-\_\-protocol\-\_\-registration}}
+\index{\-\_\-mock\-\_\-session\-\_\-protocol\-\_\-registration@{\-\_\-mock\-\_\-session\-\_\-protocol\-\_\-registration}!hwm::network::protocols::tests::test_telemetry_protocol::TestPipelineTelemetryProtocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}}
+\subsubsection[{\-\_\-mock\-\_\-session\-\_\-protocol\-\_\-registration}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol.\-\_\-mock\-\_\-session\-\_\-protocol\-\_\-registration (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{protocol}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a97c3ce828070de6295cddaf03afb18fc}
+
+
+Simulates a duplicate telemetry protocol registration on a Session by throwing the Protocol\-Already\-Registered exception. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Always} & throws session.\-Protocol\-Already\-Registered. \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a25aaff647c8c34d4ba819f472fa5b539}{\index{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}!test\-\_\-initial\-\_\-session\-\_\-lookup@{test\-\_\-initial\-\_\-session\-\_\-lookup}}
+\index{test\-\_\-initial\-\_\-session\-\_\-lookup@{test\-\_\-initial\-\_\-session\-\_\-lookup}!hwm::network::protocols::tests::test_telemetry_protocol::TestPipelineTelemetryProtocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}}
+\subsubsection[{test\-\_\-initial\-\_\-session\-\_\-lookup}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol.\-test\-\_\-initial\-\_\-session\-\_\-lookup (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a25aaff647c8c34d4ba819f472fa5b539}
+
+
+This test verifies that the telemetry protocol can load the requested session and perform the necessary registrations when the user connection is made via it's connection\-Made() callback. 
+
+A callback that will receive the session once the simulated T\-L\-S handshake finishes. \hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_aaeb38296cc22748c625fb338b30f33d5}{\index{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}!test\-\_\-initial\-\_\-session\-\_\-lookup\-\_\-session\-\_\-not\-\_\-found@{test\-\_\-initial\-\_\-session\-\_\-lookup\-\_\-session\-\_\-not\-\_\-found}}
+\index{test\-\_\-initial\-\_\-session\-\_\-lookup\-\_\-session\-\_\-not\-\_\-found@{test\-\_\-initial\-\_\-session\-\_\-lookup\-\_\-session\-\_\-not\-\_\-found}!hwm::network::protocols::tests::test_telemetry_protocol::TestPipelineTelemetryProtocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}}
+\subsubsection[{test\-\_\-initial\-\_\-session\-\_\-lookup\-\_\-session\-\_\-not\-\_\-found}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol.\-test\-\_\-initial\-\_\-session\-\_\-lookup\-\_\-session\-\_\-not\-\_\-found (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_aaeb38296cc22748c625fb338b30f33d5}
+
+
+This test verifies that the telemetry protocol correctly handles errors that may occur when setting up the connection such as an invalid session. 
+
+A callback that will be called after the protocol has handled the session lookup error. \hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ab284817aa396aa8588de82343569a141}{\index{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}!test\-\_\-sending\-\_\-pipeline\-\_\-telemetry@{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry}}
+\index{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry@{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry}!hwm::network::protocols::tests::test_telemetry_protocol::TestPipelineTelemetryProtocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}}
+\subsubsection[{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol.\-test\-\_\-sending\-\_\-pipeline\-\_\-telemetry (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_ab284817aa396aa8588de82343569a141}
+
+
+This test verifies that the protocol can correctly relay any pipeline telemetry that it receives to the pipeline user. 
+
+In addition, it validates the format of the telemetry data that gets passed to the network. \hypertarget{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a26ea2216647e717a77c80bedb56b0e08}{\index{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}!test\-\_\-sending\-\_\-pipeline\-\_\-telemetry\-\_\-binary@{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry\-\_\-binary}}
+\index{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry\-\_\-binary@{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry\-\_\-binary}!hwm::network::protocols::tests::test_telemetry_protocol::TestPipelineTelemetryProtocol@{hwm\-::network\-::protocols\-::tests\-::test\-\_\-telemetry\-\_\-protocol\-::\-Test\-Pipeline\-Telemetry\-Protocol}}
+\subsubsection[{test\-\_\-sending\-\_\-pipeline\-\_\-telemetry\-\_\-binary}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-network.\-protocols.\-tests.\-test\-\_\-telemetry\-\_\-protocol.\-Test\-Pipeline\-Telemetry\-Protocol.\-test\-\_\-sending\-\_\-pipeline\-\_\-telemetry\-\_\-binary (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1network_1_1protocols_1_1tests_1_1test__telemetry__protocol_1_1_test_pipeline_telemetry_protocol_a26ea2216647e717a77c80bedb56b0e08}
+
+
+Tests that the protocol can send binary telemetry data over the network. 
+
+By setting the \char`\"{}binary\char`\"{} argument to true when writing telemetry to the session, pipelines and devices can send binary data like images and audio clips to the pipeline user. 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/network/protocols/tests/test\-\_\-telemetry\-\_\-protocol.\-py\end{DoxyCompactItemize}

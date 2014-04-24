@@ -1,0 +1,146 @@
+\hypertarget{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler}{\section{hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler Class Reference}
+\label{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler}\index{hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler@{hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler}}
+}
+
+
+A test command handler containing commands designed to test the command system.  
+
+
+Inheritance diagram for hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a8bb5fc141d663a277d8578bb39930c49}{command\-\_\-generate\-\_\-error}
+\begin{DoxyCompactList}\small\item\em Generates a simple command error for testing purposes. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a5ccc7433c4ff802af458c7e65f23c045}{command\-\_\-device\-\_\-time\-\_\-restricted}
+\begin{DoxyCompactList}\small\item\em A command that no users should have permission to execute. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_adb0e7cf69571f0916d432ab09f5a3430}{command\-\_\-device\-\_\-time}
+\begin{DoxyCompactList}\small\item\em Returns the current U\-N\-I\-X timestamp. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a756e6459670bed51e1a57de07eabd1c1}{settings\-\_\-device\-\_\-time}
+\begin{DoxyCompactList}\small\item\em Returns the metadata for the device\-\_\-time command. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_ac4fbb6239e6ed39d60fe59d8a81ae4fb}{command\-\_\-requires\-\_\-session}
+\begin{DoxyCompactList}\small\item\em This test command requires that the user have an active session. \end{DoxyCompactList}\item 
+def \hyperlink{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a763544b8b57c21161d188d5e6c1a7256}{settings\-\_\-requires\-\_\-session}
+\begin{DoxyCompactList}\small\item\em Returns a dictionary containing meta-\/data about the requires\-\_\-session command. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A test command handler containing commands designed to test the command system. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_adb0e7cf69571f0916d432ab09f5a3430}{\index{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}!command\-\_\-device\-\_\-time@{command\-\_\-device\-\_\-time}}
+\index{command\-\_\-device\-\_\-time@{command\-\_\-device\-\_\-time}!hwm::command::tests::utilities::TestCommandHandler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}}
+\subsubsection[{command\-\_\-device\-\_\-time}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler.\-command\-\_\-device\-\_\-time (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{active\-\_\-command}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_adb0e7cf69571f0916d432ab09f5a3430}
+
+
+Returns the current U\-N\-I\-X timestamp. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em active\-\_\-command} & The command object associated with the executing command. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a5ccc7433c4ff802af458c7e65f23c045}{\index{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}!command\-\_\-device\-\_\-time\-\_\-restricted@{command\-\_\-device\-\_\-time\-\_\-restricted}}
+\index{command\-\_\-device\-\_\-time\-\_\-restricted@{command\-\_\-device\-\_\-time\-\_\-restricted}!hwm::command::tests::utilities::TestCommandHandler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}}
+\subsubsection[{command\-\_\-device\-\_\-time\-\_\-restricted}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler.\-command\-\_\-device\-\_\-time\-\_\-restricted (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{active\-\_\-command}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a5ccc7433c4ff802af458c7e65f23c045}
+
+
+A command that no users should have permission to execute. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em active\-\_\-command} & The command object associated with the executing command. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a8bb5fc141d663a277d8578bb39930c49}{\index{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}!command\-\_\-generate\-\_\-error@{command\-\_\-generate\-\_\-error}}
+\index{command\-\_\-generate\-\_\-error@{command\-\_\-generate\-\_\-error}!hwm::command::tests::utilities::TestCommandHandler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}}
+\subsubsection[{command\-\_\-generate\-\_\-error}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler.\-command\-\_\-generate\-\_\-error (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{active\-\_\-command}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a8bb5fc141d663a277d8578bb39930c49}
+
+
+Generates a simple command error for testing purposes. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & Command\-Error for testing.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em active\-\_\-command} & The command object associated with the executing command. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_ac4fbb6239e6ed39d60fe59d8a81ae4fb}{\index{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}!command\-\_\-requires\-\_\-session@{command\-\_\-requires\-\_\-session}}
+\index{command\-\_\-requires\-\_\-session@{command\-\_\-requires\-\_\-session}!hwm::command::tests::utilities::TestCommandHandler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}}
+\subsubsection[{command\-\_\-requires\-\_\-session}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler.\-command\-\_\-requires\-\_\-session (
+\begin{DoxyParamCaption}
+\item[{}]{self, }
+\item[{}]{active\-\_\-command}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_ac4fbb6239e6ed39d60fe59d8a81ae4fb}
+
+
+This test command requires that the user have an active session. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Throws} & Command\-Error for testing.\\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{Parameters}
+{\em active\-\_\-command} & The command object associated with the executing command. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a756e6459670bed51e1a57de07eabd1c1}{\index{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}!settings\-\_\-device\-\_\-time@{settings\-\_\-device\-\_\-time}}
+\index{settings\-\_\-device\-\_\-time@{settings\-\_\-device\-\_\-time}!hwm::command::tests::utilities::TestCommandHandler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}}
+\subsubsection[{settings\-\_\-device\-\_\-time}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler.\-settings\-\_\-device\-\_\-time (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a756e6459670bed51e1a57de07eabd1c1}
+
+
+Returns the metadata for the device\-\_\-time command. 
+
+\begin{DoxyReturn}{Returns}
+Returns a standard dictionary containing meta-\/data about the command. 
+\end{DoxyReturn}
+\hypertarget{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a763544b8b57c21161d188d5e6c1a7256}{\index{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}!settings\-\_\-requires\-\_\-session@{settings\-\_\-requires\-\_\-session}}
+\index{settings\-\_\-requires\-\_\-session@{settings\-\_\-requires\-\_\-session}!hwm::command::tests::utilities::TestCommandHandler@{hwm\-::command\-::tests\-::utilities\-::\-Test\-Command\-Handler}}
+\subsubsection[{settings\-\_\-requires\-\_\-session}]{\setlength{\rightskip}{0pt plus 5cm}def hwm.\-command.\-tests.\-utilities.\-Test\-Command\-Handler.\-settings\-\_\-requires\-\_\-session (
+\begin{DoxyParamCaption}
+\item[{}]{self}
+\end{DoxyParamCaption}
+)}}\label{classhwm_1_1command_1_1tests_1_1utilities_1_1_test_command_handler_a763544b8b57c21161d188d5e6c1a7256}
+
+
+Returns a dictionary containing meta-\/data about the requires\-\_\-session command. 
+
+\begin{DoxyReturn}{Returns}
+Returns a standard dictionary containing meta-\/data about the command. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+hwm/command/tests/utilities.\-py\end{DoxyCompactItemize}
