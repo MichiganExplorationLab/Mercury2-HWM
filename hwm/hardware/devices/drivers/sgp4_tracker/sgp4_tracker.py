@@ -138,12 +138,12 @@ class SGP4PropagationService(service.Service):
 
     The SGP4 tracking service will call all registered callbacks everytime new position information is available. 
     Callbacks will be passed a dictionary containing the following elements:
-    * timestamp
-    * longitude 
-    * latitude 
-    * altitude 
-    * azimuth
-    * elevation
+    - timestamp
+    - longitude 
+    - latitude 
+    - altitude 
+    - azimuth
+    - elevation
 
     @param callback  A method that will be called with the satellite's position every time new position information is 
                      available.
@@ -177,6 +177,7 @@ class SGP4PropagationService(service.Service):
     if self._satellite is not None:
       # Determine the current position of the satellite
       ground_station = ephem.Observer()
+      ground_station.date = ephem.now()
       ground_station.lon = math.radians(self._station_longitude)
       ground_station.lat = math.radians(self._station_latitude)
       ground_station.elevation = self._station_altitude
@@ -215,10 +216,10 @@ class SGP4PropagationService(service.Service):
     return None
 
   def _is_flip_pass(self, ground_station):
-    """ Detects if the current pass is a flip pass (i.e. a pass that goes through 0 azimuth). 
+    """ Detects if the current (or next) pass is a flip pass (i.e. a pass that goes through 0 azimuth). 
 
-    @return Returns True if the current pass is a flip pass and if the propagator supports flip passes. Returns False 
-            otherwise.
+    @return Returns True if the current (or next) pass is a flip pass and if the propagator supports flip passes. 
+            Returns False otherwise.
     """
 
     flip_pass = False
@@ -226,18 +227,33 @@ class SGP4PropagationService(service.Service):
     if not self.flip_pass_support:
       return flip_pass
 
-    # Calculate the next pass
-    try:
-      next_pass = ground_station.next_pass(self._satellite)
-    except Exception as pass_error:
-      return flip_pass
+    # Calculate the pass parameters
+    old_station_date = ground_station.date
+    while True:
+      try:
+        next_pass = ground_station.next_pass(self._satellite)
+      except Exception as pass_error:
+        logging.error("An error occured while checking if the current pass is a flip pass: "+str(pass_error))
+        return flip_pass
 
-    rising_az = math.degrees(next_pass[1])
-    setting_az = math.degrees(next_pass[5])
+      aos = next_pass[0]
+      los = next_pass[4]
 
-    if rising_az > setting_az and (rising_az - setting_az) > 180:
+      # Check if the pass hasn't started yet (AOS < LOS)
+      if next_pass[0] < next_pass[4]:
+        ground_station.date = old_station_date
+        break;
+      else:
+        # Decrement the ground station's time by a minute
+        ground_station.date -= ephem.minute
+
+    # Determine if the pass is a flip pass
+    aos_az = math.degrees(next_pass[1])
+    los_az = math.degrees(next_pass[5])
+
+    if aos_az > los_az and (aos_az - los_az) > 180:
       flip_pass = True
-    elif rising_az < setting_az and (setting_az - rising_az) > 180:
+    elif aos_az < los_az and (los_az - aos_az) > 180:
       flip_pass = True
     else:
       flip_pass = False

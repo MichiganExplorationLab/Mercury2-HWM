@@ -1,8 +1,9 @@
 # Import required modules
 import logging, time
+import ephem
 from twisted.trial import unittest
 from twisted.internet.defer import inlineCallbacks
-from mock import MagicMock
+from mock import MagicMock, patch
 from pkg_resources import Requirement, resource_filename
 from StringIO import StringIO
 from hwm.core.configuration import *
@@ -194,13 +195,52 @@ class TestSGP4TrackingService(unittest.TestCase):
     self.assertEqual(len(test_service._registered_handlers), 0)
 
   def test_propagate_tle(self):
-    """ Tests the _propagate_tle() method which is responsible for performing one round of propagation and sending the 
-    new position data to the registered position data handlers. """
+    """ This test is designed to test the functionality and accuracy of the _propagate_tle() method.
+  
+    @note This test also verifies that the tracker is correctly handling "flip passes", i.e. passes where the azimuth 
+          passes through 0.
+    """
+
+    old_time = time.time
+    old_ephem_now = ephem.now
+
+    # Create a service to test with using a MCUBED-2 TLE
+    test_service = sgp4_tracker.SGP4PropagationService('test_sgp4_service', 'tracker', self.standard_device_config['settings'])
+    test_service.set_tle("1 39469U 13072H   14088.36999606 +.00011143 +00000-0 +10159-2 0 01083",
+                         "2 39469 120.4995 269.7232 0301752 093.0927 270.4700 14.66961415016563")
+
+    # Run the propagator before a known non-flip pass
+    ephem.now = lambda : ephem.Date("2014/4/1 00:30:00") # Orbit #1695, ~30 minutes before a non-flip pass
+    time.time = lambda : 1396312200
+    results = test_service._propagate_tle()
+    self.assertTrue(abs(331.5 - results['azimuth']) <= 1) # Make sure the Az didn't get flipped
+
+    # Run the propagator before a known flip pass
+    ephem.now = lambda : ephem.Date("2014/4/1 02:30:00") # Orbit #1696, ~15 minutes before a flip pass
+    time.time = lambda : 1396319400
+    results = test_service._propagate_tle()
+    self.assertTrue(abs(230.05 - results['azimuth']) <= 1) # Make sure the Az got flipped (actual Az is 50.05)
+    self.assertEqual(results['elevation'], 180) # Make sure the El got flipped (actual El is 0)
+
+    # Run the propagator during a known flip pass
+    ephem.now = lambda : ephem.Date("2014/4/1 02:50:00") # Orbit #1696, ~5 minutes into a flip pass
+    time.time = lambda : 1396320600
+    results = test_service._propagate_tle()
+    self.assertTrue(abs(136.9 - results['azimuth']) <= 1) # Make sure the Az got flipped (actual Az is 316.93)
+    self.assertTrue(abs(156.7 - results['elevation']) <= 1) # Make sure the El got flipped (actual El is 23.30)
+
+    # Restore the old time function
+    ephem.now = old_ephem_now
+    time.time = old_time
+
+  def test_receiver_notification(self):
+    """ This test verifies that the _propagate_tle() method notifies all registered receivers when new position
+    information is available. """
     
     # Create a service to test with
-    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker', self.standard_device_config['settings'])
-    test_service.set_tle("1 37853U 11061D   13328.80218348  .00012426  00000-0  90147-3 0  6532",
-                         "2 37853 101.7000 256.9348 0228543 286.4751 136.0421 14.85566785112276")
+    test_service = sgp4_tracker.SGP4PropagationService('test_sgp4_service', 'tracker', self.standard_device_config['settings'])
+    test_service.set_tle("1 39469U 13072H   14088.36999606 +.00011143 +00000-0 +10159-2 0 01083",
+                         "2 39469 120.4995 269.7232 0301752 093.0927 270.4700 14.66961415016563")
 
     # Register a mock position receiver
     test_receiver = MagicMock()
@@ -218,7 +258,7 @@ class TestSGP4TrackingService(unittest.TestCase):
     """ Makes sure the propagation service can start successfully. """
 
     # Create a service to test with
-    test_service = sgp4_tracker.SGP4PropagationService('direct_downlink_aprs_service', 'tracker', self.standard_device_config['settings'])
+    test_service = sgp4_tracker.SGP4PropagationService('test_sgp4_service', 'tracker', self.standard_device_config['settings'])
     test_service.set_tle("1 37853U 11061D   13328.80218348  .00012426  00000-0  90147-3 0  6532",
                          "2 37853 101.7000 256.9348 0228543 286.4751 136.0421 14.85566785112276")
 
