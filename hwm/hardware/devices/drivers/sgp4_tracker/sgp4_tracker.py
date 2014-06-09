@@ -251,9 +251,13 @@ class SGP4PropagationService(service.Service):
     aos_az = math.degrees(next_pass[1])
     los_az = math.degrees(next_pass[5])
 
-    if aos_az > los_az and (aos_az - los_az) > 180:
+    if aos_az > los_az and (aos_az - los_az) >= 180: # Crosses zero point from west to east
       flip_pass = True
-    elif aos_az < los_az and (los_az - aos_az) > 180:
+    elif aos_az < los_az and (los_az - aos_az) >= 180: # Crosses zero point from east to west
+      flip_pass = True
+    elif aos_az > los_az and abs((aos_az - los_az) - 180) <= 5: # Pass is nearly overhead from west to east
+      flip_pass = True
+    elif aos_az < los_az and abs((los_az - aos_az) - 180) <= 5: # Pass is nearly overhead from east to west
       flip_pass = True
     else:
       flip_pass = False
