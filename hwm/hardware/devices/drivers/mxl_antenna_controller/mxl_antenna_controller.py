@@ -73,15 +73,15 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
   def cleanup_after_session(self):
     """ Resets the antenna controller to its idle state after the session using it has ended.
 
-    @note The "calibrate_and_park" command executed in this method is run in kernel mode because it must always happen,
+    @note The "calibrate" command executed in this method is run in kernel mode because it must always happen, 
           regardless of the user controlling the session.
 
-    @return Returns the deferred for the "calibrate_and_park" command call that goes out at the end of each session.
+    @return Returns the deferred for the "calibrate" command call that goes out at the end of each session.
     """
 
-    # Vertically calibrate and park the antenna
+    # Calibrate the antenna
     command_request = {
-      'command': "calibrate_and_park",
+      'command': "calibrate",
       'destination': self._session_pipeline.id+"."+self.id
     }
     command_deferred = self._command_parser.parse_command(command_request, user_id = None, kernel_mode = True)

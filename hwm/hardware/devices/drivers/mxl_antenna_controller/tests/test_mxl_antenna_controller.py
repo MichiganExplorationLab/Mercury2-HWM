@@ -108,7 +108,7 @@ class TestMXLAntennaControllerDriver(unittest.TestCase):
     """ Tests that the antenna controller takes the correct actions once a session has ended. """
 
     def mock_parse_command(command_request, **keywords):
-      self.assertEqual(command_request['command'], "calibrate_and_park")
+      self.assertEqual(command_request['command'], "calibrate")
       self.assertEqual(keywords['user_id'], None)
       self.assertEqual(keywords['kernel_mode'], True)
 
