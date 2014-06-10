@@ -216,7 +216,12 @@ class SGP4PropagationService(service.Service):
     return None
 
   def _is_flip_pass(self, ground_station):
-    """ Detects if the current (or next) pass is a flip pass (i.e. a pass that goes through 0 azimuth). 
+    """ Detects if the current (or next) pass is a flip pass (i.e. a pass that goes through 0 azimuth).
+
+    @note This method counts any pass where the AOS and LOS azimuths are within +-5 degrees of being 180 degrees apart
+          as a flip pass. This is wide enough to include all passes that pass through an elevation of about 85 degrees
+          or higher which can't be tracked accurately near the zenith due to the rotational rate of the antenna
+          controller.
 
     @return Returns True if the current (or next) pass is a flip pass and if the propagator supports flip passes. 
             Returns False otherwise.
