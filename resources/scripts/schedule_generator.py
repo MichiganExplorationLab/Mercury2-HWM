@@ -15,7 +15,7 @@ import sys
 import time
 
 # Configuration
-schedule_file = "/home/mxl/Desktop/Mercury2 Testing/FXB_Configuration/Configuration/var/local/Mercury2-HWM/schedules/offline_schedule.json"
+schedule_file = "/home/mxl/Mercury2 Testing/FXB_Configuration/Configuration/var/local/Mercury2-HWM/schedules/offline_schedule.json"
 satellite = "MCUBED-2"
 ground_station = "MXL"
 pipeline = "ICOM_Pipeline"
