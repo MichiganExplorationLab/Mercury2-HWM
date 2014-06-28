@@ -206,10 +206,10 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     self._tracker_service = None
     self._session_pipeline = None
     self._controller_state = {
-      "timestamp": None,
-      "azimuth": 0,
-      "elevation": 0,
-      "state": "inactive"
+      'timestamp': None,
+      'azimuth': 0,
+      'elevation': 0,
+      'state': "inactive"
     }
 
 class AntennaControllerHandler(handler.DeviceCommandHandler):
