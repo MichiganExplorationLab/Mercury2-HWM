@@ -12,8 +12,7 @@ from hwm.hardware.devices.drivers.mxl_antenna_controller import mxl_antenna_cont
 from hwm.hardware.pipelines import pipeline
 
 class TestMXLAntennaControllerDriver(unittest.TestCase):
-  """ This test suite verifies the functionality of the custom MXL antenna controller driver.
-  """
+  """ This test suite verifies the functionality of the custom MXL antenna controller driver. """
 
   def setUp(self):
     # Set a local reference to Configuration and load a test config file

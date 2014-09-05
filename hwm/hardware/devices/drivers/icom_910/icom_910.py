@@ -332,7 +332,7 @@ class ICOM910Handler(handler.DeviceCommandHandler):
       {
         "type": "number",
         "required": True,
-        "title": "set_rx_freq",
+        "title": "rx_freq",
         "description": "The Icom 910's downlink frequency (in Mhz). Must be in 430(440) band.",
         "integer": False
       }
@@ -401,7 +401,7 @@ class ICOM910Handler(handler.DeviceCommandHandler):
       {
         "type": "number",
         "required": True,
-        "title": "set_tx_freq",
+        "title": "tx_freq",
         "description": "The Icom 910's uplink frequency (in Mhz). Must be in the 144 band.",
         "integer": False
       }

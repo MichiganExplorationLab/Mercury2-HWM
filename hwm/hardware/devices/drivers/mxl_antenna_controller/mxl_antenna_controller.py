@@ -206,10 +206,10 @@ class MXL_Antenna_Controller(driver.HardwareDriver):
     self._tracker_service = None
     self._session_pipeline = None
     self._controller_state = {
-      "timestamp": None,
-      "azimuth": 0,
-      "elevation": 0,
-      "state": "inactive"
+      'timestamp': None,
+      'azimuth': 0,
+      'elevation': 0,
+      'state': "inactive"
     }
 
 class AntennaControllerHandler(handler.DeviceCommandHandler):
@@ -247,17 +247,19 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     # Define a schema for parameters
     command_parameters = [
       {
-        "type": "integer",
+        "type": "number",
         "minvalue": 0,
         "maxvalue": 360,
+        "integer": True,
         "required": True,
         "title": "azimuth",
         "description": "The desired azimuth."
       },
       {
-        "type": "integer",
+        "type": "number",
         "minvalue": 0,
         "maxvalue": 210,
+        "integer": True,
         "required": True,
         "title": "elevation",
         "description": "The desired elevation."

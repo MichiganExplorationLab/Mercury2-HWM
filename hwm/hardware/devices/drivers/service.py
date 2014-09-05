@@ -30,6 +30,7 @@ class Service(object):
     """
 
     return self._service_id
+  
   @property
   def type(self):
     """ Returns the service type.

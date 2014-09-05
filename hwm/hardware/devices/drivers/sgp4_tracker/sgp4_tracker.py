@@ -144,6 +144,7 @@ class SGP4PropagationService(service.Service):
     - altitude 
     - azimuth
     - elevation
+    - doppler_multiplier
 
     @param callback  A method that will be called with the satellite's position every time new position information is 
                      available.
