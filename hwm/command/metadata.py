@@ -27,8 +27,8 @@ def build_metadata_dict(command_parameters, command_id, command_handler_name, re
                                       + minlength    - The min length of the string (integer)
                                       + maxlength    - The max length of the string (integer)
                                   - type: number
-                                      + minvalue     - The minimum value of the number (inclusive, integer)
-                                      + maxvalue     - The maximum value of the number (inclusive, integer)
+                                      + minvalue     - The minimum value of the number (inclusive)
+                                      + maxvalue     - The maximum value of the number (inclusive)
                                       + integer      - Whether or not the number must be an integer (boolean)
                                   - type: boolean
                                   - type: select

@@ -3,20 +3,22 @@ Contains the driver and command handler for MXL's homebrew USRP interface.
 """
 
 import logging, time, json
-from twisted.internet import task, defer, threads
+from twisted.internet import task, defer, threads, reactor
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.protocol import Protocol
+from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
 from hwm.hardware.devices.drivers import driver
 from hwm.hardware.pipelines import pipeline
 from hwm.command import command
 from hwm.command.handlers import handler
+from GNURadio_top_block import USRPTopBlock
 
 class MXL_USRP(driver.HardwareDriver):
   """ A driver for the MXL USRP.
 
   This driver enables communication with a USRP (software defined radio) using MXL's homebrew USRP interface.
 
-  @note Currently, this driver only supports the USRP B100 (serial based).
+  @note Currently, this driver supports just the USRP B100 (serial based).
   """
 
   def __init__(self, device_configuration, command_parser):
@@ -31,6 +33,7 @@ class MXL_USRP(driver.HardwareDriver):
     # Set configuration settings
     self.rx_device_address = device_configuration['rx_device_address']
     self.tx_device_address = device_configuration['tx_device_address']
+    self.usrp_host = device_configuration['usrp_host']
     self.usrp_data_port = device_configuration['usrp_data_port']
     self.usrp_doppler_port = device_configuration['usrp_doppler_port']
     self.bit_rate = device_configuration['bit_rate']
@@ -48,14 +51,19 @@ class MXL_USRP(driver.HardwareDriver):
     self._reset_driver_state()
 
   def prepare_for_session(self, session_pipeline):
-    """ Prepares the USRP for a new session. 
+    """ Prepares the USRP for a new session.
 
-    This method prepares the USRP driver for a new session by loading a 'tracker' service from its pipeline, which will
-    be used to provide doppler correction information to the USRP interface. If no 'tracker' service is found the driver
-    will still be set up, but it will not receive doppler corrections.
+    This method prepares the USRP driver for a new session by loading a 'tracker' service from the session pipeline, 
+    which will be used to provide doppler correction information to the USRP. It also initializes and starts the GNU 
+    Radio top-level block (with default parameters) and connects to the USRP's data and doppler correction ports.
 
-    @param session_pipeline  The Pipeline associated with the new session. 
-    @return Returns True if the driver can locate a 'tracker' service from the session pipeline, and False otherwise. 
+    @note If no 'tracker' service is found the radio will still be set up but it will not receive any doppler
+          corrections.
+
+    @throws May throw exceptions if the USRP GNU Radio block can't be initialized or started.
+
+    @param session_pipeline  The Pipeline associated with the new session.
+    @return Returns a DeferredList containing the USRP data and doppler port deferred connections.
     """
 
     # Load the session pipeline's 'tracker' service
@@ -63,28 +71,53 @@ class MXL_USRP(driver.HardwareDriver):
     self._tracker_service = None
     try:
       self._tracker_service = session_pipeline.load_service("tracker")
+      self._tracker_service.register_position_receiver(self.process_tracker_update)
     except pipeline.ServiceTypeNotFound as e:
       # A tracker service isn't available
       logging.warning("The '"+self.id+"' device could not load a 'tracker' service from the session's pipeline.")
-      return False
-    self._tracker_service.register_position_receiver(self.process_tracker_update)
 
-    # Configure and run the GNU Radio block
+    # Initialize the GNU Radio top-block with default values
+    self._usrp_flow_graph = USRPTopBlock(rx_device_address = self.rx_device_address,
+                                         tx_device_address = self.tx_device_address,
+                                         data_port = self.usrp_data_port,
+                                         doppler_port = self.usrp_doppler_port,
+                                         bit_rate = self.bit_rate, 
+                                         interpolation = self.interpolation,
+                                         decimation = self.decimation, 
+                                         sampling_rate = self.sampling_rate,
+                                         rx_freq = 435.0e6,
+                                         tx_freq = 435.0e6,
+                                         rx_gain = self.rx_gain,
+                                         tx_gain = self.tx_gain,
+                                         fm_dev = self.fm_dev,
+                                         tx_fm_dev = self.tx_fm_dev)
+    self._usrp_flow_graph.run(True)
+    self._usrp_flow_graph_running = True
 
+    # Connect to the data and doppler correction ports
+    data_endpoint = TCP4ClientEndpoint(reactor, self.usrp_host, self.usrp_data_port)
+    self._usrp_data = USRPData(self)
+    data_endpoint_deferred = connectProtocol(data_endpoint, self._usrp_data)
+    doppler_endpoint = TCP4ClientEndpoint(reactor, self.usrp_host, self.usrp_doppler_port)
+    self._usrp_doppler = USRPDoppler(self)
+    doppler_endpoint_deferred = connectProtocol(doppler_endpoint, self._usrp_doppler)
 
-    # Connect to the USRP's data and doppler update ports
-
-
-    pass
+    return defer.DeferredList([data_endpoint_deferred, doppler_endpoint_deferred], consumeErrors = False)
 
   def cleanup_after_session(self):
     """ Puts the USRP back into its idle state after the active session has ended.
 
     This method cleans up after the active session has expired by stopping the GNU Radio block and resetting the radio
     state.
+
+    @throws May raise exceptions if the flow graph can not be stopped.
     """
 
-    pass
+    # Stop the GNU Radio flow graph
+    if self._usrp_flow_graph_running:
+      self._usrp_flow_graph.stop()
+
+    self._reset_driver_state()
 
   def get_state(self):
     """ Returns a dictionary containing information about the current state of the USRP such as its set frequencies and 
@@ -93,6 +126,14 @@ class MXL_USRP(driver.HardwareDriver):
     """
 
     return self._usrp_state
+
+  def write(self, input_data):
+    """ Writes the specified data chunk to the USRP via the USRPData protocol.
+
+    @param input_data  A data chunk that should be sent to the USRP for transmission.
+    """
+
+    self._usrp_data.write(input_data)
 
   def process_tracker_update(self, new_position):
     """ This callback processes position updates from the session's pipeline's 'tracker' service, if available.
@@ -104,24 +145,15 @@ class MXL_USRP(driver.HardwareDriver):
     """
 
     self._usrp_state['corrected_rx_freq'] = long(self._usrp_state['rx_freq']*new_position['doppler_multiplier'])
-
-
     self._usrp_doppler.write_doppler_correction(self._usrp_state['corrected_rx_freq'])
-
-
-  def write(self, input_data):
-    """ Writes the specified data chunk to the USRP via the USRPData protocol.
-
-    @param input_data  A data chunk that should be sent to the USRP for transmission.
-    """
-
-    self._usrp_data.write(input_data)
 
   def _reset_driver_state(self):
     """ Resets the driver's state initially and in between sessions. """
 
     self._tracker_service = None
     self._session_pipeline = None
+    self._usrp_flow_graph = None
+    self._usrp_flow_graph_running = False
     self._usrp_data = None
     self._usrp_doppler = None
     self._usrp_state = {
@@ -139,7 +171,85 @@ class MXL_USRP(driver.HardwareDriver):
 class USRPHandler(handler.DeviceCommandHandler):
   """ This command handler processes commands for the USRP radio. """
 
-  pass
+  def command_set_rx_freq(self, command):
+    """ Updates the USRP's receive frequency.
+
+    @throws Raises CommandError if the RX frequency can't be set.
+
+    @param command  The currently executing command instance.
+    @return Returns a deferred that will be fired with a dictionary containing the command results.
+    """
+
+    # Lock the flow graph and try to update the RX frequency
+    driver._usrp_flow_graph.lock()
+    try:
+      driver._usrp_flow_graph.usrp_block.set_rxfreq(command.parameters['rx_freq'])
+    except Exception as usrp_error:
+      raise command.CommandError("An error occured while setting the USRP's RX frequency to {0} hz: {1}".format(
+                                 command.parameters['rx_freq'], str(usrp_error)))
+    driver._usrp_flow_graph.unlock()
+
+    return defer.returnValue({'message': "The USRP's RX frequency has been set."})
+
+  def settings_set_rx_freq(self):
+    """ Returns command meta-data for the 'set_rx_freq' command.
+
+    @return Returns a dictionary containing the command meta-data.
+    """
+
+    # Define the command parameters
+    command_parameters = [
+      {
+        "type": "number",
+        "integer": True,
+        "required": True,
+        "title": "rx_freq",
+        "description": "The desired RX frequency of the USRP in hertz."
+      }
+    ]
+
+    return build_metadata_dict(command_parameters, 'set_rx_freq', self.name, requires_active_session = True,
+                               schedulable = True, use_as_initial_value = True)
+
+  def command_set_tx_freq(self, command):
+    """ Updates the USRP's transmit frequency.
+
+    @throws Raises CommandError if the TX frequency can't be set.
+
+    @param command  The currently executing command instance.
+    @return Returns a deferred that will be fired with a dictionary containing the command results.
+    """
+
+    # Lock the flow graph and try to update the RX frequency
+    driver._usrp_flow_graph.lock()
+    try:
+      driver._usrp_flow_graph.usrp_block.set_txfreq(command.parameters['tx_freq'])
+    except Exception as usrp_error:
+      raise command.CommandError("An error occured while setting the USRP's TX frequency to {0} hz: {1}".format(
+                                 command.parameters['rx_freq'], str(usrp_error)))
+    driver._usrp_flow_graph.unlock()
+
+    return defer.returnValue({'message': "The USRP's TX frequency has been set."})
+
+  def settings_set_tx_freq(self):
+    """ Returns command meta-data for the 'set_tx_freq' command. 
+
+    @return Returns a dictionary containing the command meta-data.
+    """
+
+    # Define the command parameters
+    command_parameters = [
+      {
+        "type": "number",
+        "integer": True,
+        "required": True,
+        "title": "tx_freq",
+        "description": "The desired TX frequency of the USRP in hertz."
+      }
+    ]
+
+    return build_metadata_dict(command_parameters, 'set_tx_freq', self.name, requires_active_session = True,
+                               schedulable = True, use_as_initial_value = True)
 
 class USRPData(Protocol):
   """ This TCP Protocol is used to send and receive data to and from the USRP via its data port. """

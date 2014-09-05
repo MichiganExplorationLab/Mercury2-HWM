@@ -247,17 +247,19 @@ class AntennaControllerHandler(handler.DeviceCommandHandler):
     # Define a schema for parameters
     command_parameters = [
       {
-        "type": "integer",
+        "type": "number",
         "minvalue": 0,
         "maxvalue": 360,
+        "integer": True,
         "required": True,
         "title": "azimuth",
         "description": "The desired azimuth."
       },
       {
-        "type": "integer",
+        "type": "number",
         "minvalue": 0,
         "maxvalue": 210,
+        "integer": True,
         "required": True,
         "title": "elevation",
         "description": "The desired elevation."
