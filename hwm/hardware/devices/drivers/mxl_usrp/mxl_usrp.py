@@ -203,7 +203,7 @@ class USRPHandler(handler.DeviceCommandHandler):
         "type": "number",
         "integer": True,
         "required": True,
-        "title": "rx_freq",
+        "title": "RX frequency",
         "description": "The desired RX frequency of the USRP in hertz."
       }
     ]
@@ -243,7 +243,7 @@ class USRPHandler(handler.DeviceCommandHandler):
         "type": "number",
         "integer": True,
         "required": True,
-        "title": "tx_freq",
+        "title": "TX frequency",
         "description": "The desired TX frequency of the USRP in hertz."
       }
     ]
