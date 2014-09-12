@@ -9,7 +9,7 @@ from hwm.core.configuration import *
 from hwm.command import command
 from hwm.hardware.pipelines import pipeline
 from hwm.hardware.devices.drivers.mxl_usrp import mxl_usrp
-from GNURadio_top_block import USRPTopBlock
+from hwm.hardware.devices.drivers.mxl_usrp.GNURadio_top_block import USRPTopBlock
 
 # Some globals that apply across test classes
 standard_device_configuration = {
@@ -53,6 +53,43 @@ class TestMXLUSRPDriver(unittest.TestCase):
     
     # Reset the configuration reference
     self.config = None
+
+  def _mock_GNURadio_blocks(test_function):
+    """ This decorator globally mocks the USRPTopBlock class and restores it after the test has finished. """
+
+    def mock_USRPTopBlock(self):
+      # Mock the GNU Radio flow graph
+      old_USRPTopBlock = USRPTopBlock
+      USRPTopBlock = MagicMock
+
+      test_function(self)
+
+      # Restore the GNU Radio flow graph
+      USRPTopBlock = old_USRPTopBlock
+
+    return mock_USRPTopBlock
+
+  def _mock_protocol_tools(test_function):
+    """ This decorator globally mocks the Twisted protocol tools that are used connect to the USRP. """
+
+    def mock_Twisted_tools(self):
+      # Mock the Twisted endpoint classes
+      self.old_TCP4ClientEndpoint = TCP4ClientEndpoint
+      self.old_connectProtocol = connectProtocol
+      TCP4ClientEndpoint = MagicMock()
+      connectProtocol = self._mock_connectProtocol
+
+      test_function(self)
+
+      # Restore the old Twisted endpoint classes
+      TCP4ClientEndpoint = self.old_TCP4ClientEndpoint
+      connectProtocol = self.old_connectProtocol
+
+  def _mock_connectProtocol(self, endpoint, protocol):
+    """ Mocks the twisted.internet.endpoints.connectProtocol function to immediately return the Protocol in a deferred.
+    """
+
+    return defer.succeed(protocol)
 
   def test_initialization(self):
     """ This test verifies that the USRP driver correctly initializes itself. """
@@ -208,43 +245,6 @@ class TestMXLUSRPDriver(unittest.TestCase):
     # Verify that the doppler update string was passed to the USRP's socket
     self.assertEqual(test_device._usrp_state['corrected_rx_freq'], 95)
     test_device._usrp_doppler.transport.write.assert_called_once_with('-f 95')
-
-  def _mock_GNURadio_blocks(test_function):
-    """ This decorator globally mocks the USRPTopBlock class and restores it after the test has finished. """
-
-    def mock_USRPTopBlock(self):
-      # Mock the GNU Radio flow graph
-      old_USRPTopBlock = USRPTopBlock
-      USRPTopBlock = MagicMock
-
-      test_function(self)
-
-      # Restore the GNU Radio flow graph
-      USRPTopBlock = old_USRPTopBlock
-
-    return mock_USRPTopBlock
-
-  def _mock_protocol_tools(test_function):
-    """ This decorator globally mocks the Twisted protocol tools that are used connect to the USRP. """
-
-    def mock_Twisted_tools(self):
-      # Mock the Twisted endpoint classes
-      self.old_TCP4ClientEndpoint = TCP4ClientEndpoint
-      self.old_connectProtocol = connectProtocol
-      TCP4ClientEndpoint = MagicMock()
-      connectProtocol = self._mock_connectProtocol
-
-      test_function(self)
-
-      # Restore the old Twisted endpoint classes
-      TCP4ClientEndpoint = self.old_TCP4ClientEndpoint
-      connectProtocol = self.old_connectProtocol
-
-  def _mock_connectProtocol(self, endpoint, protocol):
-    """ Mocks the twisted.internet.endpoints.connectProtocol function to immediately return the Protocol in a deferred.
-    """
-
-    return defer.succeed(protocol)
 
   def _reset_config_entries(self):
     # Reset the recorded configuration entries
