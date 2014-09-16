@@ -1,15 +1,13 @@
 import logging, time
 from pkg_resources import Requirement, resource_filename
-from mock import MagicMock
+from mock import MagicMock, patch
 from twisted.trial import unittest
 from twisted.internet import defer
 from twisted.internet.defer import inlineCallbacks
-from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
 from hwm.core.configuration import *
 from hwm.command import command
 from hwm.hardware.pipelines import pipeline
 from hwm.hardware.devices.drivers.mxl_usrp import mxl_usrp
-from hwm.hardware.devices.drivers.mxl_usrp.GNURadio_top_block import USRPTopBlock
 
 # Some globals that apply across test classes
 standard_device_configuration = {
@@ -54,39 +52,9 @@ class TestMXLUSRPDriver(unittest.TestCase):
     # Reset the configuration reference
     self.config = None
 
-  def _mock_GNURadio_blocks(test_function):
-    """ This decorator globally mocks the USRPTopBlock class and restores it after the test has finished. """
-
-    def mock_USRPTopBlock(self):
-      # Mock the GNU Radio flow graph
-      old_USRPTopBlock = USRPTopBlock
-      USRPTopBlock = MagicMock
-
-      test_function(self)
-
-      # Restore the GNU Radio flow graph
-      USRPTopBlock = old_USRPTopBlock
-
-    return mock_USRPTopBlock
-
-  def _mock_protocol_tools(test_function):
-    """ This decorator globally mocks the Twisted protocol tools that are used connect to the USRP. """
-
-    def mock_Twisted_tools(self):
-      # Mock the Twisted endpoint classes
-      self.old_TCP4ClientEndpoint = TCP4ClientEndpoint
-      self.old_connectProtocol = connectProtocol
-      TCP4ClientEndpoint = MagicMock()
-      connectProtocol = self._mock_connectProtocol
-
-      test_function(self)
-
-      # Restore the old Twisted endpoint classes
-      TCP4ClientEndpoint = self.old_TCP4ClientEndpoint
-      connectProtocol = self.old_connectProtocol
-
-  def _mock_connectProtocol(self, endpoint, protocol):
-    """ Mocks the twisted.internet.endpoints.connectProtocol function to immediately return the Protocol in a deferred.
+  def _mock_connectProtocol(endpoint, protocol):
+    """ A mock of the twisted.internet.endpoints.connectProtocol function that immediately returns the Protocol in a 
+    deferred.
     """
 
     return defer.succeed(protocol)
@@ -102,25 +70,26 @@ class TestMXLUSRPDriver(unittest.TestCase):
 
     # Verify the results
     default_settings = standard_device_configuration['settings']
-    self.assertEqual(test_device.rx_device_address, default_settings['rx_device_address'])
-    self.assertEqual(test_device.tx_device_address, default_settings['tx_device_address'])
-    self.assertEqual(test_device.usrp_host, default_settings['usrp_host'])
-    self.assertEqual(test_device.usrp_data_port, default_settings['usrp_data_port'])
-    self.assertEqual(test_device.usrp_doppler_port, default_settings['usrp_doppler_port'])
-    self.assertEqual(test_device.bit_rate, default_settings['bit_rate'])
-    self.assertEqual(test_device.interpolation, default_settings['interpolation'])
-    self.assertEqual(test_device.decimation, default_settings['decimation'])
-    self.assertEqual(test_device.sampling_rate, default_settings['sampling_rate'])
-    self.assertEqual(test_device.rx_gain, default_settings['rx_gain'])
-    self.assertEqual(test_device.tx_gain, default_settings['tx_gain'])
-    self.assertEqual(test_device.fm_dev, default_settings['fm_dev'])
-    self.assertEqual(test_device.tx_fm_dev, default_settings['tx_fm_dev'])
+    self.assertEqual(test_device.settings['rx_device_address'], default_settings['rx_device_address'])
+    self.assertEqual(test_device.settings['tx_device_address'], default_settings['tx_device_address'])
+    self.assertEqual(test_device.settings['usrp_host'], default_settings['usrp_host'])
+    self.assertEqual(test_device.settings['usrp_data_port'], default_settings['usrp_data_port'])
+    self.assertEqual(test_device.settings['usrp_doppler_port'], default_settings['usrp_doppler_port'])
+    self.assertEqual(test_device.settings['bit_rate'], default_settings['bit_rate'])
+    self.assertEqual(test_device.settings['interpolation'], default_settings['interpolation'])
+    self.assertEqual(test_device.settings['decimation'], default_settings['decimation'])
+    self.assertEqual(test_device.settings['sampling_rate'], default_settings['sampling_rate'])
+    self.assertEqual(test_device.settings['rx_gain'], default_settings['rx_gain'])
+    self.assertEqual(test_device.settings['tx_gain'], default_settings['tx_gain'])
+    self.assertEqual(test_device.settings['fm_dev'], default_settings['fm_dev'])
+    self.assertEqual(test_device.settings['tx_fm_dev'], default_settings['tx_fm_dev'])
     self.assertTrue(isinstance(test_device._command_handler, mxl_usrp.USRPHandler))
 
-  @_mock_protocol_tools
-  @_mock_GNURadio_blocks
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.USRPTopBlock')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.TCP4ClientEndpoint')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.connectProtocol', new = _mock_connectProtocol)
   @inlineCallbacks
-  def test_prepare_for_session(self):
+  def test_prepare_for_session(self, mock_TCP4ClientEndpoint, mock_USRPTopBlock):
     """ This test verifies that the USRP driver can successfully prepare for a new session. """
 
     # Create a mock driver and pipeline to test with
@@ -134,32 +103,21 @@ class TestMXLUSRPDriver(unittest.TestCase):
     result = yield protocol_deferreds
 
     # Verify the results
-    test_pipeline.load_service.assert_called_once_with("tracker")
+    default_settings = standard_device_configuration['settings']
     tracker_service.register_position_receiver.assert_called_once_with(test_device.process_tracker_update)
-    test_device._usrp_flow_graph.__init__.assert_called_once_with(
-        rx_device_address = standard_device_configuration['settings']['rx_device_address'],
-        tx_device_address = standard_device_configuration['settings']['tx_device_address'],
-        data_port = standard_device_configuration['settings']['data_port'],
-        doppler_port = standard_device_configuration['settings']['doppler_port'],
-        bit_rate = standard_device_configuration['settings']['bit_rate'], 
-        interpolation = standard_device_configuration['settings']['interpolation'],
-        decimation = standard_device_configuration['settings']['decimation'], 
-        sampling_rate = standard_device_configuration['settings']['sampling_rate'],
-        rx_freq = standard_device_configuration['settings']['rx_freq'],
-        tx_freq = standard_device_configuration['settings']['tx_freq'],
-        rx_gain = standard_device_configuration['settings']['rx_gain'],
-        tx_gain = standard_device_configuration['settings']['tx_gain'],
-        fm_dev = standard_device_configuration['settings']['fm_dev'],
-        tx_fm_dev = standard_device_configuration['settings']['tx_fm_dev'])
     test_device._usrp_flow_graph.run.assert_called_once_with(True)
     self.assertTrue(test_device._usrp_flow_graph_running)
 
-  @_mock_protocol_tools
-  @_mock_GNURadio_blocks
+    self.assertTrue(isinstance(result[0][1], mxl_usrp.USRPData))
+    self.assertTrue(isinstance(result[1][1], mxl_usrp.USRPDoppler))
+
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.USRPTopBlock')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.TCP4ClientEndpoint')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.connectProtocol', new = _mock_connectProtocol)
   @inlineCallbacks
-  def test_prepare_for_session_missing_service(self):
+  def test_prepare_for_session_missing_service(self, mock_TCP4ClientEndpoint, mock_USRPTopBlock):
     """ This test verifies that the USRP driver correctly responds to a missing 'tracker' service when preparing for a 
-    new session. """
+    new session. It should ignore the error and continue setting up the driver. """
 
     # Create a mock driver and pipeline to test with
     test_pipeline = MagicMock()
@@ -176,10 +134,11 @@ class TestMXLUSRPDriver(unittest.TestCase):
     test_device._usrp_flow_graph.run.assert_called_once_with(True)
     self.assertTrue(test_device._usrp_flow_graph_running)
 
-  @_mock_protocol_tools
-  @_mock_GNURadio_blocks
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.USRPTopBlock')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.TCP4ClientEndpoint')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.connectProtocol', new = _mock_connectProtocol)
   @inlineCallbacks
-  def test_cleanup_after_session(self):
+  def test_cleanup_after_session(self, mock_TCP4ClientEndpoint, mock_USRPTopBlock):
     """ This test verified that the 'cleanup_after_session' method behaves as expected. """
 
     # Create a mock driver and pipeline to test with
@@ -192,15 +151,19 @@ class TestMXLUSRPDriver(unittest.TestCase):
     protocol_deferreds = test_device.prepare_for_session(test_pipeline)
     result = yield protocol_deferreds
 
+    # Clean up after the session
+    old_usrp_flow_graph = test_device._usrp_flow_graph
+    test_device.cleanup_after_session()
+
     # Verify the results
-    test_device._usrp_flow_graph.stop.assert_called_once_with()
-    test_device._reset_driver_state.assert_called_once_with()
+    old_usrp_flow_graph.stop.assert_called_once_with()
     self.assertTrue(not test_device._usrp_flow_graph_running)
 
-  @_mock_protocol_tools
-  @_mock_GNURadio_blocks
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.USRPTopBlock')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.TCP4ClientEndpoint')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.connectProtocol', new = _mock_connectProtocol)
   @inlineCallbacks
-  def test_writing_to_radio(self):
+  def test_writing_to_radio(self, mock_TCP4ClientEndpoint, mock_USRPTopBlock):
     """ This test verifies that the radio can be written to. """
 
     # Create a mock driver and pipeline to test with
@@ -218,10 +181,11 @@ class TestMXLUSRPDriver(unittest.TestCase):
     test_device.write("waffles")
     test_device._usrp_data.transport.write.assert_called_once_with("waffles")
 
-  @_mock_protocol_tools
-  @_mock_GNURadio_blocks
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.USRPTopBlock')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.TCP4ClientEndpoint')
+  @patch('hwm.hardware.devices.drivers.mxl_usrp.mxl_usrp.connectProtocol', new = _mock_connectProtocol)
   @inlineCallbacks
-  def test_doppler_update_processing(self):
+  def test_doppler_update_processing(self, mock_TCP4ClientEndpoint, mock_USRPTopBlock):
     """ This method tests the process_tracker_update callback, which receives new tracking and doppler offset
     information from the active tracker.
     """
@@ -298,7 +262,7 @@ class TestMXLUSRPHandler(unittest.TestCase):
     results = yield command_deferred
     
     # Verify the results
-    self.assertEqual(results['message'], "The USRP's RX frequency has been set.")
+    self.assertTrue("RX frequency has been set" in results['message'])
     self.test_device._usrp_flow_graph.lock.assert_called_once_with()
     self.test_device._usrp_flow_graph.usrp_block.set_rxfreq.assert_called_once_with(test_frequency)
     self.test_device._usrp_flow_graph.unlock.assert_called_once_with()
@@ -324,7 +288,7 @@ class TestMXLUSRPHandler(unittest.TestCase):
     results = yield command_deferred
     
     # Verify the results
-    self.assertEqual(results['message'], "The USRP's TX frequency has been set.")
+    self.assertEqual("TX frequency has been set" in results['message'])
     self.test_device._usrp_flow_graph.lock.assert_called_once_with()
     self.test_device._usrp_flow_graph.usrp_block.set_txfreq.assert_called_once_with(test_frequency)
     self.test_device._usrp_flow_graph.unlock.assert_called_once_with()
@@ -338,7 +302,3 @@ class TestMXLUSRPHandler(unittest.TestCase):
     # Reset the recorded configuration entries
     self.config.options = {}
     self.config.user_options = {}
-
-
-
-

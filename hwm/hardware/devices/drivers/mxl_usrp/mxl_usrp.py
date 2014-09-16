@@ -11,7 +11,7 @@ from hwm.hardware.devices.drivers import driver
 from hwm.hardware.pipelines import pipeline
 from hwm.command import command
 from hwm.command.handlers import handler
-from GNURadio_top_block import USRPTopBlock
+from hwm.hardware.devices.drivers.mxl_usrp.GNURadio_top_block import USRPTopBlock
 
 class MXL_USRP(driver.HardwareDriver):
   """ A driver for the MXL USRP.
@@ -29,21 +29,6 @@ class MXL_USRP(driver.HardwareDriver):
     """
 
     super(MXL_USRP,self).__init__(device_configuration, command_parser)
-
-    # Set configuration settings
-    self.rx_device_address = device_configuration['rx_device_address']
-    self.tx_device_address = device_configuration['tx_device_address']
-    self.usrp_host = device_configuration['usrp_host']
-    self.usrp_data_port = device_configuration['usrp_data_port']
-    self.usrp_doppler_port = device_configuration['usrp_doppler_port']
-    self.bit_rate = device_configuration['bit_rate']
-    self.interpolation = device_configuration['interpolation']
-    self.decimation = device_configuration['decimation']
-    self.sampling_rate = device_configuration['sampling_rate']
-    self.rx_gain = device_configuration['rx_gain']
-    self.tx_gain = device_configuration['tx_gain']
-    self.fm_dev = device_configuration['fm_dev']
-    self.tx_fm_dev = device_configuration['tx_fm_dev']
 
     # Initialize the driver's command handler
     self._command_handler = USRPHandler(self)
@@ -77,29 +62,29 @@ class MXL_USRP(driver.HardwareDriver):
       logging.warning("The '"+self.id+"' device could not load a 'tracker' service from the session's pipeline.")
 
     # Initialize the GNU Radio top-block with default values
-    self._usrp_flow_graph = USRPTopBlock(rx_device_address = self.rx_device_address,
-                                         tx_device_address = self.tx_device_address,
-                                         data_port = self.usrp_data_port,
-                                         doppler_port = self.usrp_doppler_port,
-                                         bit_rate = self.bit_rate, 
-                                         interpolation = self.interpolation,
-                                         decimation = self.decimation, 
-                                         sampling_rate = self.sampling_rate,
+    self._usrp_flow_graph = USRPTopBlock(rx_device_address = self.settings['rx_device_address'],
+                                         tx_device_address = self.settings['tx_device_address'],
+                                         data_port = self.settings['usrp_data_port'],
+                                         doppler_port = self.settings['usrp_doppler_port'],
+                                         bit_rate = self.settings['bit_rate'], 
+                                         interpolation = self.settings['interpolation'],
+                                         decimation = self.settings['decimation'], 
+                                         sampling_rate = self.settings['sampling_rate'],
                                          rx_freq = 435.0e6,
                                          tx_freq = 435.0e6,
-                                         rx_gain = self.rx_gain,
-                                         tx_gain = self.tx_gain,
-                                         fm_dev = self.fm_dev,
-                                         tx_fm_dev = self.tx_fm_dev)
+                                         rx_gain = self.settings['rx_gain'],
+                                         tx_gain = self.settings['tx_gain'],
+                                         fm_dev = self.settings['fm_dev'],
+                                         tx_fm_dev = self.settings['tx_fm_dev'])
     self._usrp_flow_graph.run(True)
     self._usrp_flow_graph_running = True
 
     # Connect to the data and doppler correction ports
-    data_endpoint = TCP4ClientEndpoint(reactor, self.usrp_host, self.usrp_data_port)
+    data_endpoint = TCP4ClientEndpoint(reactor, self.settings['usrp_host'], self.settings['usrp_data_port'])
     self._usrp_data = USRPData(self)
     data_endpoint_deferred = connectProtocol(data_endpoint, self._usrp_data)
-    doppler_endpoint = TCP4ClientEndpoint(reactor, self.usrp_host, self.usrp_doppler_port)
-    self._usrp_doppler = USRPDoppler(self)
+    doppler_endpoint = TCP4ClientEndpoint(reactor, self.settings['usrp_host'], self.settings['usrp_doppler_port'])
+    self._usrp_doppler = USRPDoppler()
     doppler_endpoint_deferred = connectProtocol(doppler_endpoint, self._usrp_doppler)
 
     return defer.DeferredList([data_endpoint_deferred, doppler_endpoint_deferred], consumeErrors = False)
@@ -181,13 +166,13 @@ class USRPHandler(handler.DeviceCommandHandler):
     """
 
     # Lock the flow graph and try to update the RX frequency
-    driver._usrp_flow_graph.lock()
+    self.driver._usrp_flow_graph.lock()
     try:
-      driver._usrp_flow_graph.usrp_block.set_rxfreq(command.parameters['rx_freq'])
+      self.driver._usrp_flow_graph.usrp_block.set_rxfreq(command.parameters['rx_freq'])
     except Exception as usrp_error:
       raise command.CommandError("An error occured while setting the USRP's RX frequency to {0} hz: {1}".format(
                                  command.parameters['rx_freq'], str(usrp_error)))
-    driver._usrp_flow_graph.unlock()
+    self.driver._usrp_flow_graph.unlock()
 
     return defer.returnValue({'message': "The USRP's RX frequency has been set."})
 
@@ -221,13 +206,13 @@ class USRPHandler(handler.DeviceCommandHandler):
     """
 
     # Lock the flow graph and try to update the RX frequency
-    driver._usrp_flow_graph.lock()
+    self.driver._usrp_flow_graph.lock()
     try:
-      driver._usrp_flow_graph.usrp_block.set_txfreq(command.parameters['tx_freq'])
+      self.driver._usrp_flow_graph.usrp_block.set_txfreq(command.parameters['tx_freq'])
     except Exception as usrp_error:
       raise command.CommandError("An error occured while setting the USRP's TX frequency to {0} hz: {1}".format(
                                  command.parameters['rx_freq'], str(usrp_error)))
-    driver._usrp_flow_graph.unlock()
+    self.driver._usrp_flow_graph.unlock()
 
     return defer.returnValue({'message': "The USRP's TX frequency has been set."})
 
