@@ -24,6 +24,7 @@ from hwm.command import parser as command_parser_mod, connection as command_conn
 from hwm.command.handlers import system as system_command_handler
 from hwm.network.security import verification, permissions
 from hwm.network.protocols import data, telemetry
+from hwm.network.state import state
 
 def initialize():
   """ Initializes the Mercury2 Hardware Manager.
@@ -53,18 +54,27 @@ def initialize():
   # Setup the command parser
   command_parser = _setup_command_system()
 
+  # Setup the state reporter
+  state_reporter = state.StateReporter(Configuration.get('mercury2-ui-location')+"/api/state",
+                                       Configuration.get('state-update-period'))
+
   # Initialize the device manager
   device_manager = devices.DeviceManager(command_parser)
   
   # Initialize the pipeline manager
   pipeline_manager = pipelines.PipelineManager(device_manager,
-                                               command_parser)
+                                               command_parser,
+                                               state_reporter)
   
   # Initialize the session coordinator
   session_coordinator = coordinator.SessionCoordinator(schedule_manager,
                                                        device_manager,
                                                        pipeline_manager,
-                                                       command_parser)
+                                                       command_parser,
+                                                       state_reporter)
+
+  # Send the substation's configuration to the UI
+  _send_substation_configuration(state_reporter)
   
   # Initialize the required network listeners
   _setup_network_listeners(command_parser, session_coordinator);
@@ -129,6 +139,14 @@ def _announce_start():
   print "|___________________________________________________|\n"
   print "Version: "+Configuration.version+"\n\n"
 
+def _send_substation_configuration(state_reporter):
+  """ Sends the substation's configuration to the user interface.
+
+  This method sends the substation's general, device, pipeline, and command configurations to the user interface. 
+  """
+
+  state_reporter.send_substation_configuration(Configuration.get)
+
 def _setup_schedule_manager():
   """ Initializes the schedule manager.
   
@@ -141,7 +159,7 @@ def _setup_schedule_manager():
   if Configuration.get('offline-mode'):
     schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-local'))
   else:
-    schedule_manager = schedule.ScheduleManager(Configuration.get('schedule-location-network'))
+    schedule_manager = schedule.ScheduleManager(Configuration.get('mercury2-ui-location')+"/api/schedule")
   
   return schedule_manager
 
@@ -162,7 +180,7 @@ def _setup_command_system():
     permission_manager = permissions.PermissionManager(Configuration.get('permissions-location-local'),
                                                        Configuration.get('permissions-update-period'))
   else:
-    permission_manager = permissions.PermissionManager(Configuration.get('permissions-location-network'),
+    permission_manager = permissions.PermissionManager(Configuration.get('mercury2-ui-location')+"/api/schedule",
                                                        Configuration.get('permissions-update-period'))
   command_parser = command_parser_mod.CommandParser(system_command_handlers, permission_manager)
   

@@ -207,6 +207,10 @@ class Config:
           "type": "string",
           "required": True
         },
+        "mercury2-api-token": {
+          "type": "string",
+          "required": True
+        },
         "tls-private-key-location": {
           "type": "string",
           "default": self.config_directory + "ssl/mercury2_hwm-key.pem"
@@ -231,10 +235,6 @@ class Config:
           "type": "string",
           "default": self.data_directory + "schedules/offline_schedule.json"
         },
-        "schedule-location-network": {
-          "type": "string",
-          "default": "test_schedule.json"
-        },
         "permissions-update-period": {
           "type": "integer",
           "minimum": 1,
@@ -250,9 +250,15 @@ class Config:
           "type": "string",
           "default": self.data_directory + "permissions/offline_permissions.json"
         },
-        "permissions-location-network": {
+        "state-update-period": {
           "type": "string",
-          "default": "test_permissions.json"
+          "default": 30
+        },
+        "state-update-timeout": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300,
+          "default": 15
         }
       }
     }

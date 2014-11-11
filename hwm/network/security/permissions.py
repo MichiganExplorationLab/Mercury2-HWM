@@ -2,7 +2,6 @@
 This module contains a class used to manage and cache user command permissions.
 """
 
-# Include required modules
 import time, json, jsonschema, urllib2, urllib
 from twisted.internet import threads, defer
 from hwm.core import configuration
@@ -147,8 +146,9 @@ class PermissionManager:
       # Encode the request parameters
       encoded_params = urllib.urlencode({'user_id': user_id})
       
-      permissions_request = urllib2.Request(self.permissions_location+'?'+encoded_params)
+      permissions_request = urllib2.Request(self.permissions_location+"?"+encoded_params)
       permissions_opener = urllib2.build_opener()
+      permissions_opener.addheaders = [('Authorization', 'Token: '+self.config.get('mercury2-api-token'))]
       permissions_file = permissions_opener.open(permissions_request, None, self.config.get('permissions-update-timeout'))
     except:
       # Error downloading the file

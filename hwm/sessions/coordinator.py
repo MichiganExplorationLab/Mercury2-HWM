@@ -19,13 +19,14 @@ class SessionCoordinator:
   creating new sessions as needed.
   """
   
-  def __init__(self, reservation_schedule, device_manager, pipeline_manager, command_parser):
+  def __init__(self, reservation_schedule, device_manager, pipeline_manager, command_parser, state_reporter):
     """ Sets up the session coordinator instance.
     
     @param reservation_schedule  A reference to the schedule to coordinate.
     @param device_manager        A reference to a device manager that has been initialized with the available hardware. 
     @param pipeline_manager      A reference to a pipeline manager instance.
     @param command_parser        The CommandParser object that will be used to execute the session setup commands.
+    @param state_reporter        A reference to a StateReporter instance that can be used to send alerts to the UI.
     """
     
     # Set the resource references
@@ -33,6 +34,7 @@ class SessionCoordinator:
     self.devices = device_manager
     self.pipelines = pipeline_manager
     self.command_parser = command_parser
+    self.state_reporter = state_reporter
     self.config = configuration.Configuration
 
     # Register the session coordinator with the command parser so it can check command session requirements

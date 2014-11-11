@@ -211,6 +211,7 @@ class ScheduleManager:
     try:
       schedule_request = urllib2.Request(self.schedule_location)
       schedule_opener = urllib2.build_opener()
+      schedule_opener.addheaders = [('Authorization', 'Token: '+self.config.get('mercury2-api-token'))]
       schedule_file = schedule_opener.open(schedule_request, None, self.config.get('schedule-update-timeout'))
     except:
       # Error downloading the file

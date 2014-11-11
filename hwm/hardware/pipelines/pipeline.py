@@ -17,7 +17,7 @@ class Pipeline:
   This class provides an interface to the hardware pipeline and associated hardware devices.
   """
   
-  def __init__(self, pipeline_configuration, device_manager, command_parser):
+  def __init__(self, pipeline_configuration, device_manager, command_parser, state_reporter):
     """ Initializes the pipeline with the supplied configuration.
     
     @throw May pass on any exceptions raised during the pipeline setup procedure (see _setup_pipeline()).
@@ -26,11 +26,13 @@ class Pipeline:
                                    supplied by the pipeline manager and is loaded from the pipeline configuration file.
     @param device_manager          A reference to the DeviceManager that will be used to load the pipeline hardware.
     @param command_parser          A reference to the CommandParser that will be used to run pipeline setup commands.
+    @param state_reporter          A reference to a StateReporter instance that can be used to send alerts to the UI.
     """
     
     # Initialize pipeline attributes
     self.device_manager = device_manager
     self.command_parser = command_parser
+    self.state_reporter = state_reporter
     self.pipeline_configuration = pipeline_configuration
     self.id = pipeline_configuration['id']
     self.mode = pipeline_configuration['mode']

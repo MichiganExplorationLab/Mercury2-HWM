@@ -43,6 +43,7 @@ class DeviceManager:
     self.devices = {}          # Stores references to instances of the physical device drivers
     self.virtual_devices = {}  # Stores references to the virtual device driver classes (initialized on the fly)
     self._command_parser = command_parser
+    self._state_reporter = state_reporter
     
     # Initialize 
     self._initialize_devices()
